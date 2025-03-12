@@ -3,13 +3,14 @@ import { useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { useAuth } from "../components/store/UseAuth"; // Import the custom hook
 
+
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, loading } = useAuth(); // Get user & loading state
 
   return (
     <>
-      {/* Mobile Menu Button (☰) */}
+      {/* ☰ Mobile Menu Button */}
       <button
         onClick={() => setIsOpen(true)}
         className="md:hidden p-2 bg-gray-800 text-white rounded fixed top-4 left-4 z-50"
@@ -17,11 +18,14 @@ export function Sidebar() {
         ☰
       </button>
 
-      {/* Sidebar Panel */}
-      <div className={`fixed inset-y-0 left-0 transform ${isOpen ? "translate-x-0" : "-translate-x-full"} 
-                      md:relative md:translate-x-0 transition-transform duration-200 ease-in-out z-50 bg-gray-800 text-white w-64 h-full p-4 flex flex-col shadow-lg`}>
-
-        {/* Close Button (Only for Mobile) */}
+      {/* ✅ Sidebar Panel (Fixed & Non-Scrollable) */}
+      <div
+        className={`fixed top-0 left-0 transform ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        } md:relative md:translate-x-0 transition-transform duration-200 ease-in-out z-50 
+        bg-gray-800 text-white w-64 h-screen p-4 flex flex-col shadow-lg overflow-hidden`}
+      >
+        {/* ✖ Close Button (Only for Mobile) */}
         <button
           onClick={() => setIsOpen(false)}
           className="md:hidden text-white text-xl absolute top-4 right-4"
@@ -29,10 +33,10 @@ export function Sidebar() {
           ✖
         </button>
 
-        {/* Sidebar Heading */}
+        {/* 🔥 Sidebar Heading */}
         <h2 className="text-xl font-bold mb-4">Learning Go</h2>
 
-        {/* Profile Section */}
+        {/* 👤 Profile Section */}
         <div className="flex items-center gap-3 p-4 border-b border-gray-700">
           <FaUserCircle className="text-3xl" />
           <div>
@@ -41,7 +45,9 @@ export function Sidebar() {
             ) : user ? (
               <>
                 <p className="text-sm font-semibold">Welcome, {user.username}!</p>
-                <Link to="/profile" className="text-blue-400 text-sm hover:underline">View Profile</Link>
+                <Link to="/profile" className="text-blue-400 text-sm hover:underline">
+                  View Profile
+                </Link>
               </>
             ) : (
               <p className="text-sm font-semibold">Guest</p>
@@ -49,30 +55,66 @@ export function Sidebar() {
           </div>
         </div>
 
-        {/* Navigation Links */}
+        {/* 🔗 Navigation Links */}
         <nav className="space-y-2 flex-1">
-          <Link to="/" className="block p-2 rounded hover:bg-gray-700" onClick={() => setIsOpen(false)}>Home</Link>
-          <Link to="/categories" className="block p-2 rounded hover:bg-gray-700" onClick={() => setIsOpen(false)}>Categories</Link>
-          <Link to="/bookmarked" className="block p-2 rounded hover:bg-gray-700" onClick={() => setIsOpen(false)}>Bookmarked</Link>
-          <Link to="/settings" className="block p-2 rounded hover:bg-gray-700" onClick={() => setIsOpen(false)}>Settings</Link>
+          <Link
+            to="/"
+            className="block p-2 rounded hover:bg-gray-700"
+            onClick={() => setIsOpen(false)}
+          >
+            Home
+          </Link>
+          <Link
+            to="/categories"
+            className="block p-2 rounded hover:bg-gray-700"
+            onClick={() => setIsOpen(false)}
+          >
+            Categories
+          </Link>
+          <Link
+            to="/bookmarked"
+            className="block p-2 rounded hover:bg-gray-700"
+            onClick={() => setIsOpen(false)}
+          >
+            Bookmarked
+          </Link>
+          <Link
+            to="/settings"
+            className="block p-2 rounded hover:bg-gray-700"
+            onClick={() => setIsOpen(false)}
+          >
+            Settings
+          </Link>
         </nav>
 
-        {/* Auth Buttons */}
+        {/* 🔑 Auth Buttons */}
         <div className="flex mt-auto justify-evenly">
           {user ? (
-            <button 
+            <button
               onClick={() => {
                 localStorage.removeItem("token"); // Logout by removing token
                 window.location.reload(); // Reload to reflect changes
-              }} 
+              }}
               className="block p-2 rounded hover:bg-gray-700 border border-gray-600"
             >
               Logout
             </button>
           ) : (
             <>
-              <Link to="/login" className="block p-2 rounded hover:bg-gray-700 border border-gray-600" onClick={() => setIsOpen(false)}>Login</Link>
-              <Link to="/signup" className="block p-2 rounded hover:bg-gray-700 border border-gray-600" onClick={() => setIsOpen(false)}>Signup</Link>
+              <Link
+                to="/login"
+                className="block p-2 rounded hover:bg-gray-700 border border-gray-600"
+                onClick={() => setIsOpen(false)}
+              >
+                Login
+              </Link>
+              <Link
+                to="/signup"
+                className="block p-2 rounded hover:bg-gray-700 border border-gray-600"
+                onClick={() => setIsOpen(false)}
+              >
+                Signup
+              </Link>
             </>
           )}
         </div>

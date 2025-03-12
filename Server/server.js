@@ -6,7 +6,7 @@ const compression = require("compression");
 const app = express();
 const authRoute = require("./routes/auth-route");
 const reviewRoute = require("./routes/review-route");
-const blogRoute = require("./routes/blog-route")
+const quesRoute = require("./routes/ques-route")
 const connectDb = require("./utils/db");
 
 // ✅ Dynamically set CORS based on environment
@@ -33,7 +33,7 @@ app.get("/", (req, res) => {
 // ✅ API Routes
 app.use("/api/auth", authRoute);
 app.use("/api/form", reviewRoute);
-app.use("/api/blog", blogRoute)
+app.use("/api/ques-post", quesRoute)
 
 // ✅ Error handling middleware
 app.use((error, req, res, next) => {

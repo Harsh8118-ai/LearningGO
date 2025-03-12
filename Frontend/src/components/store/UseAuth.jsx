@@ -13,8 +13,13 @@ export function useAuth() {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          console.error("No token found");
-          navigate("/login");
+          console.warn("No token found");
+          
+          // Allow public pages, redirect only if necessary
+          const publicRoutes = ["/login", "/signup", "/"];
+          if (!publicRoutes.includes(window.location.pathname)) {
+            navigate("/login");
+          }
           return;
         }
 
@@ -29,19 +34,20 @@ export function useAuth() {
         });
 
         const data = await response.json();
-        console.log("🔹 API Response Data:", data);
 
         if (!response.ok || !data.userData) {
           throw new Error("Failed to fetch user");
         }
 
-        console.log("✅ Setting user state...");
         setUser(data.userData);
       } catch (error) {
-        console.error("❌ Failed to fetch user:", error.message);
-        navigate("/login");
+        console.error("Auth error:", error.message);
+        
+        // Redirect only if needed
+        if (!["/login", "/signup"].includes(window.location.pathname)) {
+          navigate("/login");
+        }
       } finally {
-        console.log("🔄 Setting loading to false...");
         setLoading(false);
       }
     };
