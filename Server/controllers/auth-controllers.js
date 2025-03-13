@@ -1,12 +1,17 @@
 const User = require("../models/user-model");
 const jwt = require("jsonwebtoken");
 
+// 🔹 Generate JWT Token
+const generateToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY, { expiresIn: "7d" });
+};
+
 // ✅ **Home Controller**
 const home = async (req, res) => {
   try {
     res.status(200).json({ msg: "Welcome to our home page" });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -16,33 +21,24 @@ const register = async (req, res, next) => {
   try {
     const { username, email, mobileNumber, password } = req.body;
 
-    // Validation
-    if (!username || !email || !password || !mobileNumber) {
+    if (!username || !email || !mobileNumber || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Check if email or mobile number already exists
-    const userExist = await User.findOne({ 
-      $or: [{ email }, { mobileNumber }] 
-    });
-
+    const userExist = await User.findOne({ $or: [{ email }, { mobileNumber }] });
     if (userExist) {
       return res.status(400).json({ message: "Email or Mobile Number already exists" });
     }
 
-    // Create new user
-    const userCreated = await User.create({
-      username, 
-      email, 
-      mobileNumber, 
-      password,
-    });
+    const newUser = new User({ username, email, mobileNumber, password });
+    await newUser.save();
 
-    // Respond with success and token
+    const token = generateToken(newUser._id);
+
     res.status(201).json({
-      msg: "Registration Successful",
-      token: await userCreated.generateToken(),
-      userId: userCreated._id.toString(),
+      message: "Registration Successful",
+      token,
+      user: { id: newUser._id, username: newUser.username, email: newUser.email },
     });
   } catch (error) {
     next(error);
@@ -50,88 +46,28 @@ const register = async (req, res, next) => {
 };
 
 // ✅ **User Login (Manual Login)**
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   try {
     const { mobileNumber, password } = req.body;
 
-    // Validation
     if (!mobileNumber || !password) {
-      return res.status(400).json({ msg: "All fields are required" });
+      return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Check if user exists
-    const userExist = await User.findOne({ mobileNumber });
-
-    if (!userExist) {
+    const user = await User.findOne({ mobileNumber });
+    if (!user || !(await user.comparePassword(password))) {
       return res.status(400).json({ message: "Invalid Mobile Number or Password" });
     }
 
-    // Compare password
-    const isPasswordValid = await userExist.comparePassword(password);
-
-    if (!isPasswordValid) {
-      return res.status(400).json({ message: "Invalid Mobile Number or Password" });
-    }
-
-    // Respond with success and token
-    return res.status(200).json({
-      msg: "Login Successful",
-      token: await userExist.generateToken(),
-      userId: userExist._id.toString(),
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-// ✅ **OAuth Login (Google/GitHub)**
-const oauthLogin = async (req, res) => {
-  try {
-    const { email, username, googleId, githubId } = req.body;
-
-    // Check if user already exists with OAuth ID
-    let user = await User.findOne({ $or: [{ googleId }, { githubId }] });
-
-    // If not found by OAuth ID, check by email
-    if (!user) {
-      user = await User.findOne({ email });
-
-      // If found by email but OAuth ID is missing, update the record
-      if (user) {
-        if (googleId) user.googleId = googleId;
-        if (githubId) user.githubId = githubId;
-        await user.save();
-      }
-    }
-
-    // If user is still not found, create a new user
-    if (!user) {
-      user = new User({
-        username,
-        email,
-        googleId: googleId || null,
-        githubId: githubId || null,
-      });
-
-      await user.save();
-    }
-
-    // Generate JWT token
-    const token = user.generateToken();
+    const token = generateToken(user._id);
 
     res.status(200).json({
-      message: "Login successful",
+      message: "Login Successful",
       token,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-      },
+      user: { id: user._id, username: user.username, email: user.email },
     });
   } catch (error) {
-    console.error("OAuth login error:", error);
-    res.status(500).json({ error: "Internal server error" });
+    next(error);
   }
 };
 
@@ -147,39 +83,44 @@ const user = async (req, res) => {
 };
 
 // ✅ **Update User Profile**
-const UpdateProfile = async (req, res) => {
+const updateProfile = async (req, res, next) => {
   try {
     const { username, email, mobileNumber } = req.body;
     const userId = req.user._id;
 
-    // Find user
     const userDetails = await User.findById(userId);
-
     if (!userDetails) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Update user details
-    if (username) userDetails.username = username;
-    if (email) userDetails.email = email;
-    if (mobileNumber) userDetails.mobileNumber = mobileNumber;
+    if (email && email !== userDetails.email) {
+      const emailExists = await User.findOne({ email });
+      if (emailExists) {
+        return res.status(400).json({ message: "Email already in use" });
+      }
+    }
 
-    // Save the updated profile
+    if (mobileNumber && mobileNumber !== userDetails.mobileNumber) {
+      const mobileExists = await User.findOne({ mobileNumber });
+      if (mobileExists) {
+        return res.status(400).json({ message: "Mobile Number already in use" });
+      }
+    }
+
+    userDetails.username = username || userDetails.username;
+    userDetails.email = email || userDetails.email;
+    userDetails.mobileNumber = mobileNumber || userDetails.mobileNumber;
+
     await userDetails.save();
 
-    return res.status(200).json({
-      success: true,
+    res.status(200).json({
       message: "Profile Updated Successfully",
-      data: userDetails,
+      user: userDetails,
     });
   } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error while updating profile",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
 // ✅ **Export Controllers**
-module.exports = { home, register, login, oauthLogin, user, UpdateProfile };
+module.exports = { home, register, login, user, updateProfile };

@@ -26,35 +26,27 @@ const userSchema = new mongoose.Schema(
     mobileNumber: {
       type: String,
       unique: true,
-      sparse: true, // ✅ Ensures uniqueness only for non-null values
+      sparse: true, // Only enforces uniqueness for non-null values
       match: [/^\d{10}$/, "Phone Number must be exactly 10 digits."],
     },
     password: {
       type: String,
       minlength: [8, "Password must be at least 8 characters"],
       maxlength: [1024, "Password must not be more than 1024 characters"],
-      required: function () {
-        return !this.googleId && !this.githubId; // Require password only if user is NOT using OAuth
-      },
+      select: false, // Prevent returning password in queries
     },
-    googleId: {
+    authProvider: {
       type: String,
-      unique: true,
-      sparse: true,
-    },
-    githubId: {
-      type: String,
-      unique: true,
-      sparse: true,
+      enum: ["manual"],
+      default: "manual",
     },
   },
   { timestamps: true }
 );
 
-// 🔹 **Middleware: Hash Password Before Saving**
 userSchema.pre("save", async function (next) {
+  if (this.authProvider !== "manual") return next(); // Skip hashing for OAuth users
   if (!this.isModified("password") || !this.password) return next();
-
   try {
     const salt = await bcrypt.genSalt(12);
     this.password = await bcrypt.hash(this.password, salt);
@@ -64,17 +56,18 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-// 🔹 **Method: Compare Password**
 userSchema.methods.comparePassword = async function (enteredPassword) {
-  if (!this.password) return false; // OAuth users don’t have passwords
+  if (this.authProvider !== "manual") return false;
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// 🔹 **Method: Generate Token**
 userSchema.methods.generateToken = function () {
-  return jwt.sign({ userId: this._id }, process.env.JWT_SECRET_KEY, { expiresIn: "30d" });
+  return jwt.sign(
+    { userId: this._id, authProvider: this.authProvider },
+    process.env.JWT_SECRET_KEY,
+    { expiresIn: "30d" }
+  );
 };
 
-// ✅ Model Export
 const User = mongoose.model("User", userSchema);
 module.exports = User;

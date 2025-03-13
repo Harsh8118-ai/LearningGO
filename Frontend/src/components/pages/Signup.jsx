@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-// Access environment variable using import.meta.env
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function Signup() {
-  const navigate = useNavigate(); // For redirecting after signup
-
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -15,8 +15,8 @@ export default function Signup() {
     password: "",
   });
 
-  const [loading, setLoading] = useState(false); // To disable button while submitting
-  const [error, setError] = useState(""); // To show error messages
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -26,6 +26,12 @@ export default function Signup() {
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    if (!form.mobileNumber.trim()) {
+      toast.error("Mobile number is required!");
+      setLoading(false);
+      return;
+    }
 
     try {
       const response = await fetch(`${BASE_URL}/auth/register`, {
@@ -37,32 +43,45 @@ export default function Signup() {
       });
 
       const data = await response.json();
+      console.log("Signup Response:", data);
+
 
       if (!response.ok) {
-        console.error("Signup Error:", data); // Log full error response
         throw new Error(data.message || "Signup failed. Please check your details.");
       }
 
-      alert("Signup successful! Redirecting to login...");
-      navigate("/login");
+      toast.success("Signup successful! Logging in...");
+
+      // ✅ Auto-login after signup
+      localStorage.setItem("user", JSON.stringify(data.user));
+      setTimeout(() => navigate("/"), 2000);
     } catch (err) {
+      toast.error(err.message);
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Google & GitHub Login Handlers
-  const handleGoogleLogin = () => {
-    window.location.href = `${BASE_URL}/auth/google`;
+  // ✅ OAuth Signup Handlers
+  const handleOAuthLogin = (provider) => {
+    window.open(`${BASE_URL}/oauth/${provider}`, "_self");
+  
+    // Extract token from URL after OAuth redirection
+    const token = new URLSearchParams(window.location.search).get("token");
+    if (token) {
+      localStorage.setItem("token", token);
+      navigate("/"); // Redirect to home page
+    }
   };
-
-  const handleGitHubLogin = () => {
-    window.location.href = `${BASE_URL}/auth/github`;
-  };
+  
+  
+  
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+
       <motion.div
         className="bg-white p-8 rounded-lg shadow-md w-96"
         initial={{ opacity: 0, y: -50 }}
@@ -144,7 +163,7 @@ export default function Signup() {
 
         {/* ✅ Google & GitHub Signup Buttons */}
         <motion.button
-          onClick={handleGoogleLogin}
+          onClick={() => handleOAuthLogin("google")}
           className="bg-red-500 text-white p-2 rounded w-full hover:bg-red-600 mb-3 flex items-center justify-center gap-2"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -154,7 +173,7 @@ export default function Signup() {
         </motion.button>
 
         <motion.button
-          onClick={handleGitHubLogin}
+          onClick={() => handleOAuthLogin("github")}
           className="bg-gray-800 text-white p-2 rounded w-full hover:bg-gray-900 flex items-center justify-center gap-2"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}

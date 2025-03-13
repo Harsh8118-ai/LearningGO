@@ -2,15 +2,14 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 
-
 const Login = () => {
   const [formData, setFormData] = useState({
     mobileNumber: "",
     password: "",
   });
 
-  // Access environment variable using import.meta.env
- const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+  // Access environment variable for backend URL
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -42,12 +41,12 @@ const Login = () => {
         throw new Error(data.message || "Login failed");
       }
 
-      console.log("Login Success:", data);x
+      console.log("Login Success:", data);
 
       // 🔹 Store the token in localStorage
-    localStorage.setItem("token", data.token);
+      localStorage.setItem("token", data.token);
 
-      // Redirect to dashboard or homepage
+      // Redirect to profile page
       navigate("/profile");
 
     } catch (err) {
@@ -56,6 +55,11 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Handle OAuth Login
+  const handleOAuthLogin = (provider) => {
+    window.location.href = `${BASE_URL}/auth/${provider}`;
   };
 
   return (
@@ -76,6 +80,7 @@ const Login = () => {
 
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
+        {/* 🔹 Login Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Mobile Number */}
           <div>
@@ -116,7 +121,33 @@ const Login = () => {
           </motion.button>
         </form>
 
-        {/* Signup Link */}
+        {/* 🔹 OR Divider */}
+        <div className="my-4 flex items-center">
+          <hr className="flex-grow border-gray-300" />
+          <span className="px-2 text-gray-500">OR</span>
+          <hr className="flex-grow border-gray-300" />
+        </div>
+
+        {/* 🔹 OAuth Login Buttons */}
+        <motion.button
+          onClick={() => handleOAuthLogin("google")}
+          className="w-full bg-red-500 text-white py-3 rounded-md hover:bg-red-600 transition-all flex items-center justify-center space-x-2 mb-3"
+          whileTap={{ scale: 0.95 }}
+        >
+          <img src="/icons/google.svg" alt="Google Icon" className="w-5 h-5" />
+          <span>Continue with Google</span>
+        </motion.button>
+
+        <motion.button
+          onClick={() => handleOAuthLogin("github")}
+          className="w-full bg-gray-800 text-white py-3 rounded-md hover:bg-gray-900 transition-all flex items-center justify-center space-x-2"
+          whileTap={{ scale: 0.95 }}
+        >
+          <img src="/icons/github.svg" alt="GitHub Icon" className="w-5 h-5" />
+          <span>Continue with GitHub</span>
+        </motion.button>
+
+        {/* 🔹 Signup Link */}
         <p className="text-gray-500 text-center mt-4">
           Don't have an account?{" "}
           <Link to="/signup" className="text-blue-500 hover:underline">

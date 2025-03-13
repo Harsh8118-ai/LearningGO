@@ -7,6 +7,7 @@ import Signup from "./components/pages/Signup";
 import Login from "./components/pages/Login";
 import Profile from "./components/pages/Profile";
 import HomePage from "./HomePage";
+import AuthSuccess from "./components/store/AuthSuccess";
 
 export default function App() {
   
@@ -27,6 +28,7 @@ export default function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/auth-success" element={<AuthSuccess />} />
 
           </Routes>
         </div>
