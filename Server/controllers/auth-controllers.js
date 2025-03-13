@@ -1,6 +1,7 @@
 const User = require("../models/user-model");
+const jwt = require("jsonwebtoken");
 
-// Home Controller
+// ✅ **Home Controller**
 const home = async (req, res) => {
   try {
     res.status(200).json({ msg: "Welcome to our home page" });
@@ -10,7 +11,7 @@ const home = async (req, res) => {
   }
 };
 
-// User Registration Logic
+// ✅ **User Registration (Manual Signup)**
 const register = async (req, res, next) => {
   try {
     const { username, email, mobileNumber, password } = req.body;
@@ -20,11 +21,13 @@ const register = async (req, res, next) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Check if mobile number already exists
-    const userExist = await User.findOne({ mobileNumber });
+    // Check if email or mobile number already exists
+    const userExist = await User.findOne({ 
+      $or: [{ email }, { mobileNumber }] 
+    });
 
     if (userExist) {
-      return res.status(400).json({ message: "Mobile Number already exists" });
+      return res.status(400).json({ message: "Email or Mobile Number already exists" });
     }
 
     // Create new user
@@ -32,7 +35,7 @@ const register = async (req, res, next) => {
       username, 
       email, 
       mobileNumber, 
-      password
+      password,
     });
 
     // Respond with success and token
@@ -46,7 +49,7 @@ const register = async (req, res, next) => {
   }
 };
 
-// User Login Logic
+// ✅ **User Login (Manual Login)**
 const login = async (req, res) => {
   try {
     const { mobileNumber, password } = req.body;
@@ -82,11 +85,60 @@ const login = async (req, res) => {
   }
 };
 
-// Get User Data
+// ✅ **OAuth Login (Google/GitHub)**
+const oauthLogin = async (req, res) => {
+  try {
+    const { email, username, googleId, githubId } = req.body;
+
+    // Check if user already exists with OAuth ID
+    let user = await User.findOne({ $or: [{ googleId }, { githubId }] });
+
+    // If not found by OAuth ID, check by email
+    if (!user) {
+      user = await User.findOne({ email });
+
+      // If found by email but OAuth ID is missing, update the record
+      if (user) {
+        if (googleId) user.googleId = googleId;
+        if (githubId) user.githubId = githubId;
+        await user.save();
+      }
+    }
+
+    // If user is still not found, create a new user
+    if (!user) {
+      user = new User({
+        username,
+        email,
+        googleId: googleId || null,
+        githubId: githubId || null,
+      });
+
+      await user.save();
+    }
+
+    // Generate JWT token
+    const token = user.generateToken();
+
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    console.error("OAuth login error:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// ✅ **Get User Data**
 const user = async (req, res) => {
   try {
     const userData = req.user;
-    console.log(userData);
     return res.status(200).json({ userData });
   } catch (error) {
     console.log(`Error from the user route: ${error}`);
@@ -94,14 +146,11 @@ const user = async (req, res) => {
   }
 };
 
-// Update User Profile
+// ✅ **Update User Profile**
 const UpdateProfile = async (req, res) => {
   try {
-    // Fetch data from request body
     const { username, email, mobileNumber } = req.body;
     const userId = req.user._id;
-
-    console.log("User ID:", userId);
 
     // Find user
     const userDetails = await User.findById(userId);
@@ -118,8 +167,6 @@ const UpdateProfile = async (req, res) => {
     // Save the updated profile
     await userDetails.save();
 
-    console.log("Updated User Details:", userDetails);
-
     return res.status(200).json({
       success: true,
       message: "Profile Updated Successfully",
@@ -134,4 +181,5 @@ const UpdateProfile = async (req, res) => {
   }
 };
 
-module.exports = { home, register, login, user, UpdateProfile };
+// ✅ **Export Controllers**
+module.exports = { home, register, login, oauthLogin, user, UpdateProfile };

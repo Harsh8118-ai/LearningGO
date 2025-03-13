@@ -2,8 +2,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 
- // Access environment variable using import.meta.env
- const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+// Access environment variable using import.meta.env
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function Signup() {
   const navigate = useNavigate(); // For redirecting after signup
@@ -26,7 +26,7 @@ export default function Signup() {
     e.preventDefault();
     setError("");
     setLoading(true);
-  
+
     try {
       const response = await fetch(`${BASE_URL}/auth/register`, {
         method: "POST",
@@ -35,24 +35,31 @@ export default function Signup() {
         },
         body: JSON.stringify(form),
       });
-  
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         console.error("Signup Error:", data); // Log full error response
         throw new Error(data.message || "Signup failed. Please check your details.");
       }
-  
+
       alert("Signup successful! Redirecting to login...");
       navigate("/login");
-  
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
-  
+
+  // ✅ Google & GitHub Login Handlers
+  const handleGoogleLogin = () => {
+    window.location.href = `${BASE_URL}/auth/google`;
+  };
+
+  const handleGitHubLogin = () => {
+    window.location.href = `${BASE_URL}/auth/github`;
+  };
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -117,7 +124,9 @@ export default function Signup() {
 
           <motion.button
             type="submit"
-            className={`bg-green-500 text-white p-2 rounded w-full hover:bg-green-600 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
+            className={`bg-green-500 text-white p-2 rounded w-full hover:bg-green-600 ${
+              loading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
             whileHover={{ scale: loading ? 1 : 1.05 }}
             whileTap={{ scale: 0.95 }}
             disabled={loading}
@@ -125,6 +134,34 @@ export default function Signup() {
             {loading ? "Signing up..." : "Signup"}
           </motion.button>
         </form>
+
+        {/* ✅ Divider */}
+        <div className="flex items-center my-4">
+          <hr className="flex-grow border-gray-300" />
+          <span className="px-2 text-gray-500">OR</span>
+          <hr className="flex-grow border-gray-300" />
+        </div>
+
+        {/* ✅ Google & GitHub Signup Buttons */}
+        <motion.button
+          onClick={handleGoogleLogin}
+          className="bg-red-500 text-white p-2 rounded w-full hover:bg-red-600 mb-3 flex items-center justify-center gap-2"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <img src="/google-icon.svg" alt="Google" className="w-5 h-5" />
+          Signup with Google
+        </motion.button>
+
+        <motion.button
+          onClick={handleGitHubLogin}
+          className="bg-gray-800 text-white p-2 rounded w-full hover:bg-gray-900 flex items-center justify-center gap-2"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <img src="/github-icon.svg" alt="GitHub" className="w-5 h-5" />
+          Signup with GitHub
+        </motion.button>
 
         <p className="text-center text-sm mt-4">
           Already have an account?{" "}

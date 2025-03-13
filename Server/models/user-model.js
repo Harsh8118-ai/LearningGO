@@ -25,15 +25,27 @@ const userSchema = new mongoose.Schema(
     },
     mobileNumber: {
       type: String,
-      required: [true, "Phone Number is required"],
       unique: true,
+      sparse: true, // ✅ Ensures uniqueness only for non-null values
       match: [/^\d{10}$/, "Phone Number must be exactly 10 digits."],
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
       minlength: [8, "Password must be at least 8 characters"],
       maxlength: [1024, "Password must not be more than 1024 characters"],
+      required: function () {
+        return !this.googleId && !this.githubId; // Require password only if user is NOT using OAuth
+      },
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    githubId: {
+      type: String,
+      unique: true,
+      sparse: true,
     },
   },
   { timestamps: true }
@@ -41,7 +53,7 @@ const userSchema = new mongoose.Schema(
 
 // 🔹 **Middleware: Hash Password Before Saving**
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+  if (!this.isModified("password") || !this.password) return next();
 
   try {
     const salt = await bcrypt.genSalt(12);
@@ -54,26 +66,15 @@ userSchema.pre("save", async function (next) {
 
 // 🔹 **Method: Compare Password**
 userSchema.methods.comparePassword = async function (enteredPassword) {
+  if (!this.password) return false; // OAuth users don’t have passwords
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// Generate Token Method
+// 🔹 **Method: Generate Token**
 userSchema.methods.generateToken = function () {
-  if (!process.env.JWT_SECRET_KEY) {
-    throw new Error("JWT Secret Key is missing in environment variables!");
-  }
-  
-  return jwt.sign(
-    {
-      userId: this._id.toString(),
-      mobileNumber: this.mobileNumber,
-      isAdmin: this.isAdmin,
-    },
-    process.env.JWT_SECRET_KEY,
-    { expiresIn: "30d" } // Token expires in 30 days
-  );
+  return jwt.sign({ userId: this._id }, process.env.JWT_SECRET_KEY, { expiresIn: "30d" });
 };
 
-// Export the User model
+// ✅ Model Export
 const User = mongoose.model("User", userSchema);
 module.exports = User;

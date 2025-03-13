@@ -42,7 +42,7 @@ const Login = () => {
         throw new Error(data.message || "Login failed");
       }
 
-      console.log("Login Success:", data);
+      console.log("Login Success:", data);x
 
       // 🔹 Store the token in localStorage
     localStorage.setItem("token", data.token);
