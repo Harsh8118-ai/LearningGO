@@ -50,18 +50,14 @@ const Login = () => {
       });
   
       const data = await response.json();
-      console.log("📥 Received Response:", data);
-  
-      if (!response.ok) {
-        throw new Error(data.message || "⚠️ Login failed, please try again.");
-      }
+      
   
       console.log("✅ Login Success:", data);
       localStorage.setItem("token", data.token);
       navigate("/profile");
   
     } catch (err) {
-      console.error("❌ Login Error:", err.message);
+      
       setError(err.message);
     } finally {
       setLoading(false);

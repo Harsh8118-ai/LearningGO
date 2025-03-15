@@ -45,19 +45,11 @@ export default function Signup() {
       const data = await response.json();
       console.log("🔹 Signup Response:", data); // Debugging API response
   
-      if (!response.ok) {
-        throw new Error(data.message || "Signup failed. Please check your details.");
-      }
-  
-      if (!data.token) {
-        throw new Error("❌ Token not received from server!");
-      }
-  
       // ✅ Store authentication token & user data
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
   
-      console.log("✅ Token stored:", data.token); // Debugging token storage
+      
   
       toast.success("Signup successful! Redirecting...");
   

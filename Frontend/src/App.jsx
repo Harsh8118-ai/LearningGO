@@ -8,6 +8,7 @@ import Login from "./components/pages/Login";
 import Profile from "./components/pages/Profile";
 import HomePage from "./HomePage";
 import AuthSuccess from "./components/store/AuthSuccess";
+import Friends from "./components/pages/Friends-User/Friends";
 
 export default function App() {
   
@@ -29,6 +30,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/auth-success" element={<AuthSuccess />} />
+            <Route path="/friends" element={<Friends />} />
 
           </Routes>
         </div>

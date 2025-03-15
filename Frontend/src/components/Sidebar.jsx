@@ -65,7 +65,14 @@ export function Sidebar() {
             Home
           </Link>
           <Link
-            to="/categories"
+            to="/friends"
+            className="block p-2 rounded hover:bg-gray-700"
+            onClick={() => setIsOpen(false)}
+          >
+            Friends
+          </Link>
+          <Link
+            to="/Friends"
             className="block p-2 rounded hover:bg-gray-700"
             onClick={() => setIsOpen(false)}
           >

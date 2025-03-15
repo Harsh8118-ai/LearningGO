@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import InviteCode from "./Friends-User/InviteCode";
 
 const BASE_URL = "http://localhost:5000/api/auth";
 
@@ -20,7 +21,7 @@ const Profile = () => {
           return;
         }
 
-        console.log("🔹 Fetching user data...");
+        
         const response = await fetch(`${BASE_URL}/user`, {
           method: "GET",
           headers: {
@@ -44,7 +45,7 @@ const Profile = () => {
         }
 
         const data = await response.json();
-        console.log("✅ API Response:", data);
+        
 
         // ✅ Fix: API response me `userData` nahi `user` hai
         if (!data?.user) {
@@ -53,10 +54,10 @@ const Profile = () => {
 
         setUser(data.user); // ✅ Fix applied here
       } catch (error) {
-        console.error("❌ Fetch User Data Error:", error.message);
+        
         navigate("/login");
       } finally {
-        console.log("🔄 Setting loading to false...");
+
         setLoading(false);
       }
     };
@@ -85,6 +86,8 @@ const Profile = () => {
         <p className="text-gray-600"><strong>Email:</strong> {user?.email}</p>
         <p className="text-gray-600"><strong>Mobile:</strong> {user?.mobileNumber}</p>
       </div>
+
+      <InviteCode userId={user?.inviteCode} />
 
       <div className="grid grid-cols-2 gap-4 mt-6">
         <motion.button

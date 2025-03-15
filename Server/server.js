@@ -7,10 +7,12 @@ const passport = require("passport");
 const connectDb = require("./utils/db");
 require("./utils/passport-config"); // ✅ Initialize OAuth Strategies
 
+// ✅ Import Routes
 const authRoute = require("./routes/auth-route");
-const oauthRoute = require("./routes/oauth-route"); // ✅ Import new OAuth route
+const oauthRoute = require("./routes/oauth-route");
 const reviewRoute = require("./routes/review-route");
 const quesRoute = require("./routes/ques-route");
+const friendRoute = require("./routes/friend-route"); // ✅ New Friend System Route
 
 const app = express();
 
@@ -36,9 +38,10 @@ app.use(passport.session());
 
 // ✅ API Routes
 app.use("/api/auth", authRoute);
-app.use("/api/oauth", oauthRoute); // ✅ New OAuth route
+app.use("/api/oauth", oauthRoute);
 app.use("/api/form", reviewRoute);
 app.use("/api/ques-post", quesRoute);
+app.use("/api/friends", friendRoute); // ✅ Friend System API Route
 
 // ✅ Root Route
 app.get("/", (req, res) => {
