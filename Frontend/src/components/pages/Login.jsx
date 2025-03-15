@@ -8,9 +8,7 @@ const Login = () => {
     password: "",
   });
 
-  // Access environment variable for backend URL
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -25,41 +23,56 @@ const Login = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
+  
+    // ✅ Ensure both fields are filled
+    if (!formData.mobileNumber.trim() || !formData.password.trim()) {
+      setError("⚠️ Please enter both mobile number and password.");
+      setLoading(false);
+      return;
+    }
+  
+    // ✅ Fix: Change "type" to "authProvider"
+    const requestBody = {
+      mobileNumber: formData.mobileNumber,
+      password: formData.password,
+      authProvider: "manual",  // ✅ Correct field name
+    };
+  
     try {
+      console.log("📤 Sending Login Request:", requestBody);
+  
       const response = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(requestBody),
       });
-
+  
       const data = await response.json();
-
+      console.log("📥 Received Response:", data);
+  
       if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+        throw new Error(data.message || "⚠️ Login failed, please try again.");
       }
-
-      console.log("Login Success:", data);
-
-      // 🔹 Store the token in localStorage
+  
+      console.log("✅ Login Success:", data);
       localStorage.setItem("token", data.token);
-
-      // Redirect to profile page
       navigate("/profile");
-
+  
     } catch (err) {
-      console.error("Login Error:", err.message);
+      console.error("❌ Login Error:", err.message);
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
+  
+  
 
   // Handle OAuth Login
   const handleOAuthLogin = (provider) => {
-    window.location.href = `${BASE_URL}/auth/${provider}`;
+    window.location.href = `${BASE_URL}/oauth/${provider}`;
   };
 
   return (

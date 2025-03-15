@@ -37,7 +37,7 @@ export function QuestionList() {
       const data = await response.json();
       setQuestions(data.questions || []);
     } catch (error) {
-      setError("Failed to load questions. Please try again.");
+      setError("There is no Question Added. Please add a question.");
     } finally {
       setLoading(false);
     }

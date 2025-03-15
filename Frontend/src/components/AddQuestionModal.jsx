@@ -53,6 +53,8 @@ export function AddQuestionModal({ open, setOpen, newQuestion, setNewQuestion })
       if (!response.ok) {
         throw new Error(data.message || "Failed to add question");
       }
+
+      window.location.reload(); 
   
       setNewQuestion({ title: "", answer: "", tags: "" });
       setOpen(false);

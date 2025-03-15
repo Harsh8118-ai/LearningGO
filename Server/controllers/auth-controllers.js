@@ -11,8 +11,8 @@ const home = async (req, res) => {
   try {
     res.status(200).json({ msg: "Welcome to our home page" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("❌ Home Route Error:", error.message);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -35,13 +35,14 @@ const register = async (req, res, next) => {
 
     const token = generateToken(newUser._id);
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Registration Successful",
       token,
       user: { id: newUser._id, username: newUser.username, email: newUser.email },
     });
   } catch (error) {
-    next(error);
+    console.error("❌ Registration Error:", error.message);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -54,31 +55,42 @@ const login = async (req, res, next) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const user = await User.findOne({ mobileNumber });
-    if (!user || !(await user.comparePassword(password))) {
+    // Fix: Ensure password is selected
+    const user = await User.findOne({ mobileNumber }).select("+password");
+    if (!user) {
+      console.log("⚠️ User not found:", mobileNumber);
       return res.status(400).json({ message: "Invalid Mobile Number or Password" });
     }
 
+    // Fix: Password comparison
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      console.log("❌ Incorrect password for user:", mobileNumber);
+      return res.status(400).json({ message: "Invalid Mobile Number or Password" });
+    }
+
+    console.log("✅ Login successful for user:", mobileNumber);
+
     const token = generateToken(user._id);
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Login Successful",
       token,
       user: { id: user._id, username: user.username, email: user.email },
     });
   } catch (error) {
-    next(error);
+    console.error("❌ Login Error:", error.message);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 
 // ✅ **Get User Data**
 const user = async (req, res) => {
   try {
-    const userData = req.user;
-    return res.status(200).json({ userData });
+    return res.status(200).json({ user: req.user });
   } catch (error) {
-    console.log(`Error from the user route: ${error}`);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("❌ Get User Data Error:", error.message);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 
@@ -113,12 +125,18 @@ const updateProfile = async (req, res, next) => {
 
     await userDetails.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Profile Updated Successfully",
-      user: userDetails,
+      user: {
+        id: userDetails._id,
+        username: userDetails.username,
+        email: userDetails.email,
+        mobileNumber: userDetails.mobileNumber,
+      },
     });
   } catch (error) {
-    next(error);
+    console.error("❌ Profile Update Error:", error.message);
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 

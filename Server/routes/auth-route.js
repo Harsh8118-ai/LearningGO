@@ -16,8 +16,9 @@ router.post("/login", validate(loginSchema), authControllers.login);
 // ✅ OAuth Signup/Login (Google/GitHub)
 router.post("/oauth", oauthControllers.oauthLogin);
 
-// ✅ Profile Routes
-router.put("/updateProfile", authMiddleware, authControllers.updateProfile);
-router.get("/user", authMiddleware, authControllers.user);
+// ✅ Profile Routes (Protected)
+router.use(authMiddleware); // Apply authMiddleware to all routes below
+router.put("/updateProfile", authControllers.updateProfile);
+router.get("/user", authControllers.user);
 
 module.exports = router;

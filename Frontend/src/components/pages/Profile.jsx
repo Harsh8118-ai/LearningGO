@@ -6,7 +6,7 @@ const BASE_URL = "http://localhost:5000/api/auth";
 
 const Profile = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null); // Ensure default state is null
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -14,11 +14,12 @@ const Profile = () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          console.error("No token found");
+          console.error("❌ No token found. Redirecting...");
+          setLoading(false);
           navigate("/login");
           return;
         }
-  
+
         console.log("🔹 Fetching user data...");
         const response = await fetch(`${BASE_URL}/user`, {
           method: "GET",
@@ -26,39 +27,44 @@ const Profile = () => {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          credentials: "include",
         });
-  
-        const data = await response.json();
-        console.log("🔹 API Response Data:", data);
-  
-        if (!response.ok || !data.userData) {
-          throw new Error("Failed to fetch user");
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("❌ API Error:", errorData);
+
+          if (response.status === 401) {
+            console.warn("⚠️ Unauthorized! Logging out...");
+            localStorage.removeItem("token");
+            navigate("/login");
+            return;
+          }
+
+          throw new Error(errorData.message || "Failed to fetch user");
         }
-  
-        console.log("✅ Setting user state...");
-        setUser(data.userData);
+
+        const data = await response.json();
+        console.log("✅ API Response:", data);
+
+        // ✅ Fix: API response me `userData` nahi `user` hai
+        if (!data?.user) {
+          throw new Error("Invalid user data received");
+        }
+
+        setUser(data.user); // ✅ Fix applied here
       } catch (error) {
-        console.error("❌ Failed to fetch user:", error.message);
+        console.error("❌ Fetch User Data Error:", error.message);
         navigate("/login");
       } finally {
         console.log("🔄 Setting loading to false...");
         setLoading(false);
       }
     };
-  
-    fetchUserData();
-  }, [navigate]);
-  
-  
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
-  };
+    fetchUserData();
+  }, []);
 
   if (loading) return <p>Loading...</p>;
-
   if (!user) return <p className="text-center text-red-500">User data not found. Please log in.</p>;
 
   return (
@@ -115,7 +121,10 @@ const Profile = () => {
       </div>
 
       <button
-        onClick={handleLogout}
+        onClick={() => {
+          localStorage.removeItem("token");
+          window.location.reload();
+        }}
         className="w-full mt-6 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition"
       >
         🚪 Logout
