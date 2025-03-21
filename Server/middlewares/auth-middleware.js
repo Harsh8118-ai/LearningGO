@@ -4,14 +4,14 @@ const User = require("../models/user-model");
 const authMiddleware = async (req, res, next) => {
     try {
         const token = req.header("Authorization");
-        console.log("🔹 Received Authorization Header:", token);
+        
 
         if (!token || !token.startsWith("Bearer ")) {
             return res.status(401).json({ message: "Unauthorized: Token not provided or invalid format" });
         }
 
         const jwtToken = token.split(" ")[1]; // Extract token properly
-        console.log("🔹 Extracted JWT Token:", jwtToken);
+        
 
         if (!process.env.JWT_SECRET_KEY) {
             console.error("❌ JWT Secret Key is missing in environment variables");
@@ -27,7 +27,7 @@ const authMiddleware = async (req, res, next) => {
             return res.status(401).json({ message: "Unauthorized: Invalid or Expired Token" });
         }
 
-        console.log("✅ Decoded JWT:", isVerified);
+        
 
         if (!isVerified.id) {
             return res.status(401).json({ message: "Unauthorized: Invalid token payload" });
@@ -40,7 +40,7 @@ const authMiddleware = async (req, res, next) => {
             return res.status(401).json({ message: "Unauthorized: User not found" });
         }
 
-        console.log("🔹 Authenticated User:", userData);
+        
 
         // Attach user to request object
         req.user = userData;

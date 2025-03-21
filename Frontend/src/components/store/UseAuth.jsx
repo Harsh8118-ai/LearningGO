@@ -10,6 +10,14 @@ export function useAuth() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Function to generate a 6-digit numeric invite code from userId
+  const generateInviteCode = (userId) => {
+    const last6Chars = userId.slice(-6); // Get last 6 chars from userId
+    let numericCode = parseInt(last6Chars, 16) % 1000000; // Convert hex to 6-digit number
+    return `${numericCode.toString().padStart(6, "0")}`; // Ensure 6 digits
+  };
+  
+
   useEffect(() => {
     const fetchUserData = async () => {
       const token = localStorage.getItem("token");
@@ -48,24 +56,24 @@ export function useAuth() {
         }
 
         const data = await response.json();
-        if (!data.user) {
-          throw new Error("Invalid response: user not found");
+        if (!data.user || !data.user._id) {
+          throw new Error("Invalid response: user ID not found");
         }
 
         let userInviteCode = data.user.inviteCode;
 
         // Generate invite code if missing
-        if (!userInviteCode) {
-          userInviteCode = `LearningGo${data.user._id.slice(-6)}`; // Last 6 chars of _id
-          await fetch(`${BASE_URL}/update-invite-code`, {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ inviteCode: userInviteCode }),
-          });
-        }
+        // if (!userInviteCode) {
+        //   userInviteCode = generateInviteCode(data.user._id); // Generate 6-digit invite code
+        //   await fetch(`${BASE_URL}/update-invite-code`, {
+        //     method: "POST",
+        //     headers: {
+        //       "Authorization": `Bearer ${token}`,
+        //       "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({ inviteCode: userInviteCode }),
+        //   });
+        // }
 
         // Save in state & localStorage
         setUser(data.user);

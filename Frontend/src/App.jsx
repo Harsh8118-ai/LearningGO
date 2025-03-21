@@ -9,6 +9,8 @@ import Profile from "./components/pages/Profile";
 import HomePage from "./HomePage";
 import AuthSuccess from "./components/store/AuthSuccess";
 import Friends from "./components/pages/Friends-User/Friends";
+import FriendRequests from "./components/pages/Friends-User/FriendRequests";
+import ChatPage from "./components/pages/Friends-User/ChatPage";
 
 export default function App() {
   
@@ -31,6 +33,8 @@ export default function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/auth-success" element={<AuthSuccess />} />
             <Route path="/friends" element={<Friends />} />
+            <Route path="/friend-requests" element={<FriendRequests />} />
+            <Route path="/chat/:friendId" element={<ChatPage />} />
 
           </Routes>
         </div>

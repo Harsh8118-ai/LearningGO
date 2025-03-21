@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 
 const InviteCode = () => {
-  const [inviteCode, setInviteCode] = useState("");
+  const [inviteCode, setInviteCode] = useState(localStorage.getItem("inviteCode") || "");
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState("");
 
   // ✅ Fetch Invite Code if it Exists
   useEffect(() => {
@@ -19,18 +20,26 @@ const InviteCode = () => {
         });
 
         const data = await response.json();
-        if (response.ok) setInviteCode(data.inviteCode);
+        if (response.ok) {
+          setInviteCode(data.inviteCode || "");
+          localStorage.setItem("inviteCode", data.inviteCode);
+        } else {
+          setError(data.message);
+          setInviteCode("");
+        }
       } catch (error) {
         console.error("Error fetching invite code:", error);
+        setError("Failed to fetch invite code!");
       }
     };
 
     fetchInviteCode();
-  }, []);
+  }, [inviteCode]); // Fetch again if inviteCode changes
 
-  // ✅ Generate Invite Code when Button is Clicked
+  // ✅ Generate Invite Code
   const generateInviteCode = async () => {
     setLoading(true);
+    setError("");
     try {
       const token = localStorage.getItem("token");
       const response = await fetch("http://localhost:5000/api/friends/generate-invite-code", {
@@ -42,9 +51,15 @@ const InviteCode = () => {
       });
 
       const data = await response.json();
-      if (response.ok) setInviteCode(data.inviteCode);
+      if (response.ok) {
+        setInviteCode(data.inviteCode);
+        localStorage.setItem("inviteCode", data.inviteCode);
+      } else {
+        setError(data.message);
+      }
     } catch (error) {
       console.error("Error generating invite code:", error);
+      setError("Failed to generate invite code!");
     }
     setLoading(false);
   };
@@ -58,6 +73,8 @@ const InviteCode = () => {
 
   return (
     <div className="bg-gray-100 p-4 rounded-lg mt-4 flex flex-col items-center">
+      {error && <p className="text-red-500">{error}</p>}
+
       {inviteCode ? (
         <div className="flex justify-between items-center w-full">
           <p className="text-gray-700 font-semibold">{inviteCode}</p>

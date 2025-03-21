@@ -23,24 +23,24 @@ const Login = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
-  
+
     // ✅ Ensure both fields are filled
     if (!formData.mobileNumber.trim() || !formData.password.trim()) {
       setError("⚠️ Please enter both mobile number and password.");
       setLoading(false);
       return;
     }
-  
+
     // ✅ Fix: Change "type" to "authProvider"
     const requestBody = {
       mobileNumber: formData.mobileNumber,
       password: formData.password,
       authProvider: "manual",  // ✅ Correct field name
     };
-  
+
     try {
       console.log("📤 Sending Login Request:", requestBody);
-  
+
       const response = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
@@ -48,23 +48,25 @@ const Login = () => {
         },
         body: JSON.stringify(requestBody),
       });
-  
+
       const data = await response.json();
-      
-  
+
+
       console.log("✅ Login Success:", data);
       localStorage.setItem("token", data.token);
+      localStorage.setItem("userId", data.user.id); // ✅ Access user.id correctly
+      console.log("✅ Stored userId:", data.user.id);
       navigate("/profile");
-  
+
     } catch (err) {
-      
+
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
-  
-  
+
+
 
   // Handle OAuth Login
   const handleOAuthLogin = (provider) => {
