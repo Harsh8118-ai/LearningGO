@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import axios from "axios";
+import { motion } from "framer-motion";
 
 const Chat = ({ receiverId }) => {
     const [message, setMessage] = useState("");
     const [chat, setChat] = useState([]);
     const [socket, setSocket] = useState(null);
     const userId = localStorage.getItem("userId");
+    const username = localStorage.getItem("username");
 
     // Initialize Socket.io connection
     useEffect(() => {
@@ -58,21 +60,35 @@ const Chat = ({ receiverId }) => {
     };
 
     return (
-        <div>
-            <input
-                type="text"
-                placeholder="Type a message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-            />
-            <button onClick={sendMessage}>Send</button>
-
-            <div>
+        <div className="flex flex-col h-screen bg-gray-100 p-4">
+            <div className="bg-white shadow-lg p-3 rounded-xl text-center text-xl font-semibold">
+                {receiverId}
+            </div>
+            <div className="flex-1 overflow-y-auto p-3 space-y-2">
                 {chat.map((msg, index) => (
-                    <p key={index}>
-                        <strong>{msg.senderId === userId ? "You" : msg.senderId}:</strong> {msg.message}
-                    </p>
+                    <motion.div 
+                        key={index}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className={`p-2 max-w-xs rounded-lg shadow-md text-white ${msg.sender === username ? "bg-blue-500 self-end" : "bg-gray-500 self-start"}`}
+                    >
+                        <p className="text-sm">{msg.message}</p>
+                        <p className="text-xs text-gray-200 text-right">{new Date(msg.timestamp).toLocaleTimeString()}</p>
+                    </motion.div>
                 ))}
+            </div>
+            <div className="flex items-center p-2 bg-white rounded-xl shadow-lg mt-2">
+                <input
+                    type="text"
+                    placeholder="Type a message..."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    className="flex-1 p-2 rounded-lg border focus:outline-none"
+                />
+                <button onClick={sendMessage} className="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg">
+                    Send
+                </button>
             </div>
         </div>
     );
