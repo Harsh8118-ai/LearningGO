@@ -13,18 +13,16 @@ import FriendRequests from "./components/pages/Friends-User/FriendRequests";
 import ChatPage from "./components/pages/Friends-User/ChatPage";
 
 export default function App() {
-  
-
   return (
     <Router>
-      <div className="flex h-screen bg-gray-100">
-        {/* Sidebar */}
+      <div className="flex h-screen min-h-screen bg-gray-100">
+        {/* ✅ Sidebar with scroll support */}
         <Sidebar />
 
-        {/* Main Content */}
-        <div className="flex-1 p-4 md:p-6">
+        {/* ✅ Main Content Wrapper */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-6">
           <Routes>
-            <Route path="/" element={<HomePage/>} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/categories" element={<Categories />} />
             <Route path="/bookmarked" element={<Bookmarked />} />
             <Route path="/settings" element={<Settings />} />
@@ -35,11 +33,9 @@ export default function App() {
             <Route path="/friends" element={<Friends />} />
             <Route path="/friend-requests" element={<FriendRequests />} />
             <Route path="/chat/:friendId" element={<ChatPage />} />
-
           </Routes>
         </div>
-
-        </div>
+      </div>
     </Router>
   );
 }

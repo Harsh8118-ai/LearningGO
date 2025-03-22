@@ -37,8 +37,9 @@ export function Sidebar() {
         <h2 className="text-xl font-bold mb-4">Learning Go</h2>
 
         {/* 👤 Profile Section */}
+        
         <div className="flex items-center gap-3 p-4 border-b border-gray-700">
-          <FaUserCircle className="text-3xl" />
+        <Link to="/profile"><FaUserCircle className="text-3xl" /></Link>
           <div>
             {loading ? (
               <p className="text-sm font-semibold">Loading...</p>
