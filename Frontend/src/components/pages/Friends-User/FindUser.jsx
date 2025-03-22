@@ -10,6 +10,8 @@ const FindUser = () => {
   const [loading, setLoading] = useState(false);
   
   const navigate = useNavigate(); // ✅ React Router navigation
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 
   // 🔎 Find user by invite code
   const searchUser = async () => {
@@ -23,7 +25,7 @@ const FindUser = () => {
     setUser(null);
 
     try {
-      const response = await axios.get(`http://localhost:5000/api/friends/search-by-invite?code=${inviteCode}`);
+      const response = await axios.get(`${BASE_URL}/friends/search-by-invite?code=${inviteCode}`);
       console.log("API Response:", response.data);
 
       if (response.data && response.data.username) {
@@ -53,7 +55,7 @@ const FindUser = () => {
       console.log("📌 Invite Code before sending request:", inviteCode);
   
       const response = await axios.post(
-        "http://localhost:5000/api/friends/send-request",
+        `${BASE_URL}/friends/send-request`,
         { inviteCode },
         {
           headers: {

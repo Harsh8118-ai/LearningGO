@@ -6,12 +6,15 @@ const InviteCode = () => {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
 
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+
   // ✅ Fetch Invite Code if it Exists
   useEffect(() => {
     const fetchInviteCode = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:5000/api/friends/invite-code", {
+        const response = await fetch(`${BASE_URL}/friends/invite-code`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -42,7 +45,7 @@ const InviteCode = () => {
     setError("");
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/api/friends/generate-invite-code", {
+      const response = await fetch(`${BASE_URL}/friends/generate-invite-code`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,

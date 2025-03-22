@@ -13,6 +13,8 @@ const FriendList = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const navigate = useNavigate();  // 🔹 Hook for navigation
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 
     useEffect(() => {
         AOS.init({ duration: 800 });
@@ -26,7 +28,7 @@ const FriendList = () => {
             }
 
             try {
-                const response = await axios.get("http://localhost:5000/api/friends/friends-list", {
+                const response = await axios.get(`${BASE_URL}/friends/friends-list`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
@@ -50,7 +52,7 @@ const FriendList = () => {
         try {
             const token = localStorage.getItem("token");
             await axios.post(
-                "http://localhost:5000/api/friends/remove",
+                `${BASE_URL}/friends/remove`,
                 { friendId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );

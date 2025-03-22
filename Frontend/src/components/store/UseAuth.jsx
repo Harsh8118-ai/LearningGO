@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-const BASE_URL = "http://localhost:5000/api/auth"; // Ensure correct base URL
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+// Ensure correct base URL
 
 export function useAuth() {
   const [user, setUser] = useState(null);
@@ -35,7 +36,7 @@ export function useAuth() {
       }
 
       try {
-        const response = await fetch(`${BASE_URL}/user`, {
+        const response = await fetch(`${BASE_URL}/auth/user`, {
           method: "GET",
           headers: {
             "Authorization": `Bearer ${token}`,

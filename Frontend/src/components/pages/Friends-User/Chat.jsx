@@ -10,13 +10,14 @@ const Chat = () => {
     const location = useLocation();
     const { friendUsername } = location.state || {};
     const receiverId = location.pathname.split("/chat/")[1];
-
     const [message, setMessage] = useState("");
     const [chat, setChat] = useState([]);
     const [socket, setSocket] = useState(null);
     const [clickedMsgId, setClickedMsgId] = useState(null); // For timestamp toggle
 
     const userId = localStorage.getItem("userId");
+    const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 
     // ✅ Initialize Socket.io connection
     useEffect(() => {
@@ -42,7 +43,7 @@ const Chat = () => {
     useEffect(() => {
         if (!userId || !receiverId) return;
 
-        axios.get(`http://localhost:5000/api/chat/conversation/${userId}/${receiverId}`)
+        axios.get(`${BASE_URL}/chat/conversation/${userId}/${receiverId}`)
             .then(res => setChat(res.data))
             .catch(err => console.error("Error fetching messages:", err));
     }, [userId, receiverId]);
@@ -56,7 +57,7 @@ const Chat = () => {
 
             socket.emit("sendMessage", newMessage);
 
-            axios.post("http://localhost:5000/api/chat/send", newMessage)
+            axios.post(`${BASE_URL}/chat/send`, newMessage)
                 .then(res => console.log("✅ Message saved:", res.data))
                 .catch(err => console.error("❌ Error sending message:", err));
 
@@ -106,7 +107,7 @@ const Chat = () => {
             </div>
 
             {/* ✅ Message Input Box (Sticky at Bottom) */}
-            <div className="sticky bottom-0 bg-white p-3 shadow-md flex items-center rounded-t-xl">
+            <div className="sticky bottom-7 bg-gray-200 p-3 shadow-md flex items-center rounded-t-xl">
                 <input
                     type="text"
                     placeholder="Type a message..."
@@ -121,6 +122,7 @@ const Chat = () => {
                     <FaPaperPlane size={18} />
                 </button>
             </div>
+
         </div>
     );
 };

@@ -13,6 +13,8 @@ const FriendRequests = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const navigate = useNavigate();
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
 
     useEffect(() => {
         AOS.init({ duration: 800 });
@@ -27,10 +29,10 @@ const FriendRequests = () => {
 
             try {
                 const [sentResponse, receivedResponse] = await Promise.all([
-                    axios.get("http://localhost:5000/api/friends/requests/sent", {
+                    axios.get(`${BASE_URL}/friends/requests/sent`, {
                         headers: { Authorization: `Bearer ${token}` },
                     }),
-                    axios.get("http://localhost:5000/api/friends/requests/received", {
+                    axios.get(`${BASE_URL}/friends/requests/received`, {
                         headers: { Authorization: `Bearer ${token}` },
                     }),
                 ]);
