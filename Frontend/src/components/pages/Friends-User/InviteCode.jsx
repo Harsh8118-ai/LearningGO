@@ -72,7 +72,7 @@ const InviteCode = () => {
   };
 
   return (
-    <div className="bg-gray-100 p-4 rounded-lg mt-4 flex flex-col items-center">
+    <div className="bg-gray-200 p-4 rounded-lg mt-4 flex flex-col items-center">
       {error && <p className="text-red-500">{error}</p>}
 
       {inviteCode ? (

@@ -64,9 +64,10 @@ const FriendList = () => {
     };
 
     // ✉️ Navigate to Chat Function
-    const handleMessage = (friendId) => {
-        navigate(`/chat/${friendId}`);
+    const handleMessage = (friendId, friendUsername) => {
+        navigate(`/chat/${friendId}`, { state: { friendUsername } });
     };
+
 
     return (
         <div className="max-w-md mx-auto p-5 bg-white shadow-md rounded-lg">
@@ -87,20 +88,19 @@ const FriendList = () => {
                         <div>
                             <p><strong>Username:</strong> {friend.username || "N/A"}</p>
                             <p><strong>Email:</strong> {friend.email || "N/A"}</p>
-                            <p><strong>Email:</strong> {friend._id || "N/A"}</p>
-
                         </div>
-                        
+
                         <div className="flex gap-3">
                             {/* ✉️ Message Button */}
                             <motion.button
                                 whileHover={{ scale: 1.1 }}
                                 whileTap={{ scale: 0.9 }}
                                 className="bg-blue-500 text-white px-3 py-1 rounded-md flex items-center gap-1"
-                                onClick={() => handleMessage(friend._id)}
+                                onClick={() => handleMessage(friend._id, friend.username)} // ✅ Pass username
                             >
-                                <FaEnvelope /> Message
+                                <FaEnvelope />
                             </motion.button>
+
 
                             {/* 🗑 Remove Friend Button */}
                             <motion.button
@@ -109,7 +109,7 @@ const FriendList = () => {
                                 className="bg-red-500 text-white px-3 py-1 rounded-md flex items-center gap-1"
                                 onClick={() => handleRemoveFriend(friend._id)}
                             >
-                                <FaTrash /> Remove
+                                <FaTrash />
                             </motion.button>
                         </div>
                     </motion.div>
