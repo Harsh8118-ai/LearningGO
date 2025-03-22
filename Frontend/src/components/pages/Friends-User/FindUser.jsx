@@ -81,41 +81,41 @@ const FindUser = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-5 bg-gray-200 shadow-md rounded-lg">
-      <h2 className="text-xl font-bold mb-4">Find User by Invite Code</h2>
+    <div className="max-w-full sm:max-w-md md:max-w-lg mx-auto p-4 sm:p-6 bg-gray-200 shadow-md rounded-lg">
+    <h2 className="text-xl font-bold mb-4 text-center">Find User by Invite Code</h2>
 
-      <input
-        type="text"
-        placeholder="Enter Invite Code"
-        value={inviteCode}
-        onChange={(e) => setInviteCode(e.target.value)}
-        className="w-full p-2 border rounded-md"
-      />
-      <button
-        onClick={searchUser}
-        className="mt-2 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
-        disabled={loading}
-      >
-        {loading ? "Searching..." : "Find User"}
-      </button>
+    <input
+      type="text"
+      placeholder="Enter Invite Code"
+      value={inviteCode}
+      onChange={(e) => setInviteCode(e.target.value)}
+      className="w-full p-3 border rounded-md text-sm sm:text-base"
+    />
+    <button
+      onClick={searchUser}
+      className="mt-2 w-full bg-blue-500 text-white py-2 sm:py-3 text-sm sm:text-base rounded-md hover:bg-blue-600 transition"
+      disabled={loading}
+    >
+      {loading ? "Searching..." : "Find User"}
+    </button>
 
-      {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+    {error && <p className="text-red-500 text-center text-sm sm:text-base mt-2">{error}</p>}
 
-      {user && (
-        <div className="mt-4 p-4 border rounded-md bg-gray-100">
-          <h3 className="text-lg font-semibold">User Found</h3>
-          <p><strong>Username:</strong> {user.username || "N/A"}</p>
-          <p><strong>Email:</strong> {user.email || "N/A"}</p>
-          <p><strong>Invite Code:</strong> {user.inviteCode || "N/A"}</p>
-          <button
-            onClick={sendFriendRequest}
-            className="mt-2 w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600"
-          >
-            Send Friend Request
-          </button>
-        </div>
-      )}
-    </div>
+    {user && (
+      <div className="mt-4 p-4 border rounded-md bg-gray-100 text-sm sm:text-base">
+        <h3 className="text-lg font-semibold text-center">User Found</h3>
+        <p className="break-words"><strong>Username:</strong> {user.username || "N/A"}</p>
+        <p className="break-words"><strong>Email:</strong> {user.email || "N/A"}</p>
+        <p className="break-words"><strong>Invite Code:</strong> {user.inviteCode || "N/A"}</p>
+        <button
+          onClick={sendFriendRequest}
+          className="mt-2 w-full bg-green-500 text-white py-2 sm:py-3 text-sm sm:text-base rounded-md hover:bg-green-600 transition"
+        >
+          Send Friend Request
+        </button>
+      </div>
+    )}
+  </div>
   );
 };
 

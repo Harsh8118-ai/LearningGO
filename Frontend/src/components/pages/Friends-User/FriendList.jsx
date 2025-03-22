@@ -72,54 +72,53 @@ const FriendList = () => {
 
 
     return (
-        <div className="max-w-md mx-auto p-5 bg-white shadow-md rounded-lg">
-            <h2 className="text-xl font-bold mb-4 text-center">Friend List</h2>
-
-            {error && <p className="text-red-500 text-center">{error}</p>}
-            {loading ? (
-                <p className="text-gray-500 text-center">Loading...</p>
-            ) : friends.length > 0 ? (
-                friends.map((friend) => (
-                    <motion.div
-                        key={friend._id}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.3 }}
-                        className="p-3 border rounded-md bg-gray-100 mt-2 flex justify-between items-center"
-                    >
-                        <div>
-                            <p><strong>Username:</strong> {friend.username || "N/A"}</p>
-                            <p><strong>Email:</strong> {friend.email || "N/A"}</p>
-                        </div>
-
-                        <div className="flex gap-3">
-                            {/* ✉️ Message Button */}
-                            <motion.button
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                                className="bg-blue-500 text-white px-3 py-1 rounded-md flex items-center gap-1"
-                                onClick={() => handleMessage(friend._id, friend.username)} // ✅ Pass username
-                            >
-                                <FaEnvelope />
-                            </motion.button>
-
-
-                            {/* 🗑 Remove Friend Button */}
-                            <motion.button
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.9 }}
-                                className="bg-red-500 text-white px-3 py-1 rounded-md flex items-center gap-1"
-                                onClick={() => handleRemoveFriend(friend._id)}
-                            >
-                                <FaTrash />
-                            </motion.button>
-                        </div>
-                    </motion.div>
-                ))
-            ) : (
-                <p className="text-gray-500 text-center">No friends added yet.</p>
-            )}
-        </div>
+        <div className="max-w-full sm:max-w-md md:max-w-lg mx-auto p-5 bg-white shadow-md rounded-lg">
+        <h2 className="text-xl font-bold mb-4 text-center">Friend List</h2>
+    
+        {error && <p className="text-red-500 text-center">{error}</p>}
+        {loading ? (
+            <p className="text-gray-500 text-center">Loading...</p>
+        ) : friends.length > 0 ? (
+            friends.map((friend) => (
+                <motion.div
+                    key={friend._id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className="p-3 border rounded-md bg-gray-100 mt-2 flex flex-wrap sm:flex-nowrap justify-between items-center"
+                >
+                    <div className="w-full sm:w-auto">
+                        <p className="truncate w-52 sm:w-auto"><strong>Username:</strong> {friend.username || "N/A"}</p>
+                        <p className="truncate w-52 sm:w-auto"><strong>Email:</strong> {friend.email || "N/A"}</p>
+                    </div>
+    
+                    <div className="flex gap-10 sm:gap-3 justify-center items-center mt-1 sm:mt-0">
+                        {/* ✉️ Message Button */}
+                        <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="bg-blue-500 text-white px-4 py-2 text-sm ml-10 sm:ml-0 sm:text-base rounded-md flex items-center gap-1"
+                            onClick={() => handleMessage(friend._id, friend.username)}
+                        >
+                            <FaEnvelope />
+                        </motion.button>
+    
+                        {/* 🗑 Remove Friend Button */}
+                        <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="bg-red-500 text-white px-4 py-2 text-sm sm:text-base rounded-md flex items-center gap-1"
+                            onClick={() => handleRemoveFriend(friend._id)}
+                        >
+                            <FaTrash />
+                        </motion.button>
+                    </div>
+                </motion.div>
+            ))
+        ) : (
+            <p className="text-gray-500 text-center">No friends added yet.</p>
+        )}
+    </div>
     );
 };
 

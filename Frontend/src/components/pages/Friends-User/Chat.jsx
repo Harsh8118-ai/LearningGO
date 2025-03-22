@@ -75,54 +75,53 @@ const Chat = () => {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3 }}
-                        className={`flex items-center ${msg.senderId === userId ? "justify-end" : "justify-start"}`}
+                        className={`flex items-center ${msg.senderId === userId ? "justify-end" : "justify-start"
+                            }`}
                     >
                         {/* ✅ Receiver's Message (Left side) */}
                         {msg.senderId !== userId && (
-                            <FaUserCircle className="text-gray-500 text-3xl mr-2" />
+                            <FaUserCircle className="text-gray-500 text-xl sm:text-2xl md:text-3xl mr-2" />
                         )}
 
                         <div
-                            className={`relative p-3 max-w-xs rounded-xl text-white shadow-lg cursor-pointer ${msg.senderId === userId ? "bg-blue-500" : "bg-gray-500"
+                            className={`relative p-2 sm:p-3 max-w-xs sm:max-w-sm md:max-w-md rounded-xl text-white shadow-lg cursor-pointer ${msg.senderId === userId ? "bg-blue-500" : "bg-gray-500"
                                 }`}
                             onClick={() => setClickedMsgId(clickedMsgId === msg._id ? null : msg._id)}
                         >
-                            <p className="text-sm">{msg.message}</p>
+                            <p className="text-xs sm:text-sm">{msg.message}</p>
 
                             {/* ✅ Show timestamp only when clicked */}
                             {clickedMsgId === msg._id && (
-                                <p className="mt-1 text-xs text-gray-300 text-center">
+                                <p className="mt-1 text-[10px] sm:text-xs text-gray-300 text-center">
                                     {new Date(msg.createdAt).toLocaleString()}
                                 </p>
                             )}
-
                         </div>
 
                         {/* ✅ Sender's Message (Right side) */}
                         {msg.senderId === userId && (
-                            <FaUserCircle className="text-blue-500 text-3xl ml-2" />
+                            <FaUserCircle className="text-blue-500 text-xl sm:text-2xl md:text-3xl ml-2" />
                         )}
                     </motion.div>
                 ))}
             </div>
 
             {/* ✅ Message Input Box (Sticky at Bottom) */}
-            <div className="sticky bottom-7 bg-gray-200 p-3 shadow-md flex items-center rounded-t-xl">
+            <div className="sticky bottom-6 bg-gray-200 p-2 sm:p-3 shadow-md flex items-center rounded-t-xl">
                 <input
                     type="text"
                     placeholder="Type a message..."
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    className="flex-1 p-3 rounded-full border border-gray-300 focus:outline-none"
+                    className="flex-1 p-2 sm:p-3 text-xs sm:text-sm md:text-base rounded-full border border-gray-300 focus:outline-none"
                 />
                 <button
                     onClick={sendMessage}
-                    className="ml-3 bg-blue-500 text-white p-3 rounded-full hover:bg-blue-600"
+                    className="ml-2 sm:ml-3 bg-blue-500 text-white p-2 sm:p-3 rounded-full hover:bg-blue-600"
                 >
-                    <FaPaperPlane size={18} />
+                    <FaPaperPlane size={14} sm:size={18} />
                 </button>
             </div>
-
         </div>
     );
 };
