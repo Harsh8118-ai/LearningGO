@@ -52,8 +52,8 @@ const FriendList = () => {
         try {
             const token = localStorage.getItem("token");
             await axios.post(
-                `${BASE_URL}/friends/remove`,
-                { friendId },
+                `${BASE_URL}/friends/remove-friend`,
+                { _id: friendId }, 
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 

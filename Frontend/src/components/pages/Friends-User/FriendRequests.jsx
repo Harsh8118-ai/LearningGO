@@ -115,21 +115,31 @@ const FriendRequests = () => {
     }
   };
 
-  const handleWithdraw = async (_id) => {
+  const handleWithdraw = async (recipientId) => {
+    console.log("📌 Withdrawing request for recipientId:", recipientId); // Debugging log
+
+    if (!recipientId) {
+      console.error("❌ No recipient ID provided!");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       await axios.post(
         `${BASE_URL}/friends/withdraw-request`,
-        { _id },
+        { recipientId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      setSentRequests((prev) => prev.filter((request) => request._id !== _id));
+      setSentRequests((prev) => prev.filter((request) => request._id !== recipientId));
       toast.success("🔄 Friend request withdrawn.");
     } catch (error) {
       toast.error("❌ Error withdrawing friend request.");
     }
-  };
+};
+
+
+
 
   return (
     <div className="w-full max-w-lg mx-auto p-4 sm:p-6 bg-white shadow-md rounded-lg">
@@ -187,7 +197,6 @@ const FriendRequests = () => {
                   <div className="text-center sm:text-left">
                     <p><strong>Username:</strong> {request.username || "N/A"}</p>
                     <p><strong>Email:</strong> {request.email || "N/A"}</p>
-                    <p><strong>UserID:</strong> {request._id || "N/A"}</p>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     <motion.button

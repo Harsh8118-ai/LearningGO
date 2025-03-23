@@ -1,5 +1,6 @@
 const User = require("../models/user-model");
 const Friend = require("../models/friend-model");
+const mongoose = require("mongoose");
 
 
 // ✅ Send Friend Request using Invite Code
@@ -220,43 +221,66 @@ exports.getReceivedRequests = async (req, res) => {
 // ✅ Withdraw Sent Friend Request
 exports.withdrawFriendRequest = async (req, res) => {
   try {
-    const { _id } = req.body; // ID of the recipient user
+    const { recipientId } = req.body; // ID of the user who received the request
     const senderId = req.user.id; // Logged-in user's ID
 
-    console.log("📌 Withdraw Friend Request - Sender ID:", senderId);
-    console.log("📌 Recipient ID:", _id);
+    
 
-    if (!_id) {
+    if (!recipientId) {
+      console.error("❌ Error: Recipient ID is missing!");
       return res.status(400).json({ message: "Recipient ID is required!" });
     }
 
-    // ✅ Find the friend document for the sender
-    let senderFriend = await Friend.findOne({ userId: senderId });
-
-    // ✅ Find the friend document for the recipient
-    let recipientFriend = await Friend.findOne({ userId: _id });
-
-    if (!senderFriend || !recipientFriend) {
-      return res.status(404).json({ message: "Friend request not found!" });
+    const senderFriend = await Friend.findOne({ userId: senderId });
+    if (!senderFriend) {
+      console.error("❌ Error: Sender's friend data not found!");
+      return res.status(404).json({ message: "Sender's friend data not found!" });
     }
 
-    // ✅ Check if the sender actually sent a request
-    if (!senderFriend.requestsSent.some(request => request.userId.toString() === _id)) {
-      console.error("❌ No sent friend request found!");
+    const recipientFriend = await Friend.findOne({ userId: recipientId });
+    if (!recipientFriend) {
+      console.error("❌ Error: Recipient's friend data not found!");
+      return res.status(404).json({ message: "Recipient's friend data not found!" });
+    }
+
+    if (!senderFriend.requestsSent || senderFriend.requestsSent.length === 0) {
+      return res.status(400).json({ message: "No sent friend requests found!" });
+    }
+
+    
+
+    // ✅ Compare `_id` instead of `userId`
+    const sentRequest = senderFriend.requestsSent.find(request =>
+      request?._id?.toString() === recipientId.toString()
+    );
+
+    if (!sentRequest) {
+      console.error("❌ Error: Friend request not found in sender's requestsSent!");
       return res.status(400).json({ message: "Friend request not found!" });
     }
 
-    // ❌ Remove the request from `requestsSent` (Sender's side)
-    senderFriend.requestsSent = senderFriend.requestsSent.filter(request => request.userId.toString() !== _id);
+    
 
-    // ❌ Remove the request from `friendRequests` (Recipient's side)
-    recipientFriend.friendRequests = recipientFriend.friendRequests.filter(request => request.userId.toString() !== senderId);
+    await Friend.updateOne(
+      { userId: senderId },
+      { $pull: { requestsSent: { _id: sentRequest._id } } }
+    );
 
-    // ✅ Save the updates
-    await senderFriend.save();
-    await recipientFriend.save();
+    if (!recipientFriend.friendRequests || recipientFriend.friendRequests.length === 0) {
+      return res.status(200).json({ message: "Friend request withdrawn successfully!" });
+    }
 
-    console.log("✅ Friend request withdrawn successfully!");
+    const recipientRequest = recipientFriend.friendRequests.find(
+      (request) => request?._id?.toString() === senderId.toString()
+    );
+
+    if (recipientRequest) {
+      await Friend.updateOne(
+        { userId: recipientId },
+        { $pull: { friendRequests: { _id: recipientRequest._id } } }
+      );
+    }
+
     res.status(200).json({ message: "Friend request withdrawn successfully!" });
 
   } catch (error) {
@@ -264,3 +288,52 @@ exports.withdrawFriendRequest = async (req, res) => {
     res.status(500).json({ message: "Server error!", error: error.message });
   }
 };
+
+
+
+
+// ✅ Remove a friend
+exports.removeFriend = async (req, res) => {
+  try {
+    const { _id } = req.body; // ID of the friend to remove
+    const userId = req.user.id; // Logged-in user's ID
+
+    if (!_id) {
+      console.error("❌ Friend ID is missing!");
+      return res.status(400).json({ message: "Friend ID is required!" });
+    }
+
+    console.log("📌 Remove Friend - User ID:", userId);
+    console.log("📌 Friend ID:", _id);
+
+    // ✅ Find the friend documents
+    let userFriend = await Friend.findOne({ userId });
+    let targetFriend = await Friend.findOne({ userId: _id });
+
+    if (!userFriend || !targetFriend) {
+      return res.status(404).json({ message: "Friend data not found!" });
+    }
+
+    // ✅ Check if they are actually friends
+    if (!userFriend.friends.some(friend => friend.userId.toString() === _id)) {
+      console.error("❌ Users are not friends!");
+      return res.status(400).json({ message: "You are not friends with this user!" });
+    }
+
+    // ❌ Remove each other from their friend lists
+    userFriend.friends = userFriend.friends.filter(friend => friend.userId.toString() !== _id);
+    targetFriend.friends = targetFriend.friends.filter(friend => friend.userId.toString() !== userId);
+
+    // ✅ Save the updates
+    await userFriend.save();
+    await targetFriend.save();
+
+    console.log("✅ Friend removed successfully!");
+    res.status(200).json({ message: "Friend removed successfully!" });
+
+  } catch (error) {
+    console.error("❌ Server Error in removeFriend:", error);
+    res.status(500).json({ message: "Server error!", error: error.message });
+  }
+};
+

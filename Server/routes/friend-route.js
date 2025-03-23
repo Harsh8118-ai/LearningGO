@@ -10,6 +10,7 @@ const {
   getSentRequests,
   getReceivedRequests,
   withdrawFriendRequest,
+  removeFriend,
 } = require("../controllers/friend-controllers");
 
 const generateInviteCode = (userId) => {
@@ -99,5 +100,8 @@ router.get("/requests/received", authMiddleware, getReceivedRequests);
 
 // ✅ Withdraw Sent Friend Request
 router.post("/withdraw-request", authMiddleware, withdrawFriendRequest);
+
+// ✅ Remove a friend
+router.post("/remove-friend", authMiddleware, removeFriend);
 
 module.exports = router;
