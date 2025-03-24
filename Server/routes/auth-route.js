@@ -16,9 +16,14 @@ router.post("/login", validate(loginSchema), authControllers.login);
 // ✅ OAuth Signup/Login (Google/GitHub)
 router.post("/oauth", oauthControllers.oauthLogin);
 
+// ✅ Password Reset Routes (OTP-based)
+router.post("/send-otp-password-reset", authControllers.sendOtpForPasswordReset);
+router.put("/reset-password", authControllers.resetPassword); 
+
+
 // ✅ Profile Routes (Protected)
 router.use(authMiddleware); // Apply authMiddleware to all routes below
-router.put("/updateProfile", authControllers.updateProfile);
+router.put("/update-profile", authControllers.updateProfile);
 router.get("/user", authControllers.user);
 
 module.exports = router;

@@ -14,7 +14,9 @@ const authRoute = require("./routes/auth-route");
 const oauthRoute = require("./routes/oauth-route");
 const quesRoute = require("./routes/ques-route");
 const friendRoute = require("./routes/friend-route");
-const messageRoute = require("./routes/chat-route"); // ✅ Message API Route
+const messageRoute = require("./routes/chat-route"); 
+const otpRoutes = require("./routes/otp-route");
+
 
 
 // ✅ Import WebSocket Controller
@@ -36,6 +38,7 @@ const io = new Server(server, {
 app.use(compression());
 app.use(cors({ origin: io.opts.cors.origin, methods: "GET, POST, PUT, DELETE", credentials: true }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "default_secret",
@@ -51,7 +54,9 @@ app.use("/api/auth", authRoute);
 app.use("/api/oauth", oauthRoute);
 app.use("/api/ques-post", quesRoute);
 app.use("/api/friends", friendRoute);
-app.use("/api/chat", messageRoute); // ✅ Message API Route
+app.use("/api/chat", messageRoute); 
+app.use("/api/otp", otpRoutes);
+
 
 // ✅ Initialize WebSocket
 initializeSocket(io);

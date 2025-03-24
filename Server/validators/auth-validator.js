@@ -44,8 +44,15 @@ const signupSchema = z.object({
         .min(8, { message: "Password must be at least 8 characters." })
         .max(1024, { message: "Password must not be more than 1024 characters." }),
 
-    authProvider: z.literal("manual") // ✅ Ensures that this is a manual signup
+    authProvider: z.literal("manual"), // ✅ Ensures that this is a manual signup
+
+    otp: z
+        .string({ required_error: "OTP is required" })
+        .trim()
+        .length(4, { message: "OTP must be exactly 4 digits." })
+        .regex(/^\d+$/, { message: "OTP must contain only numbers." })
 });
+
 
 // 🔹 OAuth Signup/Login Schema (Google/GitHub)
 const oauthSchema = z.object({

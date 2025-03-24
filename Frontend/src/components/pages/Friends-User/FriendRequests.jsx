@@ -83,7 +83,7 @@ const FriendRequests = () => {
         throw new Error(data.message);
       }
 
-      setReceivedRequests((prev) =>
+      setReceivedRequests((prev) => 
         prev.filter((request) => request._id !== _id)
       );
 

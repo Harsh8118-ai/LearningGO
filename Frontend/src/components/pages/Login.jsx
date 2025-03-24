@@ -54,8 +54,9 @@ const Login = () => {
 
       console.log("✅ Login Success:", data);
       localStorage.setItem("token", data.token);
-      localStorage.setItem("userId", data.user.id); // ✅ Access user.id correctly
+      localStorage.setItem("userId", data.user.id); 
       console.log("✅ Stored userId:", data.user.id);
+      console.log("✅ Stored Token:", data.token);
       navigate("/profile");
 
     } catch (err) {

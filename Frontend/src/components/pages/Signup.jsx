@@ -11,73 +11,79 @@ export default function Signup() {
   const [form, setForm] = useState({
     username: "",
     email: "",
-    mobileNumber: "", // Default empty string
+    mobileNumber: "",
     password: "",
+    otp: "", // New OTP field
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const sendOtp = async () => {
+    if (!form.email.trim()) {
+      toast.error("Email is required to send OTP!");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${BASE_URL}/otp/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.email }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        toast.success("OTP sent successfully!");
+        setOtpSent(true);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (err) {
+      toast.error("Failed to send OTP. Try again.");
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-  
-    if (!form.mobileNumber.trim()) {
-      toast.error("Mobile number is required!");
+
+    if (!otpSent) {
+      toast.error("Please request and enter OTP before signing up!");
       setLoading(false);
       return;
     }
-  
+
     const formData = { ...form, authProvider: "manual" };
-  
+
     try {
       const response = await fetch(`${BASE_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-  
+
       const data = await response.json();
-      console.log("🔹 Signup Response:", data); // Debugging API response
-  
-      // ✅ Store authentication token & user data
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-  
-      
-  
-      toast.success("Signup successful! Redirecting...");
-  
-      // Redirect user
-      setTimeout(() => navigate("/profile"), 1500);
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        toast.success("Signup successful! Redirecting...");
+        setTimeout(() => navigate("/profile"), 1500);
+      } else {
+        toast.error(data.message);
+      }
     } catch (err) {
-      toast.error(err.message);
-      setError(err.message);
+      toast.error("Signup failed. Try again.");
     } finally {
       setLoading(false);
     }
   };
-  
-
-  const handleOAuthLogin = (provider) => {
-    window.open(`${BASE_URL}/oauth/${provider}`, "_self");
-  };
-
-  useEffect(() => {
-    const token = new URLSearchParams(window.location.search).get("token");
-    const mobileNumber = new URLSearchParams(window.location.search).get("mobileNumber") || ""; // Default if missing
-    
-    if (token) {
-      localStorage.setItem("token", token);
-      setForm((prevForm) => ({ ...prevForm, mobileNumber }));
-      navigate("/");
-    }
-  }, []);
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
@@ -100,28 +106,25 @@ export default function Signup() {
         {error && <p className="text-red-500 text-sm mb-3 text-center">{error}</p>}
 
         <form onSubmit={handleSubmit}>
-          <motion.input type="text" name="username" placeholder="Username" value={form.username} onChange={handleChange} className="border p-2 rounded w-full mb-3" required />
-          <motion.input type="email" name="email" placeholder="Email" value={form.email} onChange={handleChange} className="border p-2 rounded w-full mb-3" required />
-          <motion.input type="text" name="mobileNumber" placeholder="Mobile Number" value={form.mobileNumber} onChange={handleChange} className="border p-2 rounded w-full mb-3" required />
-          <motion.input type="password" name="password" placeholder="Password" value={form.password} onChange={handleChange} className="border p-2 rounded w-full mb-3" required />
-          <motion.button type="submit" className="bg-green-500 text-white p-2 rounded w-full hover:bg-green-600" disabled={loading}>
-            {loading ? "Signing up..." : "Signup"}
-          </motion.button>
+          <input type="text" name="username" placeholder="Username" value={form.username} onChange={handleChange} className="border p-2 rounded w-full mb-3" required />
+          <input type="email" name="email" placeholder="Email" value={form.email} onChange={handleChange} className="border p-2 rounded w-full mb-3" required />
+          <input type="text" name="mobileNumber" placeholder="Mobile Number" value={form.mobileNumber} onChange={handleChange} className="border p-2 rounded w-full mb-3" required />
+          <input type="password" name="password" placeholder="Password" value={form.password} onChange={handleChange} className="border p-2 rounded w-full mb-3" required />
+          
+          {otpSent && (
+            <input type="text" name="otp" placeholder="Enter OTP" value={form.otp} onChange={handleChange} className="border p-2 rounded w-full mb-3" required />
+          )}
+          
+          {!otpSent ? (
+            <button type="button" className="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-600" onClick={sendOtp}>
+              Send OTP
+            </button>
+          ) : (
+            <button type="submit" className="bg-green-500 text-white p-2 rounded w-full hover:bg-green-600" disabled={loading}>
+              {loading ? "Signing up..." : "Signup"}
+            </button>
+          )}
         </form>
-
-        <div className="flex items-center my-4">
-          <hr className="flex-grow border-gray-300" />
-          <span className="px-2 text-gray-500">OR</span>
-          <hr className="flex-grow border-gray-300" />
-        </div>
-
-        <motion.button onClick={() => handleOAuthLogin("google")} className="bg-red-500 text-white p-2 rounded w-full mb-3 flex items-center justify-center">
-          <img src="/google-icon.svg" alt="Google" className="w-5 h-5" /> Signup with Google
-        </motion.button>
-
-        <motion.button onClick={() => handleOAuthLogin("github")} className="bg-gray-800 text-white p-2 rounded w-full flex items-center justify-center">
-          <img src="/github-icon.svg" alt="GitHub" className="w-5 h-5" /> Signup with GitHub
-        </motion.button>
 
         <p className="text-center text-sm mt-4">
           Already have an account? <Link to="/login" className="text-green-500 hover:underline">Login</Link>
