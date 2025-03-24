@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import { FaGoogle, FaGithub } from "react-icons/fa";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -146,8 +147,8 @@ const Login = () => {
           className="w-full bg-red-500 text-white py-3 rounded-md hover:bg-red-600 transition-all flex items-center justify-center space-x-2 mb-3"
           whileTap={{ scale: 0.95 }}
         >
-          <img src="/icons/google.svg" alt="Google Icon" className="w-5 h-5" />
-          <span>Continue with Google</span>
+          
+          <FaGoogle className="w-5 h-5" /> <span>Continue with Google</span>
         </motion.button>
 
         <motion.button
@@ -155,7 +156,8 @@ const Login = () => {
           className="w-full bg-gray-800 text-white py-3 rounded-md hover:bg-gray-900 transition-all flex items-center justify-center space-x-2"
           whileTap={{ scale: 0.95 }}
         >
-          <img src="/icons/github.svg" alt="GitHub Icon" className="w-5 h-5" />
+          
+          <FaGithub className="w-5 h-5" /> 
           <span>Continue with GitHub</span>
         </motion.button>
 

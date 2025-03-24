@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FaGoogle, FaGithub } from "react-icons/fa";
+
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -85,6 +87,11 @@ export default function Signup() {
     }
   };
 
+  // Handle OAuth Login
+  const handleOAuthLogin = (provider) => {
+    window.location.href = `${BASE_URL}/oauth/${provider}`;
+  };
+
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
@@ -125,6 +132,33 @@ export default function Signup() {
             </button>
           )}
         </form>
+
+        {/* 🔹 OR Divider */}
+        <div className="my-4 flex items-center">
+          <hr className="flex-grow border-gray-300" />
+          <span className="px-2 text-gray-500">OR</span>
+          <hr className="flex-grow border-gray-300" />
+        </div>
+
+        {/* 🔹 OAuth Login Buttons */}
+        <motion.button
+          onClick={() => handleOAuthLogin("google")}
+          className="w-full bg-red-500 text-white py-3 rounded-md hover:bg-red-600 transition-all flex items-center justify-center space-x-2 mb-3"
+          whileTap={{ scale: 0.95 }}
+        >
+          
+          <FaGoogle className="w-5 h-5" /> <span>Continue with Google</span>
+        </motion.button>
+
+        <motion.button
+          onClick={() => handleOAuthLogin("github")}
+          className="w-full bg-gray-800 text-white py-3 rounded-md hover:bg-gray-900 transition-all flex items-center justify-center space-x-2"
+          whileTap={{ scale: 0.95 }}
+        >
+          
+          <FaGithub className="w-5 h-5" /> 
+          <span>Continue with GitHub</span>
+        </motion.button>
 
         <p className="text-center text-sm mt-4">
           Already have an account? <Link to="/login" className="text-green-500 hover:underline">Login</Link>

@@ -37,9 +37,9 @@ const userSchema = new mongoose.Schema(
     },
     authProvider: {
       type: String,
-      enum: ["manual"],
+      enum: ["manual", "google", "github"],  // ✅ Allow all three options
       default: "manual",
-    },
+    },    
   },
   { timestamps: true }
 );

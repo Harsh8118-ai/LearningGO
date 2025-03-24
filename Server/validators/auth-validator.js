@@ -14,7 +14,8 @@ const loginSchema = z.object({
         .min(8, { message: "Password must be at least 8 characters." })
         .max(1024, { message: "Password must not be more than 1024 characters." }),
 
-    authProvider: z.literal("manual") // ✅ Ensures that this is a manual login
+        authProvider: z.enum(["manual", "google", "github"]), // ✅ Allows OAuth login
+        
 });
 
 // 🔹 Manual Signup Schema (Username, Mobile Number, Email, Password)
@@ -44,7 +45,8 @@ const signupSchema = z.object({
         .min(8, { message: "Password must be at least 8 characters." })
         .max(1024, { message: "Password must not be more than 1024 characters." }),
 
-    authProvider: z.literal("manual"), // ✅ Ensures that this is a manual signup
+        authProvider: z.enum(["manual", "google", "github"]), // ✅ Allows OAuth 
+
 
     otp: z
         .string({ required_error: "OTP is required" })

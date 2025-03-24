@@ -21,8 +21,13 @@ const oauthLogin = async (req, res) => {
     let user = await User.findOne({ email });
 
     if (user) {
+
+      if (googleId) user.authProvider = "google";
+      if (githubId) user.authProvider = "github";
+
       if (googleId && !user.googleId) user.googleId = googleId;
       if (githubId && !user.githubId) user.githubId = githubId;
+
       await user.save();
     } else {
       let uniqueUsername = username;
@@ -31,9 +36,11 @@ const oauthLogin = async (req, res) => {
         uniqueUsername = `${username}${count++}`;
       }
 
-      user = new User({ username: uniqueUsername, email, googleId, githubId });
+      user = new User({ username: uniqueUsername, email, googleId, githubId, authProvider: googleId ? "google" : "github", });
       await user.save();
     }
+
+    console.log("User Auth Provider:", user.authProvider);
 
     const token = generateToken(user);
     res.redirect(`${process.env.FRONTEND_URL}/oauth-success?token=${token}&username=${user.username}`);
