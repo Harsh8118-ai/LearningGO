@@ -21,7 +21,7 @@ const UsernameModal = ({ isOpen, onClose, user, onUsernameUpdated }) => {
     setError("");
 
     try {
-      const response = await fetch(`${BASE_URL}/update-username`, {
+      const response = await fetch(`${BASE_URL}/auth/update-username`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user.id, newUsername: username }),

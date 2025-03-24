@@ -12,19 +12,23 @@ const AuthSuccess = () => {
   useEffect(() => {
     const token = searchParams.get("token");
     const username = searchParams.get("username");
-  
+
     console.log("🔹 Token:", token);
     console.log("🔹 Username:", username);
-  
+
     if (token) {
       try {
         localStorage.setItem("token", token);
         const decoded = jwtDecode(token);
         console.log("🔹 Decoded Token:", decoded);
-  
+
+        
+        localStorage.setItem("userId", decoded.id);
+        console.log("User ID stored:", decoded.id);
+
         const newUser = { id: decoded.id, username };
         setUser(newUser);
-  
+
         setTimeout(() => {
           if (!username || username.startsWith("user_")) {
             setModalOpen(true);
@@ -43,7 +47,7 @@ const AuthSuccess = () => {
       navigate("/login");
     }
   }, [searchParams, navigate]);
-  
+
 
   const handleUsernameUpdated = (newUsername, newToken) => {
     setUser((prev) => ({ ...prev, username: newUsername }));
