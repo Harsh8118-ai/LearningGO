@@ -73,11 +73,11 @@ export function Sidebar() {
             Friends
           </Link>
           <Link
-            to="/Friends"
+            to="/questions"
             className="block p-2 rounded hover:bg-gray-700"
             onClick={() => setIsOpen(false)}
           >
-            Categories
+            Questions
           </Link>
           <Link
             to="/bookmarked"

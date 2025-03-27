@@ -142,7 +142,8 @@ const FriendRequests = () => {
 
 
   return (
-    <div className="w-full max-w-lg mx-auto p-4 sm:p-6 bg-white shadow-md rounded-lg">
+    <div className="w-full max-w-lg mx-auto p-4 sm:p-6 gradient
+ shadow-md rounded-lg">
       <ToastContainer position="top-right" autoClose={2000} hideProgressBar={false} />
       <h2 className="text-xl font-bold mb-4 text-center">Friend Requests</h2>
 
@@ -170,7 +171,8 @@ const FriendRequests = () => {
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className="mt-2 sm:mt-0 bg-red-500 text-white px-3 py-1 rounded-md w-full sm:w-auto"
+                    className="mt-2 sm:mt-0 gradient
+ text-white px-3 py-1 rounded-md w-full sm:w-auto"
                     onClick={() => handleWithdraw(request._id)}
                   >
                     Withdraw
@@ -202,7 +204,8 @@ const FriendRequests = () => {
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      className="bg-green-500 text-white px-3 py-1 rounded-md w-full sm:w-auto"
+                      className="gradient
+ text-white px-3 py-1 rounded-md w-full sm:w-auto"
                       onClick={() => handleConfirm(request._id, "accept")}
                     >
                       Confirm
@@ -211,7 +214,8 @@ const FriendRequests = () => {
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
-                      className="bg-red-500 text-white px-3 py-1 rounded-md w-full sm:w-auto"
+                      className="gradient
+ text-white px-3 py-1 rounded-md w-full sm:w-auto"
                       onClick={() => handleDelete(request._id)}
                     >
                       Delete

@@ -72,7 +72,8 @@ const FriendList = () => {
 
 
     return (
-        <div className="max-w-full sm:max-w-md md:max-w-lg mx-auto p-5 bg-white shadow-md rounded-lg">
+        <div className="max-w-full sm:max-w-lg md:max-w-xl mx-auto p-5 gradient-bg brightness-105
+ shadow-md rounded-lg">
         <h2 className="text-xl font-bold mb-4 text-center">Friend List</h2>
     
         {error && <p className="text-red-500 text-center">{error}</p>}
@@ -88,8 +89,8 @@ const FriendList = () => {
                     className="p-3 border rounded-md bg-gray-100 mt-2 flex flex-wrap sm:flex-nowrap justify-between items-center"
                 >
                     <div className="w-full sm:w-auto">
-                        <p className="truncate w-52 sm:w-auto"><strong>Username:</strong> {friend.username || "N/A"}</p>
-                        <p className="truncate w-52 sm:w-auto"><strong>Email:</strong> {friend.email || "N/A"}</p>
+                        <p className="truncate w-52 "><strong>Username:</strong> {friend.username || "N/A"}</p>
+                        <p className="truncate w-52 "><strong>Email:</strong> {friend.email || "N/A"}</p>
                     </div>
     
                     <div className="flex gap-10 sm:gap-3 justify-center items-center mt-1 sm:mt-0">
@@ -97,7 +98,8 @@ const FriendList = () => {
                         <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            className="bg-blue-500 text-white px-4 py-2 text-sm ml-10 sm:ml-0 sm:text-base rounded-md flex items-center gap-1"
+                            className="gradient
+ text-white px-4 py-2 text-sm ml-10 sm:ml-0 sm:text-base rounded-md flex items-center gap-1"
                             onClick={() => handleMessage(friend._id, friend.username)}
                         >
                             <FaEnvelope />
@@ -107,7 +109,8 @@ const FriendList = () => {
                         <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            className="bg-red-500 text-white px-4 py-2 text-sm sm:text-base rounded-md flex items-center gap-1"
+                            className="gradient
+ text-white px-4 py-2 text-sm sm:text-base rounded-md flex items-center gap-1"
                             onClick={() => handleRemoveFriend(friend._id)}
                         >
                             <FaTrash />

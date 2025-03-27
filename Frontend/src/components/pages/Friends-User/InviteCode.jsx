@@ -75,7 +75,7 @@ const InviteCode = () => {
   };
 
   return (
-    <div className="bg-gray-200 p-4 rounded-lg mt-4 flex flex-col items-center">
+    <div className="gradient-bg brightness-105 p-4 rounded-lg mt-4 flex flex-col items-center">
       {error && <p className="text-red-500">{error}</p>}
 
       {inviteCode ? (
@@ -83,7 +83,9 @@ const InviteCode = () => {
           <p className="text-gray-700 font-semibold">{inviteCode}</p>
           <button
             onClick={handleCopy}
-            className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition"
+            className="gradient-2
+ text-white px-3 py-1 rounded-md hover:brightness-90
+ transition"
           >
             {copied ? "✅ Copied!" : "📋 Copy"}
           </button>
@@ -91,7 +93,9 @@ const InviteCode = () => {
       ) : (
         <button
           onClick={generateInviteCode}
-          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition"
+          className="gradient-2
+ text-white px-4 py-2 rounded-md hover:brightness-90
+ transition"
           disabled={loading}
         >
           {loading ? "Generating..." : "Generate Invite Code"}

@@ -93,10 +93,11 @@ export default function Signup() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
+    <div className="flex items-center justify-center h-screen gradient-bg brightness-105">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
       <motion.div
-        className="bg-white p-8 rounded-lg shadow-md w-96"
+        className="gradient-bg
+ p-8 rounded-lg shadow-md w-96 brightness-95"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
@@ -123,11 +124,15 @@ export default function Signup() {
           )}
           
           {!otpSent ? (
-            <button type="button" className="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-600" onClick={sendOtp}>
+            <button type="button" className="gradient
+ text-white p-2 rounded w-full hover:brightness-90 hover:scale-105 transition-all
+" onClick={sendOtp}>
               Send OTP
             </button>
           ) : (
-            <button type="submit" className="bg-green-500 text-white p-2 rounded w-full hover:bg-green-600" disabled={loading}>
+            <button type="submit" className="gradient
+ text-white p-2 rounded w-full hover:brightness-90
+" disabled={loading}>
               {loading ? "Signing up..." : "Signup"}
             </button>
           )}
@@ -143,7 +148,9 @@ export default function Signup() {
         {/* 🔹 OAuth Login Buttons */}
         <motion.button
           onClick={() => handleOAuthLogin("google")}
-          className="w-full bg-red-500 text-white py-3 rounded-md hover:bg-red-600 transition-all flex items-center justify-center space-x-2 mb-3"
+          className="w-full gradient
+ text-white py-3 rounded-md hover:brightness-90
+ transition-all flex items-center justify-center space-x-2 mb-3 hover:scale-105 "
           whileTap={{ scale: 0.95 }}
         >
           
@@ -152,7 +159,7 @@ export default function Signup() {
 
         <motion.button
           onClick={() => handleOAuthLogin("github")}
-          className="w-full bg-gray-800 text-white py-3 rounded-md hover:bg-gray-900 transition-all flex items-center justify-center space-x-2"
+          className="w-full bg-gray-800 text-white py-3 rounded-md hover:bg-gray-900 transition-all flex items-center justify-center space-x-2 hover:scale-105 "
           whileTap={{ scale: 0.95 }}
         >
           

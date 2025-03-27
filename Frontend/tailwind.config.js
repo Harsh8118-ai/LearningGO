@@ -6,7 +6,16 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      boxShadow: {
+        "button-glow": "var(--button-shadow)", // Dynamic button shadow
+      },
+      
       colors: {
+        primary: "var(--primary-color)", // Dynamic primary color
+        primary2: "var(--primary-2-color)", // Dynamic secondary shade
+        background: "var(--background-color)", // Dynamic background color
+        text: "var(--text-color)", // Dynamic text color
+        
         background: "hsl(var(--background))", // Add this line
     foreground: "hsl(var(--foreground))", // Ensure foreground is also added
     
@@ -38,6 +47,7 @@ export default {
         },
         border: "hsl(var(--border))", // Added this line to fix border-border issue
       },
+     
       fontFamily: {
         sans: ["var(--font-sora)", ...fontFamily.sans],
         code: "var(--font-code)",

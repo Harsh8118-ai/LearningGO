@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import ThemeSwitcher from "./ThemeSwitch";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -60,8 +61,8 @@ const Settings = () => {
 
   const handleUpdatePassword = async () => {
     if (!otp) {
-        alert("Please enter the OTP.");
-        return;
+      alert("Please enter the OTP.");
+      return;
     }
 
     console.log("🔹 Attempting to update password...");
@@ -70,47 +71,42 @@ const Settings = () => {
     console.log("🔒 New Password:", newPassword);
 
     try {
-        const response = await axios.put(`${BASE_URL}/auth/reset-password`, {
-            email: user.email,
-            otp,
-            newPassword,
-        });
+      const response = await axios.put(`${BASE_URL}/auth/reset-password`, {
+        email: user.email,
+        otp,
+        newPassword,
+      });
 
-        console.log("✅ Password update response:", response.data);
-        alert("Password updated successfully!");
-        setIsModalOpen(null);
-        setOtp(""); // Clear OTP field
-        setIsOtpSent(false); // Reset OTP state
+      console.log("✅ Password update response:", response.data);
+      alert("Password updated successfully!");
+      setIsModalOpen(null);
+      setOtp(""); // Clear OTP field
+      setIsOtpSent(false); // Reset OTP state
     } catch (error) {
-        console.error("🚨 Error updating password:", error);
-        console.log("🔴 Error Response:", error.response?.data);
-        alert(error.response?.data?.message || "Failed to update password.");
+      console.error("🚨 Error updating password:", error);
+      console.log("🔴 Error Response:", error.response?.data);
+      alert(error.response?.data?.message || "Failed to update password.");
     }
-};
-
-
-
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
   };
+
 
   return (
     <div className="min-h-screen flex flex-col items-center p-5 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
       <h2 className="text-2xl font-bold mb-5">Settings</h2>
 
       {/* Profile Section */}
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 p-5 rounded-lg shadow-md">
+      <div className="w-full max-w-md gradient-bg
+ dark:bg-gray-800 p-5 rounded-lg shadow-md">
         <h3 className="text-lg font-semibold mb-3">Profile Information</h3>
 
         {/* Username */}
         <div className="flex justify-between items-center">
-          <p><strong>Username:</strong> {user.username}</p>
+          <p className="text-[var(--text-color)] text-lg"><strong className="text-lg text-white">Username:   </strong> {user.username}</p>
           <button
             onClick={() => { setIsModalOpen("username"); setNewValue(user.username); }}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+            className="gradient
+ hover:brightness-90
+ text-white px-3 py-1 rounded"
           >
             Edit
           </button>
@@ -118,10 +114,12 @@ const Settings = () => {
 
         {/* Email */}
         <div className="flex justify-between items-center mt-3">
-          <p><strong>Email:</strong> {user.email}</p>
+          <p className="text-[var(--text-color)] text-lg"><strong className="text-lg text-white">Email:   </strong>  {user.email}</p>
           <button
             onClick={() => { setIsModalOpen("email"); setNewValue(user.email); }}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+            className="gradient
+ hover:brightness-90
+ text-white px-3 py-1 rounded"
           >
             Edit
           </button>
@@ -129,10 +127,12 @@ const Settings = () => {
 
         {/* Mobile Number */}
         <div className="flex justify-between items-center mt-3">
-          <p><strong>Mobile Number:</strong> {user.mobileNumber}</p>
+          <p className="text-[var(--text-color)] text-lg"><strong className="text-lg text-white">Mobile Number:   </strong>  {user.mobileNumber}</p>
           <button
             onClick={() => { setIsModalOpen("mobileNumber"); setNewValue(user.mobileNumber); }}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+            className="gradient
+ hover:brightness-90
+ text-white px-3 py-1 rounded"
           >
             Edit
           </button>
@@ -140,10 +140,10 @@ const Settings = () => {
 
         {/* Password */}
         <div className="flex justify-between items-center mt-3">
-          <p><strong>Password:</strong> ********</p>
+          <p className="text-[var(--text-color)] text-lg"><strong className="text-lg text-white">Password:   </strong>  ********</p>
           <button
             onClick={() => setIsModalOpen("password")}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+            className="gradient hover:brightness-90 text-white px-3 py-1 rounded"
           >
             Change
           </button>
@@ -153,18 +153,15 @@ const Settings = () => {
       {/* Theme Preferences */}
       <div className="w-full max-w-md bg-white dark:bg-gray-800 p-5 mt-5 rounded-lg shadow-md">
         <h3 className="text-lg font-semibold mb-3">Theme Preferences</h3>
-        <button
-          onClick={toggleTheme}
-          className="w-full bg-gray-700 hover:bg-gray-800 text-white py-2 rounded"
-        >
-          Toggle to {theme === "light" ? "Dark" : "Light"} Mode
-        </button>
+        <ThemeSwitcher /> {/* Theme Switcher Component */}
       </div>
 
       {/* Edit Modals */}
       {isModalOpen && isModalOpen !== "password" && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center ">
-          <div className="bg-white dark:bg-gray-800 p-5 rounded-lg w-96 shadow-lg">
+        <div className="fixed inset-0 gradient-bg
+ bg-opacity-50 flex justify-center items-center ">
+          <div className="gradient
+ dark:bg-gray-800 p-5 rounded-lg w-96 shadow-lg">
             <h3 className="text-lg font-semibold mb-3">Edit {isModalOpen}</h3>
             <input
               type="text"
@@ -173,8 +170,12 @@ const Settings = () => {
               className="w-full p-2 mb-3 border dark:border-gray-700 rounded text-gray-900"
             />
             <div className="flex justify-between">
-              <button onClick={() => handleUpdateProfile(isModalOpen)} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">Save</button>
-              <button onClick={() => setIsModalOpen(null)} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Cancel</button>
+              <button onClick={() => handleUpdateProfile(isModalOpen)} className="gradient
+ hover:brightness-90
+ text-white px-4 py-2 rounded">Save</button>
+              <button onClick={() => setIsModalOpen(null)} className="gradient
+ hover:brightness-90
+ text-white px-4 py-2 rounded">Cancel</button>
             </div>
           </div>
         </div>
@@ -182,19 +183,25 @@ const Settings = () => {
 
       {/* Password Change Modal */}
       {isModalOpen === "password" && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white dark:bg-gray-800 p-5 rounded-lg w-96 shadow-lg relative">
+        <div className="fixed inset-0 gradient
+ bg-opacity-50 flex justify-center items-center">
+          <div className="gradient
+ dark:bg-gray-800 p-5 rounded-lg w-96 shadow-lg relative">
             {/* Close Button */}
             <button
               onClick={() => setIsModalOpen(null)}
-              className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-1 rounded-full"
+              className="absolute top-2 right-2 gradient
+ hover:brightness-90
+ text-white p-1 rounded-full"
             >
               ✖
             </button>
 
             <h3 className="text-lg font-semibold mb-3">Change Password</h3>
             {!isOtpSent ? (
-              <button onClick={sendOtp} className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded">
+              <button onClick={sendOtp} className="w-full gradient
+ hover:brightness-90
+ text-white py-2 rounded">
                 Send OTP
               </button>
             ) : (
@@ -216,7 +223,9 @@ const Settings = () => {
                 <div className="flex justify-between mt-3">
                   <button
                     onClick={handleUpdatePassword}
-                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+                    className="gradient
+ hover:brightness-90
+ text-white px-4 py-2 rounded"
                   >
                     Save
                   </button>

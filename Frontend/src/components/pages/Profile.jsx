@@ -70,7 +70,8 @@ const Profile = () => {
 
   return (
     <motion.div
-      className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10"
+      className="max-w-4xl mx-auto p-6 gradient-bg
+ shadow-lg rounded-lg mt-10"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
     >
@@ -92,7 +93,8 @@ const Profile = () => {
       <div className="grid grid-cols-2 gap-4 mt-6">
         <motion.button
           whileHover={{ scale: 1.05 }}
-          className="bg-blue-600 text-white py-3 rounded-lg text-center"
+          className="bg-green-600
+ text-white py-3 rounded-lg text-center"
           onClick={() => navigate("/notes")}
         >
           📚 Manage Notes
@@ -100,7 +102,8 @@ const Profile = () => {
 
         <motion.button
           whileHover={{ scale: 1.05 }}
-          className="bg-green-600 text-white py-3 rounded-lg text-center"
+          className="bg-red-500
+ text-white py-3 rounded-lg text-center"
           onClick={() => navigate("/interview")}
         >
           🎯 Interview Prep
@@ -128,7 +131,9 @@ const Profile = () => {
           localStorage.removeItem("token");
           window.location.reload();
         }}
-        className="w-full mt-6 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition"
+        className="w-full mt-6 gradient
+ text-white py-2 rounded-lg hover:brightness-90
+ transition"
       >
         🚪 Logout
       </button>

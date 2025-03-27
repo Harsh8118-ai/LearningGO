@@ -84,7 +84,7 @@ const Chat = () => {
                         )}
 
                         <div
-                            className={`relative p-2 sm:p-3 max-w-xs sm:max-w-sm md:max-w-md rounded-xl text-white shadow-lg cursor-pointer ${msg.senderId === userId ? "bg-blue-500" : "bg-gray-500"
+                            className={`relative p-2 sm:p-3 max-w-xs sm:max-w-sm md:max-w-md rounded-xl text-white shadow-lg cursor-pointer ${msg.senderId === userId ? "gradient" : "bg-gray-500"
                                 }`}
                             onClick={() => setClickedMsgId(clickedMsgId === msg._id ? null : msg._id)}
                         >
@@ -117,7 +117,9 @@ const Chat = () => {
                 />
                 <button
                     onClick={sendMessage}
-                    className="ml-2 sm:ml-3 bg-blue-500 text-white p-2 sm:p-3 rounded-full hover:bg-blue-600"
+                    className="ml-2 sm:ml-3 gradient
+ text-white p-2 sm:p-3 rounded-full hover:brightness-90
+"
                 >
                     <FaPaperPlane size={14} sm:size={18} />
                 </button>

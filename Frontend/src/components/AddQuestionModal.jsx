@@ -107,7 +107,7 @@ export function AddQuestionModal({ open, setOpen, newQuestion, setNewQuestion })
         </motion.div>
 
         {/* ⚠️ Error Message */}
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+        {error && <p className="text-[var(--text-color)] text-3xl mt-2">{error}</p>}
 
         {/* 🖱️ Animated Save Button */}
         <motion.div 
@@ -118,7 +118,7 @@ export function AddQuestionModal({ open, setOpen, newQuestion, setNewQuestion })
         >
           <Button 
             onClick={addQuestion} 
-            className="w-full bg-blue-600 hover:bg-blue-700 transition-all duration-300"
+            className="w-full bg-black text-white transition-all duration-300"
             disabled={loadingg || !newQuestion.title.trim() || !newQuestion.answer.trim()}
           >
             {loadingg ? "Saving..." : "Save"}

@@ -8,13 +8,16 @@ export default function Friends() {
   return (
     <div className="flex flex-col items-center px-4 py-6 min-h-screen bg-gray-100">
       {/* ✅ Card Container */}
-      <div className="w-full sm:max-w-md bg-white shadow-lg rounded-lg p-6 space-y-4">
+      <div className="w-full sm:max-w-md gradient-bg
+ shadow-lg rounded-lg p-6 space-y-4">
         {/* ✅ Invite Code Section */}
         <InviteCode />
 
         {/* ✅ Friend Requests Button */}
         <Link to="/friend-requests">
-          <button className="w-full bg-blue-500 text-white py-2 px-4 mt-3 rounded-md font-semibold shadow-md hover:bg-blue-600 transition-all text-sm sm:text-base">
+          <button className="w-full gradient
+ text-white py-2 px-4 mt-3 rounded-md font-semibold shadow-md hover:brightness-90
+ transition-all text-sm sm:text-base">
             Friend Requests
           </button>
         </Link>

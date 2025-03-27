@@ -38,7 +38,8 @@ const OTPVerification = () => {
             onChange={(e) => setEmail(e.target.value)}
             className="border p-2 m-2"
           />
-          <button onClick={sendOTP} className="bg-blue-500 text-white px-4 py-2">Send OTP</button>
+          <button onClick={sendOTP} className="gradient
+ text-white px-4 py-2">Send OTP</button>
         </>
       ) : (
         <>
@@ -49,7 +50,8 @@ const OTPVerification = () => {
             onChange={(e) => setOtp(e.target.value)}
             className="border p-2 m-2"
           />
-          <button onClick={verifyOTP} className="bg-green-500 text-white px-4 py-2">Verify OTP</button>
+          <button onClick={verifyOTP} className="gradient
+ text-white px-4 py-2">Verify OTP</button>
         </>
       )}
     </div>

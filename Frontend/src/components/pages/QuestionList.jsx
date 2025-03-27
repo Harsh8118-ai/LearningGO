@@ -112,7 +112,7 @@ export function QuestionList() {
 
   return (
     <div className="container mx-auto px-4 py-6">
-      <h2 className="text-2xl font-bold text-center text-blue-700 mb-6">Your Questions</h2>
+      <h2 className="text-2xl font-bold text-center text-[var(--text-color)] mb-6">Your Questions</h2>
 
       {loading ? (
         <p className="text-center text-gray-500">Loading questions...</p>
@@ -127,9 +127,10 @@ export function QuestionList() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="p-5 bg-white shadow-lg rounded-lg border border-gray-300 cursor-pointer hover:shadow-xl transition-all"
+              className="p-5 gradient-bg
+ shadow-lg rounded-lg border border-gray-300 cursor-pointer hover:shadow-xl transition-all"
             >
-              <h3 className="font-bold text-lg text-blue-700">{q.question}</h3>
+              <h3 className="font-bold text-lg text-[var(--text-color)]">{q.question}</h3>
               <p className="text-gray-600 mt-2">{q.answer}</p>
               <div className="text-sm text-gray-500 mt-2">
                 Tags: {q.tags.length > 0 ? q.tags.join(", ") : "No tags"}
@@ -175,13 +176,19 @@ export function QuestionList() {
             <div className="mt-4 flex gap-3">
               {editMode ? (
                 <>
-                  <Button onClick={handleUpdate} className="bg-blue-600 hover:bg-blue-700">Save</Button>
+                  <Button onClick={handleUpdate} className="gradient
+ hover:brightness-90
+">Save</Button>
                   <Button onClick={() => setEditMode(false)} className="bg-gray-600 hover:bg-gray-700">Cancel</Button>
                 </>
               ) : (
                 <>
-                  <Button onClick={() => setEditMode(true)} className="bg-green-600 hover:bg-green-700">Edit</Button>
-                  <Button onClick={handleDelete} className="bg-red-600 hover:bg-red-700">Delete</Button>
+                  <Button onClick={() => setEditMode(true)} className="gradient-2
+ hover:brightness-90
+">Edit</Button>
+                  <Button onClick={handleDelete} className="gradient-2
+ hover:brightness-90
+">Delete</Button>
                 </>
               )}
             </div>

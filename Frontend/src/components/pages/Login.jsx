@@ -77,13 +77,14 @@ const Login = () => {
 
   return (
     <motion.div
-      className="flex justify-center items-center min-h-screen bg-gray-100 p-6"
+      className="flex justify-center items-center min-h-screen gradient-bg p-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
       <motion.div
-        className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg"
+        className="w-full max-w-md p-8 gradient-bg
+ rounded-lg shadow-lg"
         initial={{ y: 50 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, type: "spring" }}
@@ -126,7 +127,9 @@ const Login = () => {
           {/* Submit Button */}
           <motion.button
             type="submit"
-            className="w-full bg-blue-500 text-white py-3 rounded-md hover:bg-blue-600 transition-all"
+            className="w-full gradient
+ text-white py-3 rounded-md hover:brightness-90
+ transition-all"
             whileTap={{ scale: 0.95 }}
             disabled={loading}
           >
@@ -144,7 +147,9 @@ const Login = () => {
         {/* 🔹 OAuth Login Buttons */}
         <motion.button
           onClick={() => handleOAuthLogin("google")}
-          className="w-full bg-red-500 text-white py-3 rounded-md hover:bg-red-600 transition-all flex items-center justify-center space-x-2 mb-3"
+          className="w-full gradient-2
+ text-white py-3 rounded-md hover:brightness-90
+ transition-all flex items-center justify-center space-x-2 mb-3"
           whileTap={{ scale: 0.95 }}
         >
           

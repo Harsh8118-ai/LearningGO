@@ -11,10 +11,12 @@ const ChatPage = () => {
   return (
       <div className="h-screen flex flex-col bg-gray-100">
           {/* ✅ Chat Header with Sticky Position */}
-          <div className="bg-blue-500 text-white p-4 flex items-center shadow-md sticky top-0 z-50">
+          <div className="gradient
+ text-white p-4 flex items-center shadow-md sticky top-0 z-50">
               <button 
                   onClick={() => navigate(-1)} 
-                  className="mr-3 p-2 rounded-full hover:bg-blue-600"
+                  className="mr-3 p-2 rounded-full hover:brightness-90
+"
               >
                   <FaArrowLeft size={20} />
               </button>

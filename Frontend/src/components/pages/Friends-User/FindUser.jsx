@@ -81,7 +81,7 @@ const FindUser = () => {
   };
 
   return (
-    <div className="max-w-full sm:max-w-md md:max-w-lg mx-auto p-4 sm:p-6 bg-gray-200 shadow-md rounded-lg">
+    <div className="max-w-full sm:max-w-md md:max-w-lg mx-auto p-4 sm:p-6 gradient-bg brightness-105 shadow-md rounded-lg">
     <h2 className="text-xl font-bold mb-4 text-center">Find User by Invite Code</h2>
 
     <input
@@ -93,7 +93,9 @@ const FindUser = () => {
     />
     <button
       onClick={searchUser}
-      className="mt-2 w-full bg-blue-500 text-white py-2 sm:py-3 text-sm sm:text-base rounded-md hover:bg-blue-600 transition"
+      className="mt-2 w-full gradient
+ text-white py-2 sm:py-3 text-sm sm:text-base rounded-md hover:brightness-90
+ transition"
       disabled={loading}
     >
       {loading ? "Searching..." : "Find User"}
@@ -109,7 +111,9 @@ const FindUser = () => {
         <p className="break-words"><strong>Invite Code:</strong> {user.inviteCode || "N/A"}</p>
         <button
           onClick={sendFriendRequest}
-          className="mt-2 w-full bg-green-500 text-white py-2 sm:py-3 text-sm sm:text-base rounded-md hover:bg-green-600 transition"
+          className="mt-2 w-full gradient
+ text-white py-2 sm:py-3 text-sm sm:text-base rounded-md hover:brightness-90
+ transition"
         >
           Send Friend Request
         </button>
