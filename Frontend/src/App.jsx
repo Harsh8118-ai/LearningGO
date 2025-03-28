@@ -26,7 +26,7 @@ export default function App() {
         <Sidebar />
 
         {/* ✅ Main Content Wrapper */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6">
+        <div className="flex-1 overflow-y-auto">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/questions" element={<Questions />} />

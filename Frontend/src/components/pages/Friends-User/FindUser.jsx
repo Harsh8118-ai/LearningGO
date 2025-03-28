@@ -1,7 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify"; // ✅ Import toast
+import { toast } from "react-toastify";
+import { FaSearch } from "react-icons/fa";
 
 const FindUser = () => {
   const [inviteCode, setInviteCode] = useState("");
@@ -70,8 +71,7 @@ const FindUser = () => {
       // ✅ Show success toast
       toast.success("Friend request sent successfully!");
 
-      // ✅ Navigate to the friend requests page
-      navigate("/friend-requests");
+      window.location.reload(); 
 
     } catch (error) {
       console.error("❌ Error sending request:", error);
@@ -81,45 +81,43 @@ const FindUser = () => {
   };
 
   return (
-    <div className="max-w-full sm:max-w-md md:max-w-lg mx-auto p-4 sm:p-6 gradient-bg brightness-105 shadow-md rounded-lg">
-    <h2 className="text-xl font-bold mb-4 text-center">Find User by Invite Code</h2>
-
-    <input
-      type="text"
-      placeholder="Enter Invite Code"
-      value={inviteCode}
-      onChange={(e) => setInviteCode(e.target.value)}
-      className="w-full p-3 border rounded-md text-sm sm:text-base"
-    />
-    <button
-      onClick={searchUser}
-      className="mt-2 w-full gradient
- text-white py-2 sm:py-3 text-sm sm:text-base rounded-md hover:brightness-90
- transition"
-      disabled={loading}
-    >
-      {loading ? "Searching..." : "Find User"}
-    </button>
-
-    {error && <p className="text-red-500 text-center text-sm sm:text-base mt-2">{error}</p>}
-
-    {user && (
-      <div className="mt-4 p-4 border rounded-md bg-gray-100 text-sm sm:text-base">
-        <h3 className="text-lg font-semibold text-center">User Found</h3>
-        <p className="break-words"><strong>Username:</strong> {user.username || "N/A"}</p>
-        <p className="break-words"><strong>Email:</strong> {user.email || "N/A"}</p>
-        <p className="break-words"><strong>Invite Code:</strong> {user.inviteCode || "N/A"}</p>
+    <div className="w-full p-2">
+      {/* 🔍 Search Bar */}
+      <div className="flex items-center bg-gray-950 p-2 rounded-full shadow-md">
+      {/* <FaSearch className="text-gray-500" />; */}
+        <input
+          type="text"
+          placeholder="Enter Invite Code..."
+          value={inviteCode}
+          onChange={(e) => setInviteCode(e.target.value)}
+          className="flex-1 bg-transparent text-white placeholder-gray-400 p-2 bg-gray-900 outline-none border rounded-2xl mr-2"
+        />
         <button
-          onClick={sendFriendRequest}
-          className="mt-2 w-full gradient
- text-white py-2 sm:py-3 text-sm sm:text-base rounded-md hover:brightness-90
- transition"
+          onClick={searchUser}
+          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-full transition"
+          disabled={loading}
         >
-          Send Friend Request
+          {loading ? "Searching..." : "Find Friends"}
         </button>
       </div>
-    )}
-  </div>
+
+      {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
+      {user && (
+        <div className="mt-4 p-4 border border-gray-700 rounded-lg bg-gray-900 text-white shadow-lg">
+          <h3 className="text-lg font-semibold text-center">User Found</h3>
+          <p className="break-words"><strong>Username:</strong> {user.username || "N/A"}</p>
+          <p className="break-words"><strong>Email:</strong> {user.email || "N/A"}</p>
+          <p className="break-words"><strong>Invite Code:</strong> {user.inviteCode || "N/A"}</p>
+          <button
+            onClick={sendFriendRequest}
+            className="mt-3 w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-md transition"
+          >
+            Send Friend Request
+          </button>
+        </div>
+      )}
+    </div>
   );
 };
 

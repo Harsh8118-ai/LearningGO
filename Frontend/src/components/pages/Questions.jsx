@@ -7,6 +7,7 @@ import { Input } from "../ui/input";
 import { AddQuestionModal } from "../../components/AddQuestionModal";
 import { FaSearch, FaPlus } from "react-icons/fa"; // Icons
 import { QuestionList } from "./QuestionList";
+import { QuestionList2 } from "./QuestionList2";
 
 export default function Questions() {
   const [open, setOpen] = useState(false);
@@ -89,7 +90,7 @@ export default function Questions() {
         </motion.button>
       </div>
 
-      <QuestionList />
+      <QuestionList2 />
 
       {/* ➕ Add Question Modal */}
       <AddQuestionModal

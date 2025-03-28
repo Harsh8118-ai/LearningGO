@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { FaClipboard, FaCheck } from "react-icons/fa";
 
 const InviteCode = () => {
   const [inviteCode, setInviteCode] = useState(localStorage.getItem("inviteCode") || "");
@@ -75,27 +76,24 @@ const InviteCode = () => {
   };
 
   return (
-    <div className="gradient-bg brightness-105 p-4 rounded-lg mt-4 flex flex-col items-center">
-      {error && <p className="text-red-500">{error}</p>}
+    <div className="bg-gray-900 text-white p-6 rounded-lg shadow-md w-full max-w-md mx-auto">
+      {error && <p className="text-red-500 text-center mb-3">{error}</p>}
 
       {inviteCode ? (
-        <div className="flex justify-between items-center w-full">
-          <p className="text-gray-700 font-semibold">{inviteCode}</p>
+        <div className="flex justify-between items-center bg-gray-800 p-3 rounded-md">
+          <p className="text-lg font-semibold text-gray-300">{inviteCode}</p>
           <button
             onClick={handleCopy}
-            className="gradient-2
- text-white px-3 py-1 rounded-md hover:brightness-90
- transition"
+            className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1 rounded-md flex items-center gap-2 transition"
           >
-            {copied ? "✅ Copied!" : "📋 Copy"}
+            {copied ? <FaCheck /> : <FaClipboard />}
+            {copied ? "Copied" : "Copy"}
           </button>
         </div>
       ) : (
         <button
           onClick={generateInviteCode}
-          className="gradient-2
- text-white px-4 py-2 rounded-md hover:brightness-90
- transition"
+          className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md transition font-semibold"
           disabled={loading}
         >
           {loading ? "Generating..." : "Generate Invite Code"}

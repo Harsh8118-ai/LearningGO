@@ -1,12 +1,15 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
-import { useAuth } from "../components/store/UseAuth"; // Import the custom hook
-
+import { FiHome, FiBook, FiUsers, FiSettings, FiLogOut } from "react-icons/fi";
+import { RiQuestionAnswerLine, RiBookmarkLine, RiAddLine } from "react-icons/ri";
+import { useAuth } from "../components/store/UseAuth"; 
+import { motion, AnimatePresence } from "framer-motion";
 
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, loading } = useAuth(); // Get user & loading state
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { user, loading } = useAuth();
 
   return (
     <>
@@ -18,14 +21,14 @@ export function Sidebar() {
         ☰
       </button>
 
-      {/* ✅ Sidebar Panel (Fixed & Non-Scrollable) */}
+      {/* Sidebar Panel */}
       <div
         className={`fixed top-0 left-0 transform ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } md:relative md:translate-x-0 transition-transform duration-200 ease-in-out z-50 
-        bg-gray-800 text-white w-64 h-screen p-4 flex flex-col shadow-lg overflow-hidden`}
+        bg-gray-950 text-white w-64  h-screen p-3 flex flex-col shadow-lg border-r border-gray-400`}
       >
-        {/* ✖ Close Button (Only for Mobile) */}
+        {/* ✖ Close Button (Mobile) */}
         <button
           onClick={() => setIsOpen(false)}
           className="md:hidden text-white text-xl absolute top-4 right-4"
@@ -34,98 +37,82 @@ export function Sidebar() {
         </button>
 
         {/* 🔥 Sidebar Heading */}
-        <h2 className="text-xl font-bold mb-4">Learning Go</h2>
+        <h2 className="text-xl font-bold mb-4 pb-3 border-b border-gray-400">Learning Go</h2>
 
-        {/* 👤 Profile Section */}
-        
-        <div className="flex items-center gap-3 p-4 border-b border-gray-700">
-        <Link to="/profile"><FaUserCircle className="text-3xl" /></Link>
-          <div>
-            {loading ? (
-              <p className="text-sm font-semibold">Loading...</p>
-            ) : user ? (
-              <>
-                <p className="text-sm font-semibold">Welcome, {user.username}!</p>
-                <Link to="/profile" className="text-blue-400 text-sm hover:underline">
-                  View Profile
-                </Link>
-              </>
-            ) : (
-              <p className="text-sm font-semibold">Guest</p>
-            )}
-          </div>
-        </div>
-
-        {/* 🔗 Navigation Links */}
+        {/* Navigation Links */}
         <nav className="space-y-2 flex-1">
-          <Link
-            to="/"
-            className="block p-2 rounded hover:bg-gray-700"
-            onClick={() => setIsOpen(false)}
-          >
-            Home
+          {/* Main Section */}
+          <p className="text-gray-400 text-sm px-2">Main</p>
+          <Link to="/" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+            <FiHome /> Home
           </Link>
-          <Link
-            to="/friends"
-            className="block p-2 rounded hover:bg-gray-700"
-            onClick={() => setIsOpen(false)}
-          >
-            Friends
+          <Link to="/questions" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+            <RiQuestionAnswerLine /> Questions
           </Link>
-          <Link
-            to="/questions"
-            className="block p-2 rounded hover:bg-gray-700"
-            onClick={() => setIsOpen(false)}
-          >
-            Questions
+          <Link to="/discussions" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+            <FiBook /> Discussions
           </Link>
-          <Link
-            to="/bookmarked"
-            className="block p-2 rounded hover:bg-gray-700"
-            onClick={() => setIsOpen(false)}
-          >
-            Bookmarked
+          <Link to="/friends" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+            <FiUsers /> Friends
           </Link>
-          <Link
-            to="/settings"
-            className="block p-2 rounded hover:bg-gray-700"
-            onClick={() => setIsOpen(false)}
-          >
-            Settings
+
+          {/* Divider */}
+          <div className="border-b border-gray-400 my-3"></div>
+
+          {/* Personal Section */}
+          <p className="text-gray-400 text-sm px-2">Personal</p>
+          <Link to="/my-questions" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+            <RiAddLine /> My Questions
+          </Link>
+          <Link to="/bookmarked" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+            <RiBookmarkLine /> Bookmarks
           </Link>
         </nav>
 
-        {/* 🔑 Auth Buttons */}
-        <div className="flex mt-auto justify-evenly">
-          {user ? (
+        {/* Divider before Profile Section */}
+        <div className="border-t border-gray-400 mt-4"></div>
+
+        {/* Profile & Settings Dropdown */}
+        <div className="mt-auto">
+    <button
+      onClick={() => setDropdownOpen(!dropdownOpen)}
+      className="flex items-center gap-3 p-3 w-full rounded hover:bg-gray-800"
+    >
+      <FaUserCircle className="text-2xl bg-gray-950 rounded-xl transition-transform duration-300 ease-in-out" />
+      {loading ? "Loading..." : user ? user.username : "Guest"}
+    </button>
+
+    {/* AnimatePresence ensures smooth exit animation */}
+    <AnimatePresence>
+      {dropdownOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+          className="absolute bottom-14 left-0 w-full max-w-sm bg-gray-950 rounded-xl shadow-lg border border-gray-500"
+        >
+          <Link to="/profile" className="flex items-center gap-3 p-2 hover:bg-gray-700">
+            <FaUserCircle /> Profile
+          </Link>
+          <Link to="/settings" className="flex items-center gap-3 p-2 hover:bg-gray-700">
+            <FiSettings /> Settings
+          </Link>
+          {user && (
             <button
               onClick={() => {
-                localStorage.removeItem("token"); // Logout by removing token
-                window.location.reload(); // Reload to reflect changes
+                localStorage.removeItem("token");
+                window.location.reload();
               }}
-              className="block p-2 rounded hover:bg-gray-700 border border-gray-600"
+              className="flex items-center gap-3 p-2 hover:bg-gray-700 w-full text-left border-t-2"
             >
-              Logout
+              <FiLogOut /> Log out
             </button>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="block p-2 rounded hover:bg-gray-700 border border-gray-600"
-                onClick={() => setIsOpen(false)}
-              >
-                Login
-              </Link>
-              <Link
-                to="/signup"
-                className="block p-2 rounded hover:bg-gray-700 border border-gray-600"
-                onClick={() => setIsOpen(false)}
-              >
-                Signup
-              </Link>
-            </>
           )}
-        </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  </div>
       </div>
     </>
   );

@@ -72,55 +72,66 @@ const FriendList = () => {
 
 
     return (
-        <div className="max-w-full sm:max-w-lg md:max-w-xl mx-auto p-5 gradient-bg brightness-105
- shadow-md rounded-lg">
-        <h2 className="text-xl font-bold mb-4 text-center">Friend List</h2>
-    
-        {error && <p className="text-red-500 text-center">{error}</p>}
-        {loading ? (
-            <p className="text-gray-500 text-center">Loading...</p>
-        ) : friends.length > 0 ? (
-            friends.map((friend) => (
-                <motion.div
-                    key={friend._id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.3 }}
-                    className="p-3 border rounded-md bg-gray-100 mt-2 flex flex-wrap sm:flex-nowrap justify-between items-center"
+      <div className="max-w-6xl mx-auto p-5">
+      <h2 className="text-2xl font-bold mb-6 text-center text-white">
+        Friend List
+      </h2>
+
+      {error && <p className="text-red-500 text-center">{error}</p>}
+      {loading ? (
+        <p className="text-gray-500 text-center">Loading...</p>
+      ) : friends.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {friends.map((friend) => (
+            <motion.div
+              key={friend._id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              className="w-full sm:w-auto overflow-hidden rounded-lg shadow-lg bg-gray-900 text-white text-center"
+            >
+              {/* Gradient Header */}
+              <div className="h-24 bg-gradient-to-r from-purple-700 to-purple-900"></div>
+
+              {/* Avatar & Info */}
+              <div className="flex flex-col items-center -mt-12 mb-4 p-4">
+                <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center border-4 border-gray-900">
+                  <span className="text-4xl text-gray-300">👤</span>
+                </div>
+                <h3 className="mt-2 text-lg font-semibold">
+                  {friend.username || "N/A"}
+                </h3>
+                <p className="text-sm text-gray-400">{friend.email || "N/A"}</p>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex flex-col sm:flex-row justify-center gap-2 sm:gap-4 pb-4">
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => handleMessage(friend._id, friend.username)}
+                  className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2"
                 >
-                    <div className="w-full sm:w-auto">
-                        <p className="truncate w-52 "><strong>Username:</strong> {friend.username || "N/A"}</p>
-                        <p className="truncate w-52 "><strong>Email:</strong> {friend.email || "N/A"}</p>
-                    </div>
-    
-                    <div className="flex gap-10 sm:gap-3 justify-center items-center mt-1 sm:mt-0">
-                        {/* ✉️ Message Button */}
-                        <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            className="gradient
- text-white px-4 py-2 text-sm ml-10 sm:ml-0 sm:text-base rounded-md flex items-center gap-1"
-                            onClick={() => handleMessage(friend._id, friend.username)}
-                        >
-                            <FaEnvelope />
-                        </motion.button>
-    
-                        {/* 🗑 Remove Friend Button */}
-                        <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            className="gradient
- text-white px-4 py-2 text-sm sm:text-base rounded-md flex items-center gap-1"
-                            onClick={() => handleRemoveFriend(friend._id)}
-                        >
-                            <FaTrash />
-                        </motion.button>
-                    </div>
-                </motion.div>
-            ))
-        ) : (
-            <p className="text-gray-500 text-center">No friends added yet.</p>
-        )}
+                  <FaEnvelope />
+                  Message
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2"
+                  onClick={() => handleRemoveFriend(friend._id)}
+                >
+                  <FaTrash />
+                  Remove
+                </motion.button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-gray-500 text-center">No friends added yet.</p>
+      )}
     </div>
     );
 };
