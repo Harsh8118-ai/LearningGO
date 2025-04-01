@@ -2,20 +2,34 @@ const { Schema, model } = require("mongoose");
 
 const questionSchema = new Schema(
   {
-    userId: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Reference to User
-    username: { type: String, required: true }, // Match frontend user
-    questions: [
+    question: { type: String, required: true },
+    answer: { type: String, required: true },
+    tags: { type: [String], default: [] },
+    likes: { type: [Schema.Types.ObjectId], ref: "User", default: [] }, // Change from number to array
+    isPublic: { type: Boolean, default: true },
+    createdAt: { type: Date, default: Date.now },
+    answers: [
       {
-        question: { type: String, required: true },
+        userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+        username: { type: String, required: true },
         answer: { type: String, required: true },
-        tags: { type: [String], default: [] },
         createdAt: { type: Date, default: Date.now },
       },
     ],
   },
-  { timestamps: true } // Auto-generates `createdAt` and `updatedAt`
+  { timestamps: true }
 );
 
-const Question = model("Question", questionSchema);
+
+const userQuestionSchema = new Schema(
+  {
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    username: { type: String, required: true },
+    questions: [questionSchema], // 👈 Embedding questions array inside `questions`
+  },
+  { timestamps: true }
+);
+
+const Question = model("Question", userQuestionSchema);
 
 module.exports = Question;

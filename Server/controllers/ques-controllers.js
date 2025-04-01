@@ -1,69 +1,211 @@
 const Question = require("../models/ques-model");
 
-// Create or Add a Question under the same User
+// Create or Add a Question (User can also provide an answer while posting)
 const createQuestion = async (req, res) => {
   try {
-    const { userId, username, question, answer, tags } = req.body;
+    console.log("Received Data:", req.body); // Debugging log
 
-    if (!userId || !username || !question || !answer) {
-      return res.status(400).json({ message: "userId, username, question, and answer are required" });
+    const { userId, username, questions } = req.body;
+
+    if (!userId || !questions || questions.length === 0 || !questions[0].question || !questions[0].answer) {
+      return res.status(400).json({ message: "UserId, Question, and Answer are required!" });
     }
 
-    // Find if the user already has a question document
-    let userQuestions = await Question.findOne({ userId });
+    let userQuestionDoc = await Question.findOne({ userId });
 
-    if (!userQuestions) {
-      // If no document exists for the user, create one
-      userQuestions = new Question({
-        userId,
-        username,
-        questions: [{ question, answer, tags: tags || [] }],
-      });
+    if (!userQuestionDoc) {
+      userQuestionDoc = new Question({ userId, username, questions });
     } else {
-      // If document exists, push new question into the array
-      userQuestions.questions.push({ question, answer, tags: tags || [] });
+      userQuestionDoc.questions.push(...questions); // Add new question inside the array
     }
 
-    await userQuestions.save();
-
-    return res.status(201).json({ message: "Question added successfully", userQuestions });
+    await userQuestionDoc.save();
+    res.status(201).json({ message: "Question added successfully!", questions: userQuestionDoc.questions });
   } catch (error) {
-    console.error("Error posting question:", error);
-    return res.status(500).json({ message: "Error posting question", error: error.message });
+    console.error("Error posting question:", error.message);
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 };
 
-// Retrieve all users with their questions
+// Get all public questions
 const getAllQuestions = async (req, res) => {
   try {
-    const questions = await Question.find();
-    res.status(200).json(questions);
+    const users = await Question.aggregate([
+      { $unwind: "$questions" },  // Deconstruct the questions array
+      { $match: { "questions.isPublic": true } },  // Filter for public questions
+      {
+        $project: {
+          _id: "$questions._id",
+          username: 1,
+          userId: 1,
+          question: "$questions.question",
+          answer: "$questions.answer",
+          likes: { $size: "$questions.likes" },
+          tags: "$questions.tags",
+          createdAt: "$questions.createdAt"
+        }
+      }
+    ]);
+
+    res.status(200).json(users);
   } catch (error) {
     console.error("Error fetching questions:", error.message);
     res.status(500).json({ message: "Error fetching questions", error: error.message });
   }
 };
 
-// Get all questions by a specific user
+// Like a question
+const likeQuestion = async (req, res) => {
+  try {
+    console.log("🔹 Received Like Request for Question ID:", req.params.questionId);
+
+    const { questionId } = req.params;
+    const { userId } = req.body; // User ID from authentication middleware
+
+    console.log("🔹 User ID:", userId);
+    
+    if (!userId) {
+      console.error("❌ Unauthorized: No user ID provided");
+      return res.status(401).json({ message: "Unauthorized: Please log in" });
+    }
+
+    // Find the document that contains this question
+    const questionDoc = await Question.findOne({ "questions._id": questionId });
+
+    console.log("🔍 Fetched Question Document:", questionDoc);
+
+    if (!questionDoc) {
+      console.error("❌ Question document not found for ID:", questionId);
+      return res.status(404).json({ message: "Question not found" });
+    }
+
+    // Extract the specific question
+    const question = questionDoc.questions.find(q => q._id.toString() === questionId);
+    
+    console.log("🔍 Extracted Question:", question);
+
+    if (!question) {
+      console.error("❌ Question not found inside document:", questionId);
+      return res.status(404).json({ message: "Question data missing" });
+    }
+
+    const isLiked = question.likes.includes(userId);
+    
+    console.log("👍 Is Liked Already:", isLiked);
+
+    // Update using $[elem] to target the right question inside the array
+    const updateQuery = isLiked
+      ? { $pull: { "questions.$[elem].likes": userId } }  // Unlike
+      : { $addToSet: { "questions.$[elem].likes": userId } }; // Like
+
+    console.log("🔄 Update Query:", updateQuery);
+
+    const updatedDoc = await Question.findOneAndUpdate(
+      { "questions._id": questionId },
+      updateQuery,
+      { 
+        new: true,
+        arrayFilters: [{ "elem._id": questionId }] // ✅ Ensure correct question is updated
+      }
+    );
+
+    console.log("✅ Updated Document:", updatedDoc);
+
+    if (!updatedDoc) {
+      console.error("❌ Failed to update like status");
+      return res.status(500).json({ message: "Failed to update like status" });
+    }
+
+    // Get the updated likes count
+    const updatedLikes = updatedDoc.questions.find(q => q._id.toString() === questionId).likes.length;
+
+    console.log("🎉 Updated Likes Count:", updatedLikes);
+
+    res.json({ message: "Like updated", likes: updatedLikes });
+
+  } catch (error) {
+    console.error("❌ Error liking question:", error);
+    res.status(500).json({ message: "Error liking question", error: error.message });
+  }
+};
+
+// Toggle public/private visibility of a question
+const toggleVisibility = async (req, res) => {
+  try {
+    const { questionId } = req.params;
+
+    const userQuestion = await Question.findOne({ "questions._id": questionId });
+
+    if (!userQuestion) return res.status(404).json({ message: "Question not found" });
+
+    const questionToUpdate = userQuestion.questions.id(questionId);
+    questionToUpdate.isPublic = !questionToUpdate.isPublic;
+
+    await userQuestion.save();
+
+    res.json({
+      message: `Visibility updated to ${questionToUpdate.isPublic ? "Public" : "Private"}`,
+      question: questionToUpdate,
+    });
+  } catch (error) {
+    console.error("Error toggling visibility:", error.message);
+    res.status(500).json({ message: "Error toggling visibility", error: error.message });
+  }
+};
+
+// Add an answer to a question
+const addAnswer = async (req, res) => {
+  try {
+    const { questionId } = req.params;
+    const { userId, username, answer } = req.body;
+
+    if (!userId || !username || !answer) {
+      return res.status(400).json({ message: "userId, username, and answer are required" });
+    }
+
+    const userQuestions = await Question.findOne({ "questions._id": questionId });
+
+    if (!userQuestions) return res.status(404).json({ message: "Question not found" });
+
+    const question = userQuestions.questions.id(questionId);
+    if (!question) return res.status(404).json({ message: "Question not found" });
+
+    question.answers.push({ userId, username, answer });
+
+    await userQuestions.save();
+    res.status(201).json({ message: "Answer added successfully", question });
+  } catch (error) {
+    console.error("Error adding answer:", error.message);
+    res.status(500).json({ message: "Error adding answer", error: error.message });
+  }
+};
+
 const getQuestionsByUserId = async (req, res) => {
   try {
     const { userId } = req.params;
+    const { viewerId } = req.query; // Optional: Viewer ID to check private access
+
     const userQuestions = await Question.findOne({ userId });
 
     if (!userQuestions) return res.status(404).json({ message: "No questions found for this user" });
 
-    res.status(200).json(userQuestions);
+    // If the viewer is the owner, show all questions. Otherwise, show only public ones.
+    const filteredQuestions =
+      viewerId === userId
+        ? userQuestions.questions // Owner sees all
+        : userQuestions.questions.filter(q => q.isPublic); // Others see only public questions
+
+    res.status(200).json({ userId, username: userQuestions.username, questions: filteredQuestions });
   } catch (error) {
     console.error("Error fetching questions:", error.message);
     res.status(500).json({ message: "Error fetching questions", error: error.message });
   }
 };
 
-// Update a specific question
 const updateQuestion = async (req, res) => {
   try {
     const { userId, questionId } = req.params;
-    const { question, answer, tags } = req.body;
+    const { question, answer, tags, isPublic } = req.body;
 
     const userQuestions = await Question.findOne({ userId });
     if (!userQuestions) return res.status(404).json({ message: "User not found" });
@@ -76,16 +218,16 @@ const updateQuestion = async (req, res) => {
     if (question) questionToUpdate.question = question;
     if (answer) questionToUpdate.answer = answer;
     if (tags) questionToUpdate.tags = tags;
+    if (typeof isPublic !== "undefined") questionToUpdate.isPublic = isPublic; // Toggle visibility
 
     await userQuestions.save();
-    res.json({ message: "Question updated successfully", userQuestions });
+    res.json({ message: "Question updated successfully", question: questionToUpdate });
   } catch (error) {
     console.error("Error updating question:", error.message);
     res.status(500).json({ message: "Error updating question", error: error.message });
   }
 };
 
-// Delete a specific question
 const deleteQuestion = async (req, res) => {
   try {
     const { userId, questionId } = req.params;
@@ -93,8 +235,13 @@ const deleteQuestion = async (req, res) => {
     const userQuestions = await Question.findOne({ userId });
     if (!userQuestions) return res.status(404).json({ message: "User not found" });
 
-    // Filter out the question to delete
+    // Remove the question
+    const initialLength = userQuestions.questions.length;
     userQuestions.questions = userQuestions.questions.filter(q => q._id.toString() !== questionId);
+
+    if (userQuestions.questions.length === initialLength) {
+      return res.status(404).json({ message: "Question not found" });
+    }
 
     await userQuestions.save();
     res.json({ message: "Question deleted successfully" });
@@ -104,11 +251,64 @@ const deleteQuestion = async (req, res) => {
   }
 };
 
+const getTrendingQuestions = async (req, res) => {
+  try {
+    const questions = await Question.aggregate([
+      { $unwind: "$questions" }, // Flatten the questions array
+      { $match: { "questions.isPublic": true } }, // Only public questions
+      { $sort: { "questions.likes": -1 } }, // Sort by likes (descending)
+      { $limit: 10 }, // Limit to top 10
+      {
+        $project: { // Only return necessary fields
+          _id: "$questions._id",
+          question: "$questions.question",
+          answer: "$questions.answer",
+          likes: "$questions.likes",
+          username: 1,
+          userId: 1,
+          tags: "$questions.tags",
+          time: "$Questions.createdAt"
+        }
+      }
+    ]);
+
+    res.status(200).json(questions);
+  } catch (error) {
+    console.error("Error fetching trending questions:", error.message);
+    res.status(500).json({ message: "Error fetching trending questions", error: error.message });
+  }
+};
+
+
+const getPrivateQuestions = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const userQuestions = await Question.findOne({ userId });
+
+    if (!userQuestions) return res.status(404).json({ message: "No private questions found" });
+
+    const privateQuestions = userQuestions.questions.filter(q => !q.isPublic); // Filter private questions
+
+    res.status(200).json({ userId, username: userQuestions.username, questions: privateQuestions });
+  } catch (error) {
+    console.error("Error fetching private questions:", error.message);
+    res.status(500).json({ message: "Error fetching private questions", error: error.message });
+  }
+};
+
+
+
 // Export all functions
 module.exports = {
   createQuestion,
   getAllQuestions,
+  likeQuestion,
+  toggleVisibility,
+  addAnswer,
   getQuestionsByUserId,
   updateQuestion,
   deleteQuestion,
+  getTrendingQuestions,
+  getPrivateQuestions,
 };

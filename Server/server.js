@@ -52,7 +52,7 @@ app.use(passport.session());
 // ✅ API Routes
 app.use("/api/auth", authRoute);
 app.use("/api/oauth", oauthRoute);
-app.use("/api/ques-post", quesRoute);
+app.use("/api/ques", quesRoute);
 app.use("/api/friends", friendRoute);
 app.use("/api/chat", messageRoute); 
 app.use("/api/otp", otpRoutes);

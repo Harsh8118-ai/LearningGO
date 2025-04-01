@@ -21,12 +21,13 @@ export default function App() {
   }, []);
   return (
     <Router>
-      <div className="flex h-screen min-h-screen bg-gray-100">
+      <div className="bg-gray-950">
+      <div className="flex h-screen min-h-screen">
         {/* ✅ Sidebar with scroll support */}
         <Sidebar />
 
         {/* ✅ Main Content Wrapper */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto bg-gray-950 mx-5">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/questions" element={<Questions />} />
@@ -41,7 +42,7 @@ export default function App() {
             <Route path="/chat/:friendId" element={<ChatPage />} />
           </Routes>
         </div>
-      </div>
+      </div></div>
     </Router>
   );
 }

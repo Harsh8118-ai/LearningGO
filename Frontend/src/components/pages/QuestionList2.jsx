@@ -1,95 +1,96 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useAuth } from "../store/UseAuth"; // Authentication hook
-import { FaUser, FaCommentDots, FaThumbsUp } from "react-icons/fa";
+import { QuestionModal } from "./QuestionModal";
 import { Button } from "../ui/button";
-import { useNavigate } from "react-router-dom";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { useAuth } from "../store/UseAuth";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export function QuestionList2() {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [questions, setQuestions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  const fetchQuestions = useCallback(async () => {
-    if (!user || !user._id) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      const response = await fetch(`${BASE_URL}/ques-post/${user._id}`);
-      if (!response.ok) throw new Error("Failed to fetch questions");
-
-      const data = await response.json();
-      setQuestions(data.questions || []);
-    } catch (error) {
-      setError("No questions found. Please add one.");
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
+  const [selectedCategory, setSelectedCategory] = useState("trending");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
 
   useEffect(() => {
     fetchQuestions();
-  }, [fetchQuestions]);
+  }, [selectedCategory]);
+
+  const fetchQuestions = async () => {
+    let endpoint = "/ques/trending";
+    if (selectedCategory === "public") endpoint = "/ques/public";
+    if (selectedCategory === "private") endpoint = `/ques/private/${user?._id}`;
+
+    try {
+      const response = await fetch(`${BASE_URL}${endpoint}`);
+      const data = await response.json();
+      setQuestions(data);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+    }
+  };
+
+  const handleLike = async (questionId) => {
+    try {
+      await fetch(`${BASE_URL}/ques/like/${questionId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      fetchQuestions();
+    } catch (error) {
+      console.error("Error liking question:", error);
+    }
+  };
+
+  const handleDelete = async (questionId) => {
+    try {
+      await fetch(`${BASE_URL}/ques/delete/${questionId}`, { method: "DELETE" });
+      fetchQuestions();
+    } catch (error) {
+      console.error("Error deleting question:", error);
+    }
+  };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <div className="flex gap-3 border-b pb-2">
-        <button className="px-4 py-2 bg-gray-800 text-white rounded-lg">Recent Questions</button>
-        <button className="px-4 py-2 text-gray-400">Trending Discussions</button>
-        <button className="px-4 py-2 text-gray-400">Friend Activity</button>
-      </div>
-
-      {loading ? (
-        <p className="text-center text-gray-400 mt-6">Loading questions...</p>
-      ) : error ? (
-        <p className="text-center text-red-400 mt-6">{error}</p>
-      ) : (
-        <div className="mt-6 space-y-4">
-          {questions.map((q) => (
-            <motion.div
-              key={q._id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-gray-900 p-4 rounded-lg shadow-md border border-gray-700"
-            >
-              <div className="flex items-center gap-2 text-gray-300 text-sm">
-                <FaUser className="text-gray-500" />
-                <span>{q.username || "Anonymous"}</span>
-                <span className="text-gray-500">• {new Date(q.createdAt).toLocaleTimeString()}</span>
+    <div className="bg-black rounded-lg p-6 w-full">
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h2 className="text-white text-xl font-medium">How do I implement authentication in Next.js?</h2>
+          <div className="flex items-center mt-2">
+            <div className="flex items-center">
+              <div className="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center text-white text-xs">
+                A
               </div>
-
-              <h3 className="text-lg font-semibold text-white mt-2">{q.question}</h3>
-
-              <div className="flex items-center gap-4 text-gray-400 text-sm mt-2">
-                <span className="flex items-center gap-1">
-                  <FaCommentDots /> {q.comments?.length || 0} answers
-                </span>
-                <span className="flex items-center gap-1">
-                  <FaThumbsUp /> {q.likes || 0} likes
-                </span>
-              </div>
-
-              <div className="mt-3 flex justify-between items-center">
-                <span className="bg-purple-700 text-white px-3 py-1 text-xs rounded-full">
-                  {q.tags[0] || "General"}
-                </span>
-                <Button
-                  onClick={() => navigate(`/question/${q._id}`)}
-                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-1 rounded-md"
-                >
-                  View
-                </Button>
-              </div>
-            </motion.div>
-          ))}
+              <span className="text-gray-400 text-sm ml-2">Alex Johnson</span>
+            </div>
+            <span className="text-gray-500 text-sm ml-2">• 2 hours ago</span>
+          </div>
         </div>
-      )}
+        <div className="bg-purple-900 text-purple-400 px-3 py-1 rounded-md text-sm font-medium">
+          Web Development
+        </div>
+      </div>
+      <div className="flex items-center text-gray-400 text-sm">
+        <div className="flex items-center mr-4">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+          </svg>
+          <span>12 answers</span>
+        </div>
+        <div className="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905a3.61 3.61 0 01-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+          </svg>
+          <span>34 likes</span>
+        </div>
+        <div className="ml-auto">
+          <button className="bg-purple-600 text-white px-4 py-1 rounded-full text-sm">
+            View
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
