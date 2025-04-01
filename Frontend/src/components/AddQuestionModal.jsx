@@ -16,7 +16,7 @@ export function AddQuestionModal({ open, setOpen, newQuestion, setNewQuestion })
   const [isPublic, setIsPublic] = useState(true); // Default to public
 
   const addQuestion = async () => {
-    if (!newQuestion.title.trim() || !newQuestion.answer.trim()) {
+    if (!newQuestion.title.trim() ) {
       setError("Question title and answer cannot be empty!");
       return;
     }
@@ -130,7 +130,7 @@ export function AddQuestionModal({ open, setOpen, newQuestion, setNewQuestion })
           <Button 
             onClick={addQuestion} 
             className="w-full bg-[#4CAF50] text-white transition-all duration-300"
-            disabled={loading || !newQuestion.title.trim() || !newQuestion.answer.trim()}
+            disabled={loading || !newQuestion.title.trim()}
           >
             {loading ? "Saving..." : "Save"}
           </Button>

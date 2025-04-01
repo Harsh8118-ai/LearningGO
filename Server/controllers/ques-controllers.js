@@ -7,7 +7,7 @@ const createQuestion = async (req, res) => {
 
     const { userId, username, questions } = req.body;
 
-    if (!userId || !questions || questions.length === 0 || !questions[0].question || !questions[0].answer) {
+    if (!userId || !questions || questions.length === 0 || !questions[0].question ) {
       return res.status(400).json({ message: "UserId, Question, and Answer are required!" });
     }
 

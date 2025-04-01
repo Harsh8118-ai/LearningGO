@@ -3,7 +3,7 @@ const { Schema, model } = require("mongoose");
 const questionSchema = new Schema(
   {
     question: { type: String, required: true },
-    answer: { type: String, required: true },
+    answer: { type: String },
     tags: { type: [String], default: [] },
     likes: { type: [Schema.Types.ObjectId], ref: "User", default: [] }, // Change from number to array
     isPublic: { type: Boolean, default: true },

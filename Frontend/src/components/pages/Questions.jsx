@@ -2,19 +2,14 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import AOS from "aos";
 import "aos/dist/aos.css"; // Import AOS styles
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
 import { AddQuestionModal } from "../../components/AddQuestionModal";
 import { FaSearch, FaPlus } from "react-icons/fa"; // Icons
-import { QuestionList } from "./QuestionList";
-import { QuestionList2 } from "./QuestionList2";
 import ToggleQues from "./Questions/ToggleQues";
 
 export default function Questions() {
   const [open, setOpen] = useState(false);
   const [questions, setQuestions] = useState([]);
   const [newQuestion, setNewQuestion] = useState({ title: "", answer: "", tags: "" });
-  const [showSearch, setShowSearch] = useState(false);
 
   useEffect(() => {
     AOS.init({ duration: 800 }); // Initialize AOS
