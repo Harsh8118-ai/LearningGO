@@ -1,4 +1,5 @@
 const Question = require("../models/ques-model");
+const mongoose = require("mongoose");
 
 // Create or Add a Question (User can also provide an answer while posting)
 const createQuestion = async (req, res) => {
@@ -163,22 +164,31 @@ const addAnswer = async (req, res) => {
       return res.status(400).json({ message: "userId, username, and answer are required" });
     }
 
-    const userQuestions = await Question.findOne({ "questions._id": questionId });
+    // Find the user document that contains the question
+    const userQuestion = await Question.findOne({ "questions._id": questionId });
 
-    if (!userQuestions) return res.status(404).json({ message: "Question not found" });
+    if (!userQuestion) {
+      return res.status(404).json({ message: "Question not found" });
+    }
 
-    const question = userQuestions.questions.id(questionId);
-    if (!question) return res.status(404).json({ message: "Question not found" });
+    // Find the specific question inside the user's questions array
+    const question = userQuestion.questions.id(questionId);
+    if (!question) {
+      return res.status(404).json({ message: "Question not found" });
+    }
 
-    question.answers.push({ userId, username, answer });
+    // Add answer to the question
+    question.answers.push({ userId, username, text: answer });
 
-    await userQuestions.save();
-    res.status(201).json({ message: "Answer added successfully", question });
+    await userQuestion.save();
+
+    res.status(201).json({ message: "Answer added successfully", answers: question.answers });
   } catch (error) {
     console.error("Error adding answer:", error.message);
     res.status(500).json({ message: "Error adding answer", error: error.message });
   }
 };
+
 
 const getQuestionsByUserId = async (req, res) => {
   try {
@@ -297,6 +307,33 @@ const getPrivateQuestions = async (req, res) => {
   }
 };
 
+const getAnswers = async (req, res) => {
+  try {
+    const { questionId } = req.params;
+
+    // ✅ Ensure `questionId` is converted to ObjectId correctly
+    const objectId = new mongoose.Types.ObjectId(questionId);
+
+    // ✅ Find the document that contains the question inside `questions` array
+    const parentDoc = await Question.findOne({ "questions._id": objectId });
+
+    if (!parentDoc) {
+      return res.status(404).json({ message: "Question not found" });
+    }
+
+    // ✅ Extract the specific question from the array
+    const question = parentDoc.questions.find(q => q._id.equals(objectId));
+
+    if (!question) {
+      return res.status(404).json({ message: "Question not found" });
+    }
+
+    res.json({ answers: question.answers || [] });
+  } catch (error) {
+    console.error("Error fetching answers:", error.message);
+    res.status(500).json({ message: "Error fetching answers", error: error.message });
+  }
+};
 
 
 // Export all functions
@@ -311,4 +348,5 @@ module.exports = {
   deleteQuestion,
   getTrendingQuestions,
   getPrivateQuestions,
+  getAnswers,
 };

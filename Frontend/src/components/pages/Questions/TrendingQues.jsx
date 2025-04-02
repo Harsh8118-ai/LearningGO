@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import QuestionCard from "./QuestionCard";
 import { useAuth } from "../../store/UseAuth";
+import { QuestionModal } from "../QuestionModal";
+
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -9,6 +11,7 @@ const TrendingQues = () => {
     const [trendingQuestions, setTrendingQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [selectedQuestion, setSelectedQuestion] = useState(null);
 
     useEffect(() => {
         const fetchTrendingQuestions = async () => {
@@ -31,6 +34,7 @@ const TrendingQues = () => {
                 })) : [];
 
                 setTrendingQuestions(formattedData);
+                fetchAnswersCount(formattedData);
                 setLoading(false);
 
             } catch (error) {
@@ -57,7 +61,7 @@ const TrendingQues = () => {
 
         try {
             const token = localStorage.getItem("token");
-            
+
             const response = await fetch(`${BASE_URL}/ques/${questionId}/like`, {
                 method: "POST",
                 headers: {
@@ -92,34 +96,21 @@ const TrendingQues = () => {
         }
     };
 
-    const handleAnswer = async (questionId) => {
-        if (!user) return alert("Please log in to answer questions");
-
-        const answerText = prompt("Enter your answer:");
-        if (!answerText) return;
-
+    const fetchAnswersCount = async (questions) => {
         try {
-            const response = await fetch(`${BASE_URL}/ques/${questionId}/answer`, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ userId: user._id, username: user.name, answer: answerText }),
-            });
-
-            if (!response.ok) throw new Error("Failed to post answer");
-
-            const data = await response.json();
-
-            setTrendingQuestions((prev) =>
-                prev.map((q) => (q._id === questionId ? { ...q, answers: [...q.answers, data.answer] } : q))
-            );
-
+          const updatedQuestions = await Promise.all(
+            questions.map(async (q) => {
+              const answerResponse = await fetch(`${BASE_URL}/ques/${q._id}/answer`);
+              const answerData = await answerResponse.json();
+              return { ...q, answers: answerData.answers?.length || 0 };
+            })
+          );
+      
+          setTrendingQuestions(updatedQuestions); // Update state with correct answer counts
         } catch (error) {
-            console.error("Error answering question:", error);
+          console.error("Error fetching answers count:", error);
         }
-    };
+      };
 
     if (loading) return <p className="text-gray-400">Loading...</p>;
     if (error) return <p className="text-red-500">{error}</p>;
@@ -127,28 +118,39 @@ const TrendingQues = () => {
     return (
         <div className="space-y-4 py-4">
             {trendingQuestions?.length > 0 ? (
-                trendingQuestions.map((q) => {
+                trendingQuestions.map((q, index) => {
                     // Check if user has liked this question
                     const isLiked = user && Array.isArray(q.likedByUser) && q.likedByUser.includes(user._id);
 
                     return (
                         <QuestionCard
-                            key={q._id}
+                            key={`${q._id}-${index}`}
                             title={q.question}
                             author={q.username}
                             time={new Date(q.createdAt).toLocaleDateString()}
-                            answers={q.answers?.length || 0}
+                            answers={q.answers || 0}
                             likes={typeof q.likes === 'number' ? q.likes : 0}
                             tags={q.tags || "General"}
                             tagColor={"purple"}
-                            isLiked={isLiked} // Pass the liked status to QuestionCard
+                            isLiked={isLiked}
                             onLike={() => likeQuestion(q._id, isLiked)}
-                            onAnswer={() => handleAnswer(q._id)}
+                            onAnswer={() => setSelectedQuestion(q)}
                         />
                     );
                 })
             ) : (
-                <p className="text-gray-400">No trending questions available.</p>
+                <p className="text-gray-400">No public questions available.</p>
+            )}
+
+            {/* Question Modal */}
+            {selectedQuestion && (
+                <QuestionModal
+                    open={selectedQuestion !== null}
+                    setOpen={(value) => {
+                        if (!value) setSelectedQuestion(null);
+                    }}
+                    question={selectedQuestion}
+                />
             )}
         </div>
     );

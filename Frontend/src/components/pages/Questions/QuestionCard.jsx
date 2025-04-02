@@ -1,11 +1,11 @@
 import React from "react";
 
-const QuestionCard = ({ title, author, time, answers, likes, tags, tagColor, onLike, onAnswer }) => {
+const QuestionCard = ({ title, author, time, answers, likes, tags, onLike, onAnswer }) => {
   return (
     <div className="w-full bg-gray-950 rounded-lg p-6 mb-4 border border-gray-800">
       <div className="flex justify-between items-start mb-4">
         <h2 className="text-white text-xl font-medium">{title}</h2>
-        <div className={`bg-gray-800 text-purple-600 px-3  rounded-md text-2xl font-bold` }>
+        <div className="bg-gray-800 text-purple-600 px-3 rounded-md text-2xl font-bold">
           {tags}
         </div>
       </div>
@@ -38,7 +38,9 @@ const QuestionCard = ({ title, author, time, answers, likes, tags, tagColor, onL
         </div>
 
         <div className="ml-auto">
-          <button className="bg-purple-600 text-white px-4 py-1 rounded-full text-sm">View</button>
+          <button className="bg-purple-600 text-white px-4 py-1 rounded-full text-sm" onClick={onAnswer}>
+            View
+          </button>
         </div>
       </div>
     </div>

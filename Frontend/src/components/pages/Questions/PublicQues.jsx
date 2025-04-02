@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import QuestionCard from "./QuestionCard";
 import { useAuth } from "../../store/UseAuth";
+import { QuestionModal } from "../QuestionModal";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -9,6 +10,7 @@ const PublicQues = () => {
   const [PublicQuestions, setPublicQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
 
     const fetchPublicQuestions = async () => {
       try {
@@ -26,11 +28,13 @@ const PublicQues = () => {
 
         const data = await response.json();
         console.log("Fetched public questions:", data);
+        
 
         if (data.length === 0) {
           setPublicQuestions([{ _id: "1", question: "Test Question", likes: 0, username: "Admin", createdAt: new Date(), answers: [] }]);
         } else {
           setPublicQuestions(data);
+          fetchAnswersCount(data);
         }
       } catch (error) {
         console.error("Error fetching public questions:", error);
@@ -39,8 +43,6 @@ const PublicQues = () => {
         setLoading(false);
       }
     };
-
-
 
 
   useEffect(() => {
@@ -129,36 +131,23 @@ const PublicQues = () => {
     }
   };
 
-  const handleAnswer = async (questionId) => {
-    if (!user) return alert("Please log in to answer questions");
-
-    const answerText = prompt("Enter your answer:");
-    if (!answerText) return;
-
+  const fetchAnswersCount = async (questions) => {
     try {
-      const token = localStorage.getItem("token");
-      console.log("Token being sent:", token);
-
-      const response = await fetch(`${BASE_URL}/ques/${questionId}/answer`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId: user._id, username: user.name, answer: answerText }),
-      });
-
-      if (!response.ok) throw new Error("Failed to post answer");
-
-      const data = await response.json();
-
-      setPublicQuestions((prev) =>
-        prev.map((q) => (q._id === questionId ? { ...q, answers: [...q.answers, data.answer] } : q))
+      const updatedQuestions = await Promise.all(
+        questions.map(async (q) => {
+          const answerResponse = await fetch(`${BASE_URL}/ques/${q._id}/answer`);
+          const answerData = await answerResponse.json();
+          return { ...q, answers: answerData.answers?.length || 0 };
+        })
       );
+  
+      setPublicQuestions(updatedQuestions); // Update state with correct answer counts
     } catch (error) {
-      console.error("Error answering question:", error);
+      console.error("Error fetching answers count:", error);
     }
   };
+  
+
 
   if (loading) return <p className="text-gray-400">Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
@@ -175,22 +164,34 @@ const PublicQues = () => {
               title={q.question}
               author={q.username}
               time={new Date(q.createdAt).toLocaleDateString()}
-              answers={q.answers?.length || 0}
+              answers={q.answers || 0}
               likes={typeof q.likes === 'number' ? q.likes : 0}
               tags={q.tags || "General"}
               tagColor={"purple"}
               isLiked={isLiked}
               onLike={() => likeQuestion(q._id, isLiked)}
-              onAnswer={() => handleAnswer(q._id)}
+              onAnswer={() => setSelectedQuestion(q)}
             />
           );
         })
       ) : (
         <p className="text-gray-400">No public questions available.</p>
       )}
+
+      {/* Question Modal */}
+      {selectedQuestion && (
+        <QuestionModal
+        open={selectedQuestion !== null}
+        setOpen={(value) => {
+          if (!value) setSelectedQuestion(null);
+        }}
+        question={selectedQuestion}
+      />
+      
+      )}
     </div>
   );
 };
 
 export default PublicQues;
-``
+

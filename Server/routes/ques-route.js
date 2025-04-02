@@ -33,4 +33,8 @@ router.put("/:userId/:questionId/toggle-visibility", quesController.toggleVisibi
 // Add an answer to a question
 router.post("/:questionId/answer", quesController.addAnswer);
 
+// Get all answers for a specific question
+router.get("/:questionId/answer", quesController.getAnswers);
+
+
 module.exports = router;

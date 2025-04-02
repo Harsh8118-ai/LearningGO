@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import MyQuestionCard from "./MyQuestionCard";
 
+const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+
 const MyQues = ({ userId }) => {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +16,9 @@ const MyQues = ({ userId }) => {
       return;
     }
     try {
-      const response = await axios.get(`http://localhost:5000/api/ques/user/${userId}`);
+      const response = await axios.get(`${BASE_URL}/ques/user/${userId}`, {
+        params: { viewerId: userId }, // Pass viewerId in the request
+      });
       setQuestions(response.data.questions || []);
     } catch (error) {
       console.error("Error fetching questions:", error);
@@ -21,7 +26,6 @@ const MyQues = ({ userId }) => {
       setLoading(false);
     }
   };
-  
   
 
   useEffect(() => {
