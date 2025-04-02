@@ -277,7 +277,7 @@ const getTrendingQuestions = async (req, res) => {
           username: 1,
           userId: 1,
           tags: "$questions.tags",
-          time: "$Questions.createdAt"
+          createdAt: "$questions.createdAt"
         }
       }
     ]);
