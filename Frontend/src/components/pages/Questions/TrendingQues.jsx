@@ -2,6 +2,14 @@ import React, { useEffect, useState } from "react";
 import QuestionCard from "./QuestionCard";
 import { useAuth } from "../../store/UseAuth";
 import { QuestionModal } from "../QuestionModal";
+import SearchBar from "./SearchBar";
+import CategoryFilter from "./CategoryFilter";
+import { FaSearch, FaPlus } from "react-icons/fa"; // Icons
+import { AddQuestionModal } from "../../AddQuestionModal";
+import { motion } from "framer-motion";
+import AOS from "aos";
+import "aos/dist/aos.css"; // Import AOS styles
+
 
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
@@ -12,6 +20,21 @@ const TrendingQues = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedQuestion, setSelectedQuestion] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState("All Categories");
+    const [open, setOpen] = useState(false);
+    const [newQuestion, setNewQuestion] = useState({ title: "", answer: "", tags: "" });
+
+    useEffect(() => {
+        AOS.init({ duration: 800 }); // Initialize AOS
+    }, []);
+
+    const addQuestion = () => {
+        setQuestions([...questions, newQuestion]);
+        setNewQuestion({ title: "", answer: "", tags: "" });
+        setOpen(false);
+    };
+
 
     useEffect(() => {
         const fetchTrendingQuestions = async () => {
@@ -46,6 +69,13 @@ const TrendingQues = () => {
 
         fetchTrendingQuestions();
     }, []);
+
+    const filteredQuestions = trendingQuestions.filter(
+        (q) =>
+            q.question.toLowerCase().includes(searchTerm.toLowerCase()) &&
+            (selectedCategory === "All Categories" ||
+                (Array.isArray(q.tags) && q.tags.includes(selectedCategory)))
+    );
 
     const likeQuestion = async (questionId, isLiked) => {
         if (!user) return alert("Please log in to like questions");
@@ -98,27 +128,50 @@ const TrendingQues = () => {
 
     const fetchAnswersCount = async (questions) => {
         try {
-          const updatedQuestions = await Promise.all(
-            questions.map(async (q) => {
-              const answerResponse = await fetch(`${BASE_URL}/ques/${q._id}/answer`);
-              const answerData = await answerResponse.json();
-              return { ...q, answers: answerData.answers?.length || 0 };
-            })
-          );
-      
-          setTrendingQuestions(updatedQuestions); // Update state with correct answer counts
+            const updatedQuestions = await Promise.all(
+                questions.map(async (q) => {
+                    const answerResponse = await fetch(`${BASE_URL}/ques/${q._id}/answer`);
+                    const answerData = await answerResponse.json();
+                    return { ...q, answers: answerData.answers?.length || 0 };
+                })
+            );
+
+            setTrendingQuestions(updatedQuestions); // Update state with correct answer counts
         } catch (error) {
-          console.error("Error fetching answers count:", error);
+            console.error("Error fetching answers count:", error);
         }
-      };
+    };
 
     if (loading) return <p className="text-gray-400">Loading...</p>;
     if (error) return <p className="text-red-500">{error}</p>;
 
     return (
         <div className="space-y-4 py-4">
-            {trendingQuestions?.length > 0 ? (
-                trendingQuestions.map((q, index) => {
+
+            {/* ✅ Search + Category Filter */}
+            <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4 w-full">
+                {/* 🔍 Search Bar (Full width on small screens, shrinks on large screens) */}
+                <div className="flex-1 min-w-[200px]">
+                    <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+                </div>
+
+                {/* ➕ Add Question Button (Responsive, scales well) */}
+                <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setOpen(true)}
+                    className="gradient text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg flex items-center gap-2 shadow-lg transition-all duration-300"
+                >
+                    <FaPlus className="text-sm sm:text-base" /> Add Question
+                </motion.button>
+            </div>
+
+            <CategoryFilter selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
+
+
+
+            {filteredQuestions.length > 0 ? (
+        filteredQuestions.map((q, index) => {
                     // Check if user has liked this question
                     const isLiked = user && Array.isArray(q.likedByUser) && q.likedByUser.includes(user._id);
 
@@ -142,17 +195,24 @@ const TrendingQues = () => {
                 <p className="text-gray-400">No public questions available.</p>
             )}
 
-            {/* Question Modal */}
             {selectedQuestion && (
-                <QuestionModal
-                    open={selectedQuestion !== null}
-                    setOpen={(value) => {
-                        if (!value) setSelectedQuestion(null);
-                    }}
-                    question={selectedQuestion}
-                />
-            )}
-        </div>
+                    <QuestionModal
+                      open={!!selectedQuestion}
+                      setOpen={() => setSelectedQuestion(null)}
+                      question={selectedQuestion}
+                    />
+                  )}
+            
+                  {/* ➕ Add Question Modal */}
+                  <AddQuestionModal
+                    open={open}
+                    setOpen={setOpen}
+                    newQuestion={newQuestion}
+                    setNewQuestion={setNewQuestion}
+                    addQuestion={addQuestion}
+                  />
+                </div>
+            
     );
 };
 

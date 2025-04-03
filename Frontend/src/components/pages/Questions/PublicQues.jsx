@@ -2,6 +2,15 @@ import React, { useEffect, useState } from "react";
 import QuestionCard from "./QuestionCard";
 import { useAuth } from "../../store/UseAuth";
 import { QuestionModal } from "../QuestionModal";
+import SearchBar from "./SearchBar";
+import CategoryFilter from "./CategoryFilter";
+import { FaSearch, FaPlus } from "react-icons/fa"; // Icons
+import { AddQuestionModal } from "../../AddQuestionModal";
+import { motion } from "framer-motion";
+import AOS from "aos";
+import "aos/dist/aos.css"; // Import AOS styles
+
+
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -11,38 +20,20 @@ const PublicQues = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [open, setOpen] = useState(false);
+  const [newQuestion, setNewQuestion] = useState({ title: "", answer: "", tags: "" });
 
-    const fetchPublicQuestions = async () => {
-      try {
-        const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
-        const response = await fetch(`${BASE_URL}/ques/public`, {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-          },
-        });
+  useEffect(() => {
+    AOS.init({ duration: 800 }); // Initialize AOS
+  }, []);
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch public questions");
-        }
-
-        const data = await response.json();
-        console.log("Fetched public questions:", data);
-        
-
-        if (data.length === 0) {
-          setPublicQuestions([{ _id: "1", question: "Test Question", likes: 0, username: "Admin", createdAt: new Date(), answers: [] }]);
-        } else {
-          setPublicQuestions(data);
-          fetchAnswersCount(data);
-        }
-      } catch (error) {
-        console.error("Error fetching public questions:", error);
-        setError("Failed to load questions. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  const addQuestion = () => {
+    setQuestions([...questions, newQuestion]);
+    setNewQuestion({ title: "", answer: "", tags: "" });
+    setOpen(false);
+  };
 
 
   useEffect(() => {
@@ -54,6 +45,49 @@ const PublicQues = () => {
       setLoading(false); // Stop loading if no user
     }
   }, [user]);
+
+
+  const fetchPublicQuestions = async () => {
+    try {
+      const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
+      const response = await fetch(`${BASE_URL}/ques/public`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch public questions");
+      }
+
+      const data = await response.json();
+      console.log("Fetched public questions:", data);
+
+
+      if (data.length === 0) {
+        setPublicQuestions([{ _id: "1", question: "Test Question", likes: 0, username: "Admin", createdAt: new Date(), answers: [] }]);
+      } else {
+        setPublicQuestions(data);
+        fetchAnswersCount(data);
+      }
+    } catch (error) {
+      console.error("Error fetching public questions:", error);
+      setError("Failed to load questions. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredQuestions = PublicQuestions.filter(
+    (q) =>
+      q.question.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (selectedCategory === "All Categories" ||
+        (Array.isArray(q.tags) && q.tags.includes(selectedCategory)))
+  );
+
+
+
 
 
   const likeQuestion = async (questionId, isLiked) => {
@@ -140,13 +174,13 @@ const PublicQues = () => {
           return { ...q, answers: answerData.answers?.length || 0 };
         })
       );
-  
-      setPublicQuestions(updatedQuestions); // Update state with correct answer counts
+
+      setPublicQuestions(updatedQuestions); 
     } catch (error) {
       console.error("Error fetching answers count:", error);
     }
   };
-  
+
 
 
   if (loading) return <p className="text-gray-400">Loading...</p>;
@@ -154,41 +188,64 @@ const PublicQues = () => {
 
   return (
     <div className="space-y-4 py-4">
-      {PublicQuestions?.length > 0 ? (
-        PublicQuestions.map((q, index) => {
-          const isLiked = user && Array.isArray(q.likedByUser) && q.likedByUser.includes(user._id);
 
-          return (
-            <QuestionCard
-              key={`${q._id}-${index}`}
-              title={q.question}
-              author={q.username}
-              time={new Date(q.createdAt).toLocaleDateString()}
-              answers={q.answers || 0}
-              likes={typeof q.likes === 'number' ? q.likes : 0}
-              tags={q.tags || "General"}
-              tagColor={"purple"}
-              isLiked={isLiked}
-              onLike={() => likeQuestion(q._id, isLiked)}
-              onAnswer={() => setSelectedQuestion(q)}
-            />
-          );
-        })
+      {/* ✅ Search + Category Filter */}
+      <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4 w-full">
+        {/* 🔍 Search Bar (Full width on small screens, shrinks on large screens) */}
+        <div className="flex-1 min-w-[200px]">
+          <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        </div>
+
+        {/* ➕ Add Question Button (Responsive, scales well) */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setOpen(true)}
+          className="gradient text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg flex items-center gap-2 shadow-lg transition-all duration-300"
+        >
+          <FaPlus className="text-sm sm:text-base" /> Add Question
+        </motion.button>
+      </div>
+
+      <CategoryFilter selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
+
+
+      {filteredQuestions.length > 0 ? (
+        filteredQuestions.map((q, index) => (
+          <QuestionCard
+            key={`${q._id}-${index}`}
+            title={q.question}
+            author={q.username}
+            time={new Date(q.createdAt).toLocaleDateString()}
+            answers={q.answers || 0}
+            likes={q.likes || 0}
+            tags={q.tags || ["General"]}
+            tagColor="purple"
+            isLiked={user && q.likedByUser?.includes(user._id)}
+            onLike={() => likeQuestion(q._id, user && q.likedByUser?.includes(user._id))}
+            onAnswer={() => setSelectedQuestion(q)}
+          />
+        ))
       ) : (
-        <p className="text-gray-400">No public questions available.</p>
+        <p className="text-gray-400">No questions match your search.</p>
       )}
 
-      {/* Question Modal */}
       {selectedQuestion && (
         <QuestionModal
-        open={selectedQuestion !== null}
-        setOpen={(value) => {
-          if (!value) setSelectedQuestion(null);
-        }}
-        question={selectedQuestion}
-      />
-      
+          open={!!selectedQuestion}
+          setOpen={() => setSelectedQuestion(null)}
+          question={selectedQuestion}
+        />
       )}
+
+      {/* ➕ Add Question Modal */}
+      <AddQuestionModal
+        open={open}
+        setOpen={setOpen}
+        newQuestion={newQuestion}
+        setNewQuestion={setNewQuestion}
+        addQuestion={addQuestion}
+      />
     </div>
   );
 };
