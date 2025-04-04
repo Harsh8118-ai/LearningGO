@@ -3,7 +3,7 @@ import { useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import { FiHome, FiBook, FiUsers, FiSettings, FiLogOut } from "react-icons/fi";
 import { RiQuestionAnswerLine, RiBookmarkLine, RiAddLine } from "react-icons/ri";
-import { useAuth } from "../components/store/UseAuth"; 
+import { useAuth } from "../store/UseAuth"; 
 import { motion, AnimatePresence } from "framer-motion";
 
 export function Sidebar() {

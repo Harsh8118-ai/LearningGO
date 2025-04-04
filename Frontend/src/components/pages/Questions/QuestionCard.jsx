@@ -1,14 +1,33 @@
 import React from "react";
 
-const QuestionCard = ({ title, author, time, answers, likes, tags, onLike, onAnswer }) => {
+const QuestionCard = ({ title, author, time, answers, likes, tags, onLike, onAnswer, answerPreview }) => {
+
   return (
     <div className="w-full bg-gray-950 rounded-lg p-6 mb-4 border border-gray-800">
       <div className="flex justify-between items-start mb-4">
         <h2 className="text-white text-xl font-medium">{title}</h2>
-        <div className="bg-gray-800 text-purple-600 px-3 rounded-md text-2xl font-bold">
-          {tags}
+        <div className="flex flex-wrap gap-2">
+          {(Array.isArray(tags) ? tags : []).map((tag, index) => (
+            <span
+              key={index}
+              className="bg-gray-800 text-purple-400 px-3 py-1 rounded-md text-sm"
+            >
+              {tag}
+            </span>
+          ))}
         </div>
       </div>
+
+      {/* ✅ Corrected Answer Preview */}
+      {answerPreview && (
+        <div>
+          <p className="hidden sm:block text-gray-400 text-sm w-3/4  mb-3">
+            {answerPreview.substring(0, 250)}...
+          </p>
+          <p className="sm:hidden text-gray-400 text-sm w-3/4  mb-3">
+            {answerPreview.substring(0, 80)}...
+          </p></div>
+      )}
 
       <div className="flex items-center mt-2 mb-4">
         <div className="flex items-center">

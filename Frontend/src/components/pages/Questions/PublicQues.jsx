@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import QuestionCard from "./QuestionCard";
 import { useAuth } from "../../store/UseAuth";
-import { QuestionModal } from "../QuestionModal";
+import { QuestionModal } from "./QuestionModal";
 import SearchBar from "./SearchBar";
 import CategoryFilter from "./CategoryFilter";
 import { FaSearch, FaPlus } from "react-icons/fa"; // Icons
-import { AddQuestionModal } from "../../AddQuestionModal";
+import { AddQuestionModal } from "./AddQuestionModal";
 import { motion } from "framer-motion";
 import AOS from "aos";
 import "aos/dist/aos.css"; // Import AOS styles
@@ -21,7 +21,7 @@ const PublicQues = () => {
   const [error, setError] = useState(null);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [open, setOpen] = useState(false);
   const [newQuestion, setNewQuestion] = useState({ title: "", answer: "", tags: "" });
 
@@ -38,10 +38,8 @@ const PublicQues = () => {
 
   useEffect(() => {
     if (user) {
-      console.log("User is authenticated:", user);  // Log the user object
       fetchPublicQuestions();
     } else {
-      console.log("User is not authenticated.");
       setLoading(false); // Stop loading if no user
     }
   }, [user]);
@@ -62,7 +60,7 @@ const PublicQues = () => {
       }
 
       const data = await response.json();
-      console.log("Fetched public questions:", data);
+      
 
 
       if (data.length === 0) {
@@ -82,7 +80,7 @@ const PublicQues = () => {
   const filteredQuestions = PublicQuestions.filter(
     (q) =>
       q.question.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (selectedCategory === "All Categories" ||
+      (selectedCategory === "All" ||
         (Array.isArray(q.tags) && q.tags.includes(selectedCategory)))
   );
 
@@ -170,16 +168,23 @@ const PublicQues = () => {
       const updatedQuestions = await Promise.all(
         questions.map(async (q) => {
           const answerResponse = await fetch(`${BASE_URL}/ques/${q._id}/answer`);
+          if (!answerResponse.ok) throw new Error(`Failed to fetch answers for ${q._id}`);
+  
           const answerData = await answerResponse.json();
-          return { ...q, answers: answerData.answers?.length || 0 };
+          
+          return { 
+            ...q, 
+            answers: answerData.answers || []  // Ensure `answers` is always an array
+          };
         })
       );
-
+  
       setPublicQuestions(updatedQuestions); 
     } catch (error) {
       console.error("Error fetching answers count:", error);
     }
   };
+  
 
 
 
@@ -217,7 +222,7 @@ const PublicQues = () => {
             title={q.question}
             author={q.username}
             time={new Date(q.createdAt).toLocaleDateString()}
-            answers={q.answers || 0}
+            answerPreview={q.answers?.length > 0 ? q.answers[0]?.text : "No answers yet."}
             likes={q.likes || 0}
             tags={q.tags || ["General"]}
             tagColor="purple"

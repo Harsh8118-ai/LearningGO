@@ -55,7 +55,7 @@ const Login = () => {
 
       console.log("✅ Login Success:", data);
       localStorage.setItem("token", data.token);
-      localStorage.setItem("userId", data.user.id); 
+      localStorage.setItem("userId", data.user.id);
       console.log("✅ Stored userId:", data.user.id);
       console.log("✅ Stored Token:", data.token);
       navigate("/profile");
@@ -77,20 +77,21 @@ const Login = () => {
 
   return (
     <motion.div
-      className="flex justify-center items-center min-h-screen gradient-bg p-6"
+      className="flex justify-center items-center min-h-screen bg-gray-950
+      
+      p-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
       <motion.div
-        className="w-full max-w-md p-8 gradient-bg
- rounded-lg shadow-lg"
+        className="w-full max-w-md p-8 bg-gray-950 rounded-lg shadow-lg border border-gray-500"
         initial={{ y: 50 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, type: "spring" }}
       >
-        <h2 className="text-2xl font-semibold text-gray-800 text-center">Login</h2>
-        <p className="text-gray-500 text-center mb-6">Sign in to your account</p>
+        <h2 className="text-2xl font-semibold text-gray-400 text-center">Welcome back</h2>
+        <p className="text-gray-500 text-center mb-6">Enter your credentials to access your account</p>
 
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
@@ -98,28 +99,28 @@ const Login = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Mobile Number */}
           <div>
-            <label className="block text-gray-700">Mobile Number</label>
+            <label className="block text-gray-200">Mobile Number</label>
             <input
               type="text"
               name="mobileNumber"
               value={formData.mobileNumber}
               onChange={handleChange}
               placeholder="Enter your mobile number"
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border border-gray-300 text-gray-200 hover:bg-gray-900 hover:scale-105 rounded-xl bg-gray-950 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-gray-700">Password</label>
+            <label className="block text-gray-200">Password</label>
             <input
               type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
               placeholder="Enter your password"
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-3 border border-gray-300 text-gray-200 hover:bg-gray-900 hover:scale-105 rounded-xl bg-gray-950 focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
@@ -127,9 +128,7 @@ const Login = () => {
           {/* Submit Button */}
           <motion.button
             type="submit"
-            className="w-full gradient
- text-white py-3 rounded-md hover:brightness-90
- transition-all"
+            className="w-full gradient text-white py-3 rounded-md hover:brightness-90 transition-all"
             whileTap={{ scale: 0.95 }}
             disabled={loading}
           >
@@ -137,39 +136,37 @@ const Login = () => {
           </motion.button>
         </form>
 
-        {/* 🔹 OR Divider */}
+        {/* 🔹 OAuth Login Buttons */}
         <div className="my-4 flex items-center">
-          <hr className="flex-grow border-gray-300" />
-          <span className="px-2 text-gray-500">OR</span>
-          <hr className="flex-grow border-gray-300" />
+          <hr className="flex-grow border-gray-700" />
+          <span className="px-2 text-gray-400 text-sm">OR CONTINUE WITH</span>
+          <hr className="flex-grow border-gray-700" />
         </div>
 
-        {/* 🔹 OAuth Login Buttons */}
-        <motion.button
-          onClick={() => handleOAuthLogin("google")}
-          className="w-full gradient-2
- text-white py-3 rounded-md hover:brightness-90
- transition-all flex items-center justify-center space-x-2 mb-3"
-          whileTap={{ scale: 0.95 }}
-        >
-          
-          <FaGoogle className="w-5 h-5" /> <span>Continue with Google</span>
-        </motion.button>
+        <div className="flex justify-center space-x-3">
+          <motion.button
+            onClick={() => handleOAuthLogin("github")}
+            className="flex items-center space-x-2 px-4 py-2 bg-[#0f0f0f] border border-gray-700 text-white rounded-md hover:bg-gray-800 transition-all"
+            whileTap={{ scale: 0.95 }}
+          >
+            <FaGithub className="w-5 h-5" />
+            <span>GitHub</span>
+          </motion.button>
 
-        <motion.button
-          onClick={() => handleOAuthLogin("github")}
-          className="w-full bg-gray-800 text-white py-3 rounded-md hover:bg-gray-900 transition-all flex items-center justify-center space-x-2"
-          whileTap={{ scale: 0.95 }}
-        >
-          
-          <FaGithub className="w-5 h-5" /> 
-          <span>Continue with GitHub</span>
-        </motion.button>
+          <motion.button
+            onClick={() => handleOAuthLogin("google")}
+            className="flex items-center space-x-2 px-4 py-2 bg-[#0f0f0f] border border-gray-700 text-white rounded-md hover:bg-gray-800 transition-all"
+            whileTap={{ scale: 0.95 }}
+          >
+            <FaGoogle className="w-5 h-5" />
+            <span>Google</span>
+          </motion.button>
+        </div>
 
         {/* 🔹 Signup Link */}
         <p className="text-gray-500 text-center mt-4">
           Don't have an account?{" "}
-          <Link to="/signup" className="text-blue-500 hover:underline">
+          <Link to="/signup" className="text-green-500 hover:underline">
             Sign up here
           </Link>
         </p>

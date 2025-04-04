@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../ui/dialog";
-import { Button } from "../ui/button";
-import { useAuth } from "../store/UseAuth";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../ui/dialog";
+import { Button } from "../../ui/button";
+import { useAuth } from "../../store/UseAuth";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 

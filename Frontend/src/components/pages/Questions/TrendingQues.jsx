@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import QuestionCard from "./QuestionCard";
 import { useAuth } from "../../store/UseAuth";
-import { QuestionModal } from "../QuestionModal";
+import { QuestionModal } from "./QuestionModal";
 import SearchBar from "./SearchBar";
 import CategoryFilter from "./CategoryFilter";
 import { FaSearch, FaPlus } from "react-icons/fa"; // Icons
-import { AddQuestionModal } from "../../AddQuestionModal";
+import { AddQuestionModal } from "./AddQuestionModal";
 import { motion } from "framer-motion";
 import AOS from "aos";
 import "aos/dist/aos.css"; // Import AOS styles
@@ -21,7 +21,7 @@ const TrendingQues = () => {
     const [error, setError] = useState(null);
     const [selectedQuestion, setSelectedQuestion] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("All Categories");
+    const [selectedCategory, setSelectedCategory] = useState("All");
     const [open, setOpen] = useState(false);
     const [newQuestion, setNewQuestion] = useState({ title: "", answer: "", tags: "" });
 
@@ -45,7 +45,7 @@ const TrendingQues = () => {
                 }
 
                 const data = await response.json();
-                console.log("Fetched trending questions:", data);
+                
 
                 // Ensure each question has the correct data structure
                 const formattedData = Array.isArray(data) ? data.map(q => ({
@@ -73,7 +73,7 @@ const TrendingQues = () => {
     const filteredQuestions = trendingQuestions.filter(
         (q) =>
             q.question.toLowerCase().includes(searchTerm.toLowerCase()) &&
-            (selectedCategory === "All Categories" ||
+            (selectedCategory === "All" ||
                 (Array.isArray(q.tags) && q.tags.includes(selectedCategory)))
     );
 
@@ -132,7 +132,7 @@ const TrendingQues = () => {
                 questions.map(async (q) => {
                     const answerResponse = await fetch(`${BASE_URL}/ques/${q._id}/answer`);
                     const answerData = await answerResponse.json();
-                    return { ...q, answers: answerData.answers?.length || 0 };
+                    return { ...q, answers: answerData.answers?.length || 0, answer: answerData.answers || [] };
                 })
             );
 
@@ -188,6 +188,7 @@ const TrendingQues = () => {
                             isLiked={isLiked}
                             onLike={() => likeQuestion(q._id, isLiked)}
                             onAnswer={() => setSelectedQuestion(q)}
+                            answerPreview={q.answer?.length > 0 ? q.answer[0]?.text : "No answers yet."}
                         />
                     );
                 })

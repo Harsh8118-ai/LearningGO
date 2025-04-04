@@ -18,6 +18,15 @@ export default {
         
         background: "hsl(var(--background))", // Add this line
     foreground: "hsl(var(--foreground))", // Ensure foreground is also added
+
+    primary_home: {
+      DEFAULT: "hsl(var(--primary))",
+      foreground: "hsl(var(--primary-foreground))",
+    },
+    secondary: {
+      DEFAULT: "hsl(var(--secondary))",
+      foreground: "hsl(var(--secondary-foreground))",
+    },
     
         color: {
           1: "#AC6AFF",

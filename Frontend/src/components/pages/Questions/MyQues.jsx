@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import MyQuestionCard from "./MyQuestionCard";
-import { QuestionModal } from "../QuestionModal";
+import { QuestionModal } from "./QuestionModal";
 import SearchBar from "./SearchBar";
 import CategoryFilter from "./CategoryFilter";
 import { FaSearch, FaPlus } from "react-icons/fa"; // Icons
-import { AddQuestionModal } from "../../AddQuestionModal";
+import { AddQuestionModal } from "./AddQuestionModal";
 import { motion } from "framer-motion";
 import AOS from "aos";
 import "aos/dist/aos.css"; // Import AOS styles
@@ -18,20 +18,20 @@ const MyQues = ({ userId }) => {
   const [loading, setLoading] = useState(true);
   const [selectedQuestion, setSelectedQuestion] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState("All Categories");
-    const [open, setOpen] = useState(false);
-    const [newQuestion, setNewQuestion] = useState({ title: "", answer: "", tags: "" });
-  
-    useEffect(() => {
-      AOS.init({ duration: 800 }); // Initialize AOS
-    }, []);
-  
-    const addQuestion = () => {
-      setQuestions([...questions, newQuestion]);
-      setNewQuestion({ title: "", answer: "", tags: "" });
-      setOpen(false);
-    };
-  
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [open, setOpen] = useState(false);
+  const [newQuestion, setNewQuestion] = useState({ title: "", answer: "", tags: "" });
+
+  useEffect(() => {
+    AOS.init({ duration: 800 }); // Initialize AOS
+  }, []);
+
+  const addQuestion = () => {
+    setQuestions([...questions, newQuestion]);
+    setNewQuestion({ title: "", answer: "", tags: "" });
+    setOpen(false);
+  };
+
 
   // Fetch questions from the backend
   const fetchQuestions = async () => {
@@ -43,6 +43,8 @@ const MyQues = ({ userId }) => {
       const response = await axios.get(`${BASE_URL}/ques/user/${userId}`, {
         params: { viewerId: userId }, // Pass viewerId in the request
       });
+      console.log("Fetched Questions:", response.data.questions); // Debug log
+
       setQuestions(response.data.questions || []);
     } catch (error) {
       console.error("Error fetching questions:", error);
@@ -50,19 +52,25 @@ const MyQues = ({ userId }) => {
       setLoading(false);
     }
   };
-  
+
 
   useEffect(() => {
     fetchQuestions();
   }, []);
 
-  const filteredQuestions = questions.filter(
-    (question) =>
+  const filteredQuestions = questions.filter((question) => {
+    const tagsArray = Array.isArray(question.tags)
+      ? question.tags
+      : typeof question.tags === "string"
+        ? question.tags.split(",").map((tag) => tag.trim())
+        : [];
+
+    return (
       question.question.toLowerCase().includes(searchTerm.toLowerCase()) &&
-      (selectedCategory === "All Categories" ||
-        (Array.isArray(question.tags) && question.tags.includes(selectedCategory)))
-  );
-  
+      (selectedCategory === "All" || tagsArray.includes(selectedCategory))
+    );
+  });
+
 
   // Edit a question
   const handleEdit = async (questionId, updatedData) => {
@@ -78,7 +86,7 @@ const MyQues = ({ userId }) => {
   const handleDelete = async (questionId) => {
     try {
       await axios.delete(`http://localhost:5000/api/ques/${userId}/${questionId}`);
-      setQuestions(questions.filter((q) => q._id !== questionId));
+      setQuestions(questions.filter((q) => question._id !== questionId));
     } catch (error) {
       console.error("Error deleting question:", error);
     }
@@ -103,6 +111,8 @@ const MyQues = ({ userId }) => {
       console.error("Error toggling visibility:", error);
     }
   };
+
+  
 
   if (loading) return <p>Loading questions...</p>;
 
@@ -137,7 +147,7 @@ const MyQues = ({ userId }) => {
             time={new Date(question.createdAt).toLocaleDateString()}
             answers={question.answers.length}
             likes={question.likes.length}
-            tag={question.tags?.[0] || "General"}
+            tag={Array.isArray(question.tags) ? question.tags : (typeof question.tags === "string" ? question.tags.split(",").map(tag => tag.trim()) : ["General"])}
             tagColor="purple"
             isPublic={question.isPublic}
             onEdit={(updatedData) => handleEdit(question._id, updatedData)}
@@ -145,6 +155,7 @@ const MyQues = ({ userId }) => {
             onDelete={() => handleDelete(question._id)}
             onLike={() => handleLike(question._id)}
             onAnswer={() => setSelectedQuestion(question)}
+            answerPreview={question.answers?.length > 0 ? question.answers[0]?.text : "No answers yet."}
           />
         ))
       ) : (

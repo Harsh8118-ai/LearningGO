@@ -1,45 +1,55 @@
 import React, { useState } from "react";
 
-const MyQuestionCard = ({ title, author, time, answers, likes, tag, isPublic, onEdit, onToggleVisibility, onDelete, onAnswer }) => {
+const MyQuestionCard = ({ title, author, time, answers, likes, tag, isPublic, onEdit, onToggleVisibility, onDelete, onAnswer, answerPreview }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
   return (
     <div className="w-full bg-gray-950 rounded-lg p-6 mb-4 border border-gray-800 relative">
-      
+
       {/* Header Section */}
       <div className="flex justify-between items-start mb-4">
         <h2 className="text-white text-xl font-medium">{title}</h2>
         <div className="flex items-center gap-2">
-          <div className="bg-gray-800 text-purple-600 px-3 py-1 rounded-md text-sm font-medium">
-            {tag}
+          <div className="flex flex-wrap gap-2">
+            {(Array.isArray(tag) ? tag : [tag]).map((t, index) => (
+              <span
+                key={index}
+                className="bg-gray-800 text-purple-400 px-3 py-1 rounded-md text-sm font-medium"
+              >
+                {t}
+              </span>
+            ))}
           </div>
+
+
+
           {/* Dropdown Button */}
           <button className="text-gray-400 hover:text-white" onClick={toggleMenu}>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
             </svg>
           </button>
-          
+
           {/* Dropdown Menu */}
           {menuOpen && (
             <div className="absolute right-6 top-16 w-40 bg-gray-900 border border-gray-700 rounded-md shadow-lg z-10">
               <ul className="py-1">
                 <li>
-                  <button onClick={() => { onEdit(); setMenuOpen(false); }} 
+                  <button onClick={() => { onEdit(); setMenuOpen(false); }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800">
                     Edit Question
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => { onToggleVisibility(); setMenuOpen(false); }} 
+                  <button onClick={() => { onToggleVisibility(); setMenuOpen(false); }}
                     className="w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800">
                     Make {isPublic ? "Private" : "Public"}
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => { onDelete(); setMenuOpen(false); }} 
+                  <button onClick={() => { onDelete(); setMenuOpen(false); }}
                     className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-800">
                     Delete
                   </button>
@@ -49,6 +59,17 @@ const MyQuestionCard = ({ title, author, time, answers, likes, tag, isPublic, on
           )}
         </div>
       </div>
+
+      {/* Answer Preview */}
+      {answerPreview && (
+        <div>
+          <p className="hidden sm:block text-gray-400 text-sm w-3/4  mb-3">
+            {answerPreview.substring(0, 250)}...
+          </p>
+          <p className="sm:hidden text-gray-400 text-sm w-3/4  mb-3">
+            {answerPreview.substring(0, 80)}...
+          </p></div>
+      )}
 
       {/* Author & Time Section */}
       <div className="flex items-center mt-2 mb-4">

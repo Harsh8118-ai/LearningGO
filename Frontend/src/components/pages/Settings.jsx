@@ -91,11 +91,11 @@ const Settings = () => {
 
 
   return (
-    <div className="min-h-screen flex flex-col items-center p-5 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+    <div className="min-h-screen flex flex-col items-center p-5 bg-gray-950  text-gray-900 dark:text-white">
       <h2 className="text-2xl font-bold mb-5">Settings</h2>
 
       {/* Profile Section */}
-      <div className="w-full max-w-md gradient-bg
+      <div className="w-full max-w-md bg-gray-950
  dark:bg-gray-800 p-5 rounded-lg shadow-md">
         <h3 className="text-lg font-semibold mb-3">Profile Information</h3>
 
@@ -158,8 +158,8 @@ const Settings = () => {
 
       {/* Edit Modals */}
       {isModalOpen && isModalOpen !== "password" && (
-        <div className="fixed inset-0 gradient-bg
- bg-opacity-50 flex justify-center items-center ">
+        <div className="fixed my-auto h-screen
+ bg-opacity-60 -inset-y-full bg-gray-950  w-full flex justify-center items-center ">
           <div className="gradient
  dark:bg-gray-800 p-5 rounded-lg w-96 shadow-lg">
             <h3 className="text-lg font-semibold mb-3">Edit {isModalOpen}</h3>
@@ -167,7 +167,8 @@ const Settings = () => {
               type="text"
               value={newValue}
               onChange={(e) => setNewValue(e.target.value)}
-              className="w-full p-2 mb-3 border dark:border-gray-700 rounded text-gray-900"
+              placeholder={`Enter ${isModalOpen}`}
+              className="w-full p-2 mb-3 border gradient brightness-90  dark:border-gray-700 rounded text-gray-900"
             />
             <div className="flex justify-between">
               <button onClick={() => handleUpdateProfile(isModalOpen)} className="gradient

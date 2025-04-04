@@ -5,7 +5,6 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FaGoogle, FaGithub } from "react-icons/fa";
 
-
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export default function Signup() {
@@ -93,39 +92,105 @@ export default function Signup() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen gradient-bg brightness-105">
+    <div className="flex items-center justify-center h-screen bg-gray-950 brightness-105">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
       <motion.div
-        className="gradient-bg
- p-8 rounded-lg shadow-md w-96 brightness-95"
+        className="bg-gray-950
+ p-8 rounded-3xl shadow-md w-96 brightness-95 border border-gray-500"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
         <motion.h2
-          className="text-2xl font-bold mb-4 text-center"
+          className="text-2xl font-bold mb-2 text-left text-gray-400"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.3 }}
         >
-          Signup
+          Create an Account
         </motion.h2>
+        <motion.h6
+          className="text-sm font-semibold mb-5 text-left text-gray-400"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}>Enter your information to create an account</motion.h6>
 
         {error && <p className="text-red-500 text-sm mb-3 text-center">{error}</p>}
 
         <form onSubmit={handleSubmit}>
-          <input type="text" name="username" placeholder="Username" value={form.username} onChange={handleChange} className="border p-2 rounded w-full mb-3" required />
-          <input type="email" name="email" placeholder="Email" value={form.email} onChange={handleChange} className="border p-2 rounded w-full mb-3" required />
-          <input type="text" name="mobileNumber" placeholder="Mobile Number" value={form.mobileNumber} onChange={handleChange} className="border p-2 rounded w-full mb-3" required />
-          <input type="password" name="password" placeholder="Password" value={form.password} onChange={handleChange} className="border p-2 rounded w-full mb-3" required />
-          
-          {otpSent && (
-            <input type="text" name="otp" placeholder="Enter OTP" value={form.otp} onChange={handleChange} className="border p-2 rounded w-full mb-3" required />
-          )}
-          
+          <div className="flex flex-col space-y-3">
+            <div className="flex flex-col">
+              <label className="text-gray-200 text-sm mb-1">Username</label>
+              <input
+                type="text"
+                name="username"
+                // placeholder="Enter your username"
+                value={form.username}
+                onChange={handleChange}
+                className="border p-2 rounded-xl border-gray-500 hover:bg-gray-900 hover:scale-105 bg-gray-950 text-gray-300 w-full"
+                required
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label className="text-gray-200 text-sm mb-1">Email</label>
+              <input
+                type="email"
+                name="email"
+                placeholder="abc@example.com"
+                value={form.email}
+                onChange={handleChange}
+                className="border p-2 rounded-xl border-gray-500 hover:bg-gray-900 hover:scale-105 bg-gray-950 text-gray-300 w-full"
+                required
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label className="text-gray-200 text-sm mb-1">Mobile Number</label>
+              <input
+                type="text"
+                name="mobileNumber"
+                // placeholder="Enter your mobile number"
+                value={form.mobileNumber}
+                onChange={handleChange}
+                className="border p-2 rounded-xl border-gray-500 hover:bg-gray-900 hover:scale-105 bg-gray-950 text-gray-300 w-full"
+                required
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label className="text-gray-200 text-sm mb-1">Password</label>
+              <input
+                type="password"
+                name="password"
+                // placeholder="Enter your password"
+                value={form.password}
+                onChange={handleChange}
+                className="border p-2 rounded-xl border-gray-500 hover:bg-gray-900 hover:scale-105 bg-gray-950 text-gray-300 w-full"
+                required
+              />
+            </div>
+
+            {otpSent && (
+              <div className="flex flex-col">
+                <label className="text-gray-200 text-sm mb-1">Enter OTP</label>
+                <input
+                  type="text"
+                  name="otp"
+                  // placeholder="Enter OTP"
+                  value={form.otp}
+                  onChange={handleChange}
+                  className="border p-2 rounded-xl border-gray-500 hover:bg-gray-900 hover:scale-105 bg-gray-950 text-gray-300 w-full"
+                  required
+                />
+              </div>
+            )}
+          </div>
+
+
           {!otpSent ? (
             <button type="button" className="gradient
- text-white p-2 rounded w-full hover:brightness-90 hover:scale-105 transition-all
+ text-white p-2 rounded w-full hover:brightness-90 mt-4 hover:scale-105 transition-all
 " onClick={sendOtp}>
               Send OTP
             </button>
@@ -138,36 +203,37 @@ export default function Signup() {
           )}
         </form>
 
-        {/* 🔹 OR Divider */}
-        <div className="my-4 flex items-center">
-          <hr className="flex-grow border-gray-300" />
-          <span className="px-2 text-gray-500">OR</span>
-          <hr className="flex-grow border-gray-300" />
-        </div>
+      
 
         {/* 🔹 OAuth Login Buttons */}
-        <motion.button
-          onClick={() => handleOAuthLogin("google")}
-          className="w-full gradient
- text-white py-3 rounded-md hover:brightness-90
- transition-all flex items-center justify-center space-x-2 mb-3 hover:scale-105 "
-          whileTap={{ scale: 0.95 }}
-        >
-          
-          <FaGoogle className="w-5 h-5" /> <span>Continue with Google</span>
-        </motion.button>
+        <div className="my-4 flex items-center">
+          <hr className="flex-grow border-gray-700" />
+          <span className="px-2 text-gray-400 text-sm">OR CONTINUE WITH</span>
+          <hr className="flex-grow border-gray-700" />
+        </div>
 
-        <motion.button
-          onClick={() => handleOAuthLogin("github")}
-          className="w-full bg-gray-800 text-white py-3 rounded-md hover:bg-gray-900 transition-all flex items-center justify-center space-x-2 hover:scale-105 "
-          whileTap={{ scale: 0.95 }}
-        >
-          
-          <FaGithub className="w-5 h-5" /> 
-          <span>Continue with GitHub</span>
-        </motion.button>
+        <div className="flex justify-center space-x-3">
+          <motion.button
+            onClick={() => handleOAuthLogin("github")}
+            className="flex items-center space-x-2 px-4 py-2 bg-[#0f0f0f] border border-gray-700 text-white rounded-md hover:bg-gray-800 transition-all"
+            whileTap={{ scale: 0.95 }}
+          >
+            <FaGithub className="w-5 h-5" />
+            <span>GitHub</span>
+          </motion.button>
 
-        <p className="text-center text-sm mt-4">
+          <motion.button
+            onClick={() => handleOAuthLogin("google")}
+            className="flex items-center space-x-2 px-4 py-2 bg-[#0f0f0f] border border-gray-700 text-white rounded-md hover:bg-gray-800 transition-all"
+            whileTap={{ scale: 0.95 }}
+          >
+            <FaGoogle className="w-5 h-5" />
+            <span>Google</span>
+          </motion.button>
+        </div>
+
+
+        <p className="text-center text-sm mt-4 text-gray-400">
           Already have an account? <Link to="/login" className="text-green-500 hover:underline">Login</Link>
         </p>
       </motion.div>

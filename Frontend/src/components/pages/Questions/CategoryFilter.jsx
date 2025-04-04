@@ -1,14 +1,24 @@
 import React from "react";
 
 const categories = [
-  "All Categories",
-  "Web Development",
-  "Mobile Development",
-  "Data Science",
-  "DevOps",
-  "UI/UX Design",
-  "Intro"
+  "All", 
+  "General",
+  "JavaScript", 
+  "React", 
+  "Node.js", 
+  "Python", 
+  "Machine Learning", 
+  "AI & Deep Learning", 
+  "Cybersecurity", 
+  "Blockchain", 
+  "Cloud Computing", 
+  "Game Development", 
+  "AR/VR", 
+  "IoT", 
+  "Database Management", 
+  "Software Testing",
 ];
+
 
 const CategoryFilter = ({ selectedCategory, setSelectedCategory }) => {
   return (
