@@ -36,7 +36,7 @@ const AuthSuccess = () => {
           } else {
             navigate("/profile");
           }
-        }, 500); // Give some delay for state update
+        }, 500);
       } catch (error) {
         console.error("❌ Invalid Token:", error);
         localStorage.removeItem("token");

@@ -8,7 +8,7 @@ import { FaSearch, FaPlus } from "react-icons/fa"; // Icons
 import { AddQuestionModal } from "./AddQuestionModal";
 import { motion } from "framer-motion";
 import AOS from "aos";
-import "aos/dist/aos.css"; // Import AOS styles
+import "aos/dist/aos.css";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -23,7 +23,7 @@ const MyQues = ({ userId }) => {
   const [newQuestion, setNewQuestion] = useState({ title: "", answer: "", tags: "" });
 
   useEffect(() => {
-    AOS.init({ duration: 800 }); // Initialize AOS
+    AOS.init({ duration: 800 });
   }, []);
 
   const addQuestion = () => {
@@ -41,9 +41,9 @@ const MyQues = ({ userId }) => {
     }
     try {
       const response = await axios.get(`${BASE_URL}/ques/user/${userId}`, {
-        params: { viewerId: userId }, // Pass viewerId in the request
+        params: { viewerId: userId },
       });
-      console.log("Fetched Questions:", response.data.questions); // Debug log
+      console.log("Fetched Questions:", response.data.questions);
 
       setQuestions(response.data.questions || []);
     } catch (error) {
@@ -76,7 +76,7 @@ const MyQues = ({ userId }) => {
   const handleEdit = async (questionId, updatedData) => {
     try {
       await axios.put(`http://localhost:5000/api/ques/${userId}/${questionId}`, updatedData);
-      fetchQuestions(); // Refresh list
+      fetchQuestions();
     } catch (error) {
       console.error("Error editing question:", error);
     }

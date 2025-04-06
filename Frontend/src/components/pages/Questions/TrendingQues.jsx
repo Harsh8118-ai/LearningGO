@@ -4,11 +4,11 @@ import { useAuth } from "../../store/UseAuth";
 import { QuestionModal } from "./QuestionModal";
 import SearchBar from "./SearchBar";
 import CategoryFilter from "./CategoryFilter";
-import { FaSearch, FaPlus } from "react-icons/fa"; // Icons
+import { FaSearch, FaPlus } from "react-icons/fa";
 import { AddQuestionModal } from "./AddQuestionModal";
 import { motion } from "framer-motion";
 import AOS from "aos";
-import "aos/dist/aos.css"; // Import AOS styles
+import "aos/dist/aos.css";
 
 
 
@@ -26,7 +26,7 @@ const TrendingQues = () => {
     const [newQuestion, setNewQuestion] = useState({ title: "", answer: "", tags: "" });
 
     useEffect(() => {
-        AOS.init({ duration: 800 }); // Initialize AOS
+        AOS.init({ duration: 800 });
     }, []);
 
     const addQuestion = () => {
@@ -136,7 +136,7 @@ const TrendingQues = () => {
                 })
             );
 
-            setTrendingQuestions(updatedQuestions); // Update state with correct answer counts
+            setTrendingQuestions(updatedQuestions);
         } catch (error) {
             console.error("Error fetching answers count:", error);
         }
@@ -150,6 +150,7 @@ const TrendingQues = () => {
 
             {/* ✅ Search + Category Filter */}
             <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4 w-full">
+                
                 {/* 🔍 Search Bar (Full width on small screens, shrinks on large screens) */}
                 <div className="flex-1 min-w-[200px]">
                     <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />

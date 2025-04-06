@@ -1,7 +1,7 @@
 const OTP = require("../models/otp-model");
 const nodemailer = require("nodemailer");
 const otpGenerator = require("otp-generator");
-require("dotenv").config(); // Load environment variables
+require("dotenv").config();
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -10,14 +10,11 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 });
-
-// 📌 Generate & Send OTP  
-// 📌 Generate & Send OTP  
+ 
 const sendOTP = async (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ message: "Email is required" });
   
-    // 🛑 Purane OTPs delete karo pehle
     await OTP.deleteMany({ email });
   
     const otp = otpGenerator.generate(4, { 
@@ -53,7 +50,7 @@ const verifyOTP = async (req, res) => {
 
     if (!otpRecord) return res.status(400).json({ message: "Invalid or expired OTP" });
 
-    await OTP.deleteOne({ _id: otpRecord._id }); // Delete OTP after verification
+    await OTP.deleteOne({ _id: otpRecord._id });
     res.status(200).json({ message: "OTP verified successfully!" });
   } catch (error) {
     res.status(500).json({ message: "Error verifying OTP", error });

@@ -4,11 +4,11 @@ import { useAuth } from "../../store/UseAuth";
 import { QuestionModal } from "./QuestionModal";
 import SearchBar from "./SearchBar";
 import CategoryFilter from "./CategoryFilter";
-import { FaSearch, FaPlus } from "react-icons/fa"; // Icons
+import { FaSearch, FaPlus } from "react-icons/fa"; 
 import { AddQuestionModal } from "./AddQuestionModal";
 import { motion } from "framer-motion";
 import AOS from "aos";
-import "aos/dist/aos.css"; // Import AOS styles
+import "aos/dist/aos.css";
 
 
 
@@ -26,7 +26,7 @@ const PublicQues = () => {
   const [newQuestion, setNewQuestion] = useState({ title: "", answer: "", tags: "" });
 
   useEffect(() => {
-    AOS.init({ duration: 800 }); // Initialize AOS
+    AOS.init({ duration: 800 });
   }, []);
 
   const addQuestion = () => {
@@ -40,14 +40,14 @@ const PublicQues = () => {
     if (user) {
       fetchPublicQuestions();
     } else {
-      setLoading(false); // Stop loading if no user
+      setLoading(false);
     }
   }, [user]);
 
 
   const fetchPublicQuestions = async () => {
     try {
-      const token = localStorage.getItem("token"); // Assuming the token is stored in localStorage
+      const token = localStorage.getItem("token");
       const response = await fetch(`${BASE_URL}/ques/public`, {
         method: "GET",
         headers: {
@@ -95,6 +95,7 @@ const PublicQues = () => {
     setPublicQuestions((prev) =>
       prev.map((q) => {
         if (q._id === questionId) {
+
           // Update likes count
           const currentLikesCount = typeof q.likes === 'number' ? q.likes : 0;
           const newLikesCount = isLiked ? Math.max(0, currentLikesCount - 1) : currentLikesCount + 1;
@@ -138,6 +139,7 @@ const PublicQues = () => {
       setPublicQuestions((prev) =>
         prev.map((q) => {
           if (q._id === questionId) {
+
             // Make sure we're using the likes count from the server
             const likesFromServer = typeof data.likes === 'number' ? data.likes : 0;
 
@@ -158,8 +160,7 @@ const PublicQues = () => {
     } catch (error) {
       console.error("Error liking/unliking question:", error);
 
-      // Revert optimistic update in case of error
-      fetchPublicQuestions(); // Refresh the data from server
+      fetchPublicQuestions();
     }
   };
 
@@ -174,7 +175,7 @@ const PublicQues = () => {
           
           return { 
             ...q, 
-            answers: answerData.answers || []  // Ensure `answers` is always an array
+            answers: answerData.answers || []
           };
         })
       );
@@ -196,6 +197,7 @@ const PublicQues = () => {
 
       {/* ✅ Search + Category Filter */}
       <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-4 w-full">
+        
         {/* 🔍 Search Bar (Full width on small screens, shrinks on large screens) */}
         <div className="flex-1 min-w-[200px]">
           <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />

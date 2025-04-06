@@ -178,7 +178,7 @@ const sendOtpForPasswordReset = async (req, res) => {
     }
 
     // ✅ Delete old OTP before saving new one
-    await OTP.deleteOne({ email });  // <-- Fix added
+    await OTP.deleteOne({ email });
 
     // ✅ Generate OTP
     const otp = otpGenerator.generate(4, { digits: true, alphabets: false, specialChars: false });
@@ -254,8 +254,4 @@ const resetPassword = async (req, res) => {
 };
 
 
-
-
-
-// ✅ **Export Controllers**
 module.exports = { home, register, login, user, updateProfile, sendOtpForPasswordReset, resetPassword };

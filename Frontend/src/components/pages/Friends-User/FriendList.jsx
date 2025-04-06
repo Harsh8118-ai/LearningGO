@@ -5,14 +5,14 @@ import "react-toastify/dist/ReactToastify.css";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";  // 🔹 Import for navigation
-import { FaTrash, FaEnvelope } from "react-icons/fa";  // 🔹 Import icons
+import { useNavigate } from "react-router-dom";  
+import { FaTrash, FaEnvelope } from "react-icons/fa";  
 
 const FriendList = () => {
     const [friends, setFriends] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const navigate = useNavigate();  // 🔹 Hook for navigation
+    const navigate = useNavigate();  
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 
@@ -32,7 +32,6 @@ const FriendList = () => {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
-                // Check if the response contains friends
                 setFriends(response.data.friends || []);
             } catch (error) {
                 setError(error.response?.data?.message || "Failed to load friends.");

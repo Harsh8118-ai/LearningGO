@@ -22,7 +22,7 @@ router.put("/reset-password", authControllers.resetPassword);
 
 
 // ✅ Profile Routes (Protected)
-router.use(authMiddleware); // Apply authMiddleware to all routes below
+router.use(authMiddleware); 
 router.put("/update-profile", authControllers.updateProfile);
 router.get("/user", authControllers.user);
 

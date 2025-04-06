@@ -7,7 +7,7 @@ const compression = require("compression");
 const session = require("express-session");
 const passport = require("passport");
 const connectDb = require("./utils/db");
-require("./utils/passport-config"); // ✅ Initialize OAuth
+require("./utils/passport-config");
 
 // ✅ Import Routes
 const authRoute = require("./routes/auth-route");
@@ -23,12 +23,12 @@ const otpRoutes = require("./routes/otp-route");
 const initializeSocket = require("./controllers/webSocket-controllers");
 
 const app = express();
-const server = http.createServer(app); // ✅ Create HTTP Server for WebSocket
+const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: process.env.NODE_ENV === "production"
       ? ["https://silkenglamour.com", "https://www.silkenglamour.com", "https://silken-glamour.vercel.app", "https://silkenglamour.netlify.app"]
-      : ["http://localhost:5173", "http://192.168.81.15:5173"],
+      : ["http://localhost:5173", "http://192.168.81.15:5173", "https://aksagora.netlify.app"],
     methods: ["GET", "POST"],
     credentials: true,
   },

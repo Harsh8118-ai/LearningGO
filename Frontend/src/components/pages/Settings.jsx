@@ -9,12 +9,12 @@ const Settings = () => {
   const [user, setUser] = useState({ username: "", email: "", mobileNumber: "" });
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
 
-  const [isModalOpen, setIsModalOpen] = useState(null); // Track which field is being edited
-  const [newValue, setNewValue] = useState(""); // Store new value for update
+  const [isModalOpen, setIsModalOpen] = useState(null); 
+  const [newValue, setNewValue] = useState(""); 
 
-  const [newPassword, setNewPassword] = useState(""); // New password
-  const [otp, setOtp] = useState(""); // OTP for verification
-  const [isOtpSent, setIsOtpSent] = useState(false); // OTP sent status
+  const [newPassword, setNewPassword] = useState(""); 
+  const [otp, setOtp] = useState(""); 
+  const [isOtpSent, setIsOtpSent] = useState(false); 
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -41,7 +41,7 @@ const Settings = () => {
       );
       alert(`${field} updated successfully!`);
       setUser((prev) => ({ ...prev, [field]: newValue }));
-      setIsModalOpen(null); // Close modal
+      setIsModalOpen(null); 
     } catch (error) {
       console.error("Error updating profile:", error);
       alert(`Failed to update ${field}.`);
@@ -80,8 +80,8 @@ const Settings = () => {
       console.log("✅ Password update response:", response.data);
       alert("Password updated successfully!");
       setIsModalOpen(null);
-      setOtp(""); // Clear OTP field
-      setIsOtpSent(false); // Reset OTP state
+      setOtp(""); 
+      setIsOtpSent(false); 
     } catch (error) {
       console.error("🚨 Error updating password:", error);
       console.log("🔴 Error Response:", error.response?.data);
@@ -153,7 +153,10 @@ const Settings = () => {
       {/* Theme Preferences */}
       <div className="w-full max-w-md bg-white dark:bg-gray-800 p-5 mt-5 rounded-lg shadow-md">
         <h3 className="text-lg font-semibold mb-3">Theme Preferences</h3>
-        <ThemeSwitcher /> {/* Theme Switcher Component */}
+        
+        {/* Theme Switcher Component */}
+        <ThemeSwitcher /> 
+        
       </div>
 
       {/* Edit Modals */}

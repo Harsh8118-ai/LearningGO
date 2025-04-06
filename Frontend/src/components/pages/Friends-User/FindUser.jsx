@@ -10,7 +10,7 @@ const FindUser = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   
-  const navigate = useNavigate(); // ✅ React Router navigation
+  const navigate = useNavigate(); 
   const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 
@@ -46,14 +46,11 @@ const FindUser = () => {
   const sendFriendRequest = async () => {
     try {
       const token = localStorage.getItem("token");
-      console.log("📌 Sending request with token:", token);
       
       if (!token) {
         setError("User is not authenticated. Please log in.");
         return;
       }
-  
-      console.log("📌 Invite Code before sending request:", inviteCode);
   
       const response = await axios.post(
         `${BASE_URL}/friends/send-request`,
@@ -65,10 +62,6 @@ const FindUser = () => {
           },
         }
       );
-  
-      console.log("✅ Friend request sent:", response.data);
-
-      // ✅ Show success toast
       toast.success("Friend request sent successfully!");
 
       window.location.reload(); 

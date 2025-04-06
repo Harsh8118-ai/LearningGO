@@ -36,7 +36,7 @@ const Login = () => {
     const requestBody = {
       mobileNumber: formData.mobileNumber,
       password: formData.password,
-      authProvider: "manual",  // ✅ Correct field name
+      authProvider: "manual", 
     };
 
     try {

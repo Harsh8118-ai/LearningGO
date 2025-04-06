@@ -138,13 +138,12 @@ exports.respondToFriendRequest = async (req, res) => {
 // ✅ Get Friends List
 exports.getFriendsList = async (req, res) => {
   try {
-    const userId = req.user.id; // ✅ Get the logged-in user's ID
+    const userId = req.user.id;
 
-    // 🔍 Find the Friend document for the user
     const friendData = await Friend.findOne({ userId });
 
     if (!friendData || friendData.friends.length === 0) {
-      return res.status(200).json({ friends: [] }); // ✅ Return empty list if no friends
+      return res.status(200).json({ friends: [] });
     }
 
     // ✅ Extract userIds from friends array
@@ -156,7 +155,7 @@ exports.getFriendsList = async (req, res) => {
       "username email inviteCode"
     );
 
-    res.status(200).json({ friends: friendsList }); // ✅ Return enriched friend data
+    res.status(200).json({ friends: friendsList });
   } catch (error) {
     console.error("❌ Error fetching friend list:", error);
     res.status(500).json({ message: "Server error!", error: error.message });
@@ -169,7 +168,7 @@ exports.getFriendsList = async (req, res) => {
 // ✅ Get Sent Requests
 exports.getSentRequests = async (req, res) => {
   try {
-    const userId = req.user.id; // Get logged-in user's ID
+    const userId = req.user.id;
 
     // ✅ Find the friend document for the user
     const friendData = await Friend.findOne({ userId });
@@ -180,11 +179,10 @@ exports.getSentRequests = async (req, res) => {
 
     // ✅ Fetch user details for each sent request
     const sentRequests = await User.find(
-      { _id: { $in: friendData.requestsSent } }, // Match IDs from `requestsSent`
-      "username email inviteCode" // Select only required fields
-    );
+      { _id: { $in: friendData.requestsSent } },
+      "username email inviteCode");
 
-    res.status(200).json(sentRequests); // ✅ Return enriched data
+    res.status(200).json(sentRequests);
   } catch (error) {
     console.error("Error fetching sent requests:", error);
     res.status(500).json({ message: "Server error", error: error.message });
@@ -195,7 +193,7 @@ exports.getSentRequests = async (req, res) => {
 // ✅ Get Received Requests
 exports.getReceivedRequests = async (req, res) => {
   try {
-    const userId = req.user.id; // Get logged-in user's ID
+    const userId = req.user.id;
 
     // ✅ Find the friend document for the user
     const friendData = await Friend.findOne({ userId });
@@ -206,11 +204,10 @@ exports.getReceivedRequests = async (req, res) => {
 
     // ✅ Fetch user details for each received request
     const receivedRequests = await User.find(
-      { _id: { $in: friendData.friendRequests } }, // Match IDs from `friendRequests`
-      "username email inviteCode" // Select only required fields
-    );
+      { _id: { $in: friendData.friendRequests } },
+      "username email inviteCode");
 
-    res.status(200).json(receivedRequests); // ✅ Return enriched data
+    res.status(200).json(receivedRequests);
   } catch (error) {
     console.error("Error fetching received requests:", error);
     res.status(500).json({ message: "Server error", error: error.message });
@@ -221,8 +218,8 @@ exports.getReceivedRequests = async (req, res) => {
 // ✅ Withdraw Sent Friend Request
 exports.withdrawFriendRequest = async (req, res) => {
   try {
-    const { recipientId } = req.body; // ID of the user who received the request
-    const senderId = req.user.id; // Logged-in user's ID
+    const { recipientId } = req.body;
+    const senderId = req.user.id;
 
     
 
@@ -295,8 +292,8 @@ exports.withdrawFriendRequest = async (req, res) => {
 // ✅ Remove a friend
 exports.removeFriend = async (req, res) => {
   try {
-    const { _id } = req.body; // ID of the friend to remove
-    const userId = req.user.id; // Logged-in user's ID
+    const { _id } = req.body;
+    const userId = req.user.id;
 
     if (!_id) {
       console.error("❌ Friend ID is missing!");

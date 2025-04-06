@@ -14,7 +14,7 @@ export default function Signup() {
     email: "",
     mobileNumber: "",
     password: "",
-    otp: "", // New OTP field
+    otp: "", 
   });
 
   const [loading, setLoading] = useState(false);
@@ -124,7 +124,6 @@ export default function Signup() {
               <input
                 type="text"
                 name="username"
-                // placeholder="Enter your username"
                 value={form.username}
                 onChange={handleChange}
                 className="border p-2 rounded-xl border-gray-500 hover:bg-gray-900 hover:scale-105 bg-gray-950 text-gray-300 w-full"
@@ -150,7 +149,6 @@ export default function Signup() {
               <input
                 type="text"
                 name="mobileNumber"
-                // placeholder="Enter your mobile number"
                 value={form.mobileNumber}
                 onChange={handleChange}
                 className="border p-2 rounded-xl border-gray-500 hover:bg-gray-900 hover:scale-105 bg-gray-950 text-gray-300 w-full"
@@ -163,7 +161,6 @@ export default function Signup() {
               <input
                 type="password"
                 name="password"
-                // placeholder="Enter your password"
                 value={form.password}
                 onChange={handleChange}
                 className="border p-2 rounded-xl border-gray-500 hover:bg-gray-900 hover:scale-105 bg-gray-950 text-gray-300 w-full"
@@ -177,7 +174,6 @@ export default function Signup() {
                 <input
                   type="text"
                   name="otp"
-                  // placeholder="Enter OTP"
                   value={form.otp}
                   onChange={handleChange}
                   className="border p-2 rounded-xl border-gray-500 hover:bg-gray-900 hover:scale-105 bg-gray-950 text-gray-300 w-full"

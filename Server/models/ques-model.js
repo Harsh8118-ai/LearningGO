@@ -4,7 +4,7 @@ const answerSchema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     username: { type: String, required: true },
-    text: { type: String, required: true }, // Changed from `answer` to `text`
+    text: { type: String, required: true },
   },
   { timestamps: true }
 );
@@ -15,7 +15,7 @@ const questionSchema = new Schema(
     tags: { type: [String], default: [] },
     likes: { type: [Schema.Types.ObjectId], ref: "User", default: [] },
     isPublic: { type: Boolean, default: true },
-    answers: [answerSchema], // Keep answers embedded
+    answers: [answerSchema],
   },
   { timestamps: true } 
 );
@@ -24,7 +24,7 @@ const userQuestionSchema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     username: { type: String, required: true },
-    questions: [questionSchema], // Keep questions embedded
+    questions: [questionSchema],
   },
   { timestamps: true }
 );

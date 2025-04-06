@@ -47,12 +47,12 @@ const Profile = () => {
         const data = await response.json();
         
 
-        // ✅ Fix: API response me `userData` nahi `user` hai
+        
         if (!data?.user) {
           throw new Error("Invalid user data received");
         }
 
-        setUser(data.user); // ✅ Fix applied here
+        setUser(data.user); 
       } catch (error) {
         
         navigate("/login");

@@ -1,5 +1,5 @@
 import React from "react";
-import { Search } from "lucide-react"; // For search icon
+import { Search } from "lucide-react";
 
 const SearchBar = ({ searchTerm, setSearchTerm }) => {
   return (

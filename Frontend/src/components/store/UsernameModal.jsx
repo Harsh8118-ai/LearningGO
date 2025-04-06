@@ -31,7 +31,7 @@ const UsernameModal = ({ isOpen, onClose, user, onUsernameUpdated }) => {
 
       if (response.ok) {
         onUsernameUpdated(username, data.token);
-        onClose(); // Close modal after update
+        onClose();
       } else {
         setError(data.message || "Failed to update username.");
       }

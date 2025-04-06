@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 // Create or Add a Question (User can also provide an answer while posting)
 const createQuestion = async (req, res) => {
   try {
-    console.log("Received Data:", req.body); // Debugging log
+    console.log("Received Data:", req.body);
 
     const { userId, username, questions } = req.body;
 
@@ -17,7 +17,7 @@ const createQuestion = async (req, res) => {
     if (!userQuestionDoc) {
       userQuestionDoc = new Question({ userId, username, questions });
     } else {
-      userQuestionDoc.questions.push(...questions); // Add new question inside the array
+      userQuestionDoc.questions.push(...questions);
     }
 
     await userQuestionDoc.save();
@@ -32,8 +32,8 @@ const createQuestion = async (req, res) => {
 const getAllQuestions = async (req, res) => {
   try {
     const users = await Question.aggregate([
-      { $unwind: "$questions" },  // Deconstruct the questions array
-      { $match: { "questions.isPublic": true } },  // Filter for public questions
+      { $unwind: "$questions" },
+      { $match: { "questions.isPublic": true } },
       {
         $project: {
           _id: "$questions._id",
@@ -61,7 +61,7 @@ const likeQuestion = async (req, res) => {
     console.log("🔹 Received Like Request for Question ID:", req.params.questionId);
 
     const { questionId } = req.params;
-    const { userId } = req.body; // User ID from authentication middleware
+    const { userId } = req.body;
 
     console.log("🔹 User ID:", userId);
     
@@ -96,8 +96,8 @@ const likeQuestion = async (req, res) => {
 
     // Update using $[elem] to target the right question inside the array
     const updateQuery = isLiked
-      ? { $pull: { "questions.$[elem].likes": userId } }  // Unlike
-      : { $addToSet: { "questions.$[elem].likes": userId } }; // Like
+      ? { $pull: { "questions.$[elem].likes": userId } }
+      : { $addToSet: { "questions.$[elem].likes": userId } };
 
     console.log("🔄 Update Query:", updateQuery);
 
@@ -106,7 +106,7 @@ const likeQuestion = async (req, res) => {
       updateQuery,
       { 
         new: true,
-        arrayFilters: [{ "elem._id": questionId }] // ✅ Ensure correct question is updated
+        arrayFilters: [{ "elem._id": questionId }]
       }
     );
 
@@ -193,7 +193,7 @@ const addAnswer = async (req, res) => {
 const getQuestionsByUserId = async (req, res) => {
   try {
     const { userId } = req.params;
-    const { viewerId } = req.query; // Optional: Viewer ID to check private access
+    const { viewerId } = req.query;
 
     const userQuestions = await Question.findOne({ userId });
 
@@ -202,8 +202,8 @@ const getQuestionsByUserId = async (req, res) => {
     // If the viewer is the owner, show all questions. Otherwise, show only public ones.
     const filteredQuestions =
       viewerId === userId
-        ? userQuestions.questions // Owner sees all
-        : userQuestions.questions.filter(q => q.isPublic); // Others see only public questions
+        ? userQuestions.questions
+        : userQuestions.questions.filter(q => q.isPublic);
 
     res.status(200).json({ userId, username: userQuestions.username, questions: filteredQuestions });
   } catch (error) {
@@ -264,12 +264,12 @@ const deleteQuestion = async (req, res) => {
 const getTrendingQuestions = async (req, res) => {
   try {
     const questions = await Question.aggregate([
-      { $unwind: "$questions" }, // Flatten the questions array
-      { $match: { "questions.isPublic": true } }, // Only public questions
-      { $sort: { "questions.likes": -1 } }, // Sort by likes (descending)
-      { $limit: 10 }, // Limit to top 10
+      { $unwind: "$questions" }, 
+      { $match: { "questions.isPublic": true } }, 
+      { $sort: { "questions.likes": -1 } }, 
+      { $limit: 10 }, 
       {
-        $project: { // Only return necessary fields
+        $project: { 
           _id: "$questions._id",
           question: "$questions.question",
           answer: "$questions.answer",
@@ -336,7 +336,6 @@ const getAnswers = async (req, res) => {
 };
 
 
-// Export all functions
 module.exports = {
   createQuestion,
   getAllQuestions,

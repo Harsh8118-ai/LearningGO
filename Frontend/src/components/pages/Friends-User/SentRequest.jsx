@@ -56,7 +56,6 @@ const SentRequests = () => {
  
 
   const handleWithdraw = async (recipientId) => {
-    console.log("📌 Withdrawing request for recipientId:", recipientId); // Debugging log
 
     if (!recipientId) {
       console.error("❌ No recipient ID provided!");

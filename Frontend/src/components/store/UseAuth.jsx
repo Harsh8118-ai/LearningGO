@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
-// Ensure correct base URL
 
 export function useAuth() {
   const [user, setUser] = useState(null);
@@ -13,9 +12,9 @@ export function useAuth() {
 
   // Function to generate a 6-digit numeric invite code from userId
   const generateInviteCode = (userId) => {
-    const last6Chars = userId.slice(-6); // Get last 6 chars from userId
-    let numericCode = parseInt(last6Chars, 16) % 1000000; // Convert hex to 6-digit number
-    return `${numericCode.toString().padStart(6, "0")}`; // Ensure 6 digits
+    const last6Chars = userId.slice(-6);
+    let numericCode = parseInt(last6Chars, 16) % 1000000;
+    return `${numericCode.toString().padStart(6, "0")}`;
   };
   
 
@@ -63,20 +62,6 @@ export function useAuth() {
 
         let userInviteCode = data.user.inviteCode;
 
-        // Generate invite code if missing
-        // if (!userInviteCode) {
-        //   userInviteCode = generateInviteCode(data.user._id); // Generate 6-digit invite code
-        //   await fetch(`${BASE_URL}/update-invite-code`, {
-        //     method: "POST",
-        //     headers: {
-        //       "Authorization": `Bearer ${token}`,
-        //       "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({ inviteCode: userInviteCode }),
-        //   });
-        // }
-
-        // Save in state & localStorage
         setUser(data.user);
         setInviteCode(userInviteCode);
         localStorage.setItem("inviteCode", userInviteCode);

@@ -40,6 +40,7 @@ const QuestionCard = ({ title, author, time, answers, likes, tags, onLike, onAns
       </div>
 
       <div className="flex items-center text-gray-400 text-sm">
+        
         {/* Clicking the answer count triggers onAnswer */}
         <div className="flex items-center mr-4 cursor-pointer" onClick={onAnswer}>
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">

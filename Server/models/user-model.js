@@ -26,18 +26,18 @@ const userSchema = new mongoose.Schema(
     mobileNumber: {
       type: String,
       unique: true,
-      sparse: true, // Only enforces uniqueness for non-null values
+      sparse: true,
       match: [/^\d{10}$/, "Phone Number must be exactly 10 digits."],
     },
     password: {
       type: String,
       minlength: [8, "Password must be at least 8 characters"],
       maxlength: [1024, "Password must not be more than 1024 characters"],
-      select: false, // Prevent returning password in queries
+      select: false,
     },
     authProvider: {
       type: String,
-      enum: ["manual", "google", "github"],  // ✅ Allow all three options
+      enum: ["manual", "google", "github"],
       default: "manual",
     },    
   },
@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre("save", async function (next) {
-  if (this.authProvider !== "manual") return next(); // Skip hashing for OAuth users
+  if (this.authProvider !== "manual") return next();
   if (!this.isModified("password") || !this.password) return next();
   try {
     const salt = await bcrypt.genSalt(12);

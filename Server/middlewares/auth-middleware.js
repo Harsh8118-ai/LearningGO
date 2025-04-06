@@ -10,7 +10,7 @@ const authMiddleware = async (req, res, next) => {
             return res.status(401).json({ message: "Unauthorized: Token not provided or invalid format" });
         }
 
-        const jwtToken = token.split(" ")[1]; // Extract token properly
+        const jwtToken = token.split(" ")[1]; 
         
 
         if (!process.env.JWT_SECRET_KEY) {
@@ -40,9 +40,6 @@ const authMiddleware = async (req, res, next) => {
             return res.status(401).json({ message: "Unauthorized: User not found" });
         }
 
-        
-
-        // Attach user to request object
         req.user = userData;
         req.token = jwtToken;
         req.userID = userData._id;

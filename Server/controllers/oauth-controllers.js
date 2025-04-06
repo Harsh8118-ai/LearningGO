@@ -105,5 +105,4 @@ const updateUsername = async (req, res) => {
   }
 };
 
-// ✅ Export OAuth Controller
 module.exports = { oauthLogin, updateUsername };

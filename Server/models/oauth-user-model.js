@@ -15,7 +15,7 @@ const oauthUserSchema = new mongoose.Schema(
     providerId: {
       type: String,
       required: true,
-      unique: true, // Ensures each OAuth user is unique
+      unique: true,
     },
   },
   { timestamps: true }
