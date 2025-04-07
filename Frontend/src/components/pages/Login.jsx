@@ -24,6 +24,7 @@ const Login = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
+    console.log("🛠 Login Attempt Started");
 
     // ✅ Ensure both fields are filled
     if (!formData.mobileNumber.trim() || !formData.password.trim()) {
@@ -53,11 +54,9 @@ const Login = () => {
       const data = await response.json();
 
 
-      console.log("✅ Login Success:", data);
+      
       localStorage.setItem("token", data.token);
       localStorage.setItem("userId", data.user.id);
-      console.log("✅ Stored userId:", data.user.id);
-      console.log("✅ Stored Token:", data.token);
       navigate("/profile");
 
     } catch (err) {

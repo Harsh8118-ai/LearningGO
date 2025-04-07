@@ -5,7 +5,7 @@ const QuestionCard = ({ title, author, time, answers, likes, tags, onLike, onAns
   return (
     <div className="w-full bg-gray-950 rounded-lg p-6 mb-4 border border-gray-800">
       <div className="flex justify-between items-start mb-4">
-        <h2 className="text-white text-xl font-medium">{title}</h2>
+        <h2 className="text-white text-xl font-medium">{title.length > 50 ? `${title.substring(0, 50)}...` : title}</h2>
         <div className="flex flex-wrap gap-2">
           {(Array.isArray(tags) ? tags : []).map((tag, index) => (
             <span

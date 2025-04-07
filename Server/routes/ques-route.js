@@ -36,5 +36,8 @@ router.post("/:questionId/answer", quesController.addAnswer);
 // Get all answers for a specific question
 router.get("/:questionId/answer", quesController.getAnswers);
 
+// Get all answers posted by a user
+router.get("/answers/user/:userId", quesController.getAnswersByUserId);
+
 
 module.exports = router;

@@ -43,16 +43,16 @@ export function Sidebar() {
         <nav className="space-y-2 flex-1">
           {/* Main Section */}
           <p className="text-gray-400 text-sm px-2">Main</p>
-          <Link to="/" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+          <Link to="/" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800" onClick={() => setIsOpen(false)}>
             <FiHome /> Home
           </Link>
-          <Link to="/questions" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+          <Link to="/questions" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800" onClick={() => setIsOpen(false)}>
             <RiQuestionAnswerLine /> Questions
           </Link>
-          <Link to="/discussions" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+          <Link to="/discussions" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800" onClick={() => setIsOpen(false)}>
             <FiBook /> Discussions
           </Link>
-          <Link to="/friends" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+          <Link to="/friends" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800" onClick={() => setIsOpen(false)}>
             <FiUsers /> Friends
           </Link>
 
@@ -61,10 +61,10 @@ export function Sidebar() {
 
           {/* Personal Section */}
           <p className="text-gray-400 text-sm px-2">Personal</p>
-          <Link to="/my-questions" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+          <Link to="/my-questions" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800" onClick={() => setIsOpen(false)}>
             <RiAddLine /> My Questions
           </Link>
-          <Link to="/bookmarked" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800">
+          <Link to="/bookmarked" className="flex items-center gap-3 p-2 rounded hover:bg-gray-800" onClick={() => setIsOpen(false)}>
             <RiBookmarkLine /> Bookmarks
           </Link>
         </nav>
@@ -90,12 +90,12 @@ export function Sidebar() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.2 }}
-          className="absolute bottom-14 left-0 w-full max-w-sm bg-gray-950 rounded-xl shadow-lg border border-gray-500"
+          className="absolute bottom-14 left-0 w-full mx-4 max-w-sm bg-gray-950 rounded-xl shadow-lg border border-gray-500"
         >
-          <Link to="/profile" className="flex items-center gap-3 p-2 hover:bg-gray-700">
+          <Link to="/profile" className="flex items-center gap-3 p-2 hover:bg-gray-700" onClick={() => {setIsOpen(false); setDropdownOpen(!dropdownOpen)}}>
             <FaUserCircle /> Profile
           </Link>
-          <Link to="/settings" className="flex items-center gap-3 p-2 hover:bg-gray-700">
+          <Link to="/settings" className="flex items-center gap-3 p-2 hover:bg-gray-700" onClick={() => {setIsOpen(false); setDropdownOpen(!dropdownOpen)}}>
             <FiSettings /> Settings
           </Link>
           {user && (

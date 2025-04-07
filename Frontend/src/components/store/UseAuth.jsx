@@ -1,22 +1,23 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export function useAuth() {
   const [user, setUser] = useState(null);
   const [inviteCode, setInviteCode] = useState(null);
+  const [questionsCount, setQuestionsCount] = useState(0);
   const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Function to generate a 6-digit numeric invite code from userId
   const generateInviteCode = (userId) => {
     const last6Chars = userId.slice(-6);
     let numericCode = parseInt(last6Chars, 16) % 1000000;
     return `${numericCode.toString().padStart(6, "0")}`;
   };
-  
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -24,12 +25,9 @@ export function useAuth() {
 
       if (!token) {
         console.warn("⚠️ No token found in localStorage");
-
-        // Redirect only if not already on login/signup
-        if (location.pathname !== "/" && location.pathname !== "/login" && location.pathname !== "/signup") {
+        if (!["/", "/login", "/signup"].includes(location.pathname)) {
           navigate("/login");
         }
-
         setLoading(false);
         return;
       }
@@ -38,7 +36,7 @@ export function useAuth() {
         const response = await fetch(`${BASE_URL}/auth/user`, {
           method: "GET",
           headers: {
-            "Authorization": `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });
@@ -47,7 +45,7 @@ export function useAuth() {
           if (response.status === 401) {
             localStorage.removeItem("token");
             setUser(null);
-            if (location.pathname !== "/" && location.pathname !== "/login" && location.pathname !== "/signup") {
+            if (!["/", "/login", "/signup"].includes(location.pathname)) {
               navigate("/login");
             }
             return;
@@ -60,15 +58,16 @@ export function useAuth() {
           throw new Error("Invalid response: user ID not found");
         }
 
-        let userInviteCode = data.user.inviteCode;
-
+        const userInviteCode = data.user.inviteCode;
         setUser(data.user);
         setInviteCode(userInviteCode);
         localStorage.setItem("inviteCode", userInviteCode);
+
+        // 👉 Fetch question stats AFTER setting user
+        fetchUserQuestionStats(data.user._id);
       } catch (error) {
         console.error("❌ Error fetching user:", error.message);
-
-        if (location.pathname !== "/" && location.pathname !== "/login" && location.pathname !== "/signup") {
+        if (!["/", "/login", "/signup"].includes(location.pathname)) {
           navigate("/login");
         }
       } finally {
@@ -76,8 +75,22 @@ export function useAuth() {
       }
     };
 
+    const fetchUserQuestionStats = async (userId) => {
+      try {
+        const response = await axios.get(`${BASE_URL}/ques/user/${userId}`, {
+          params: { viewerId: userId },
+        });
+
+        const userQuestions = response.data.questions || [];
+        setQuestionsCount(userQuestions.length); // ✅ Set count
+      } catch (error) {
+        console.error("Error fetching user questions:", error.message);
+        setQuestionsCount(0); // fallback
+      }
+    };
+
     fetchUserData();
   }, [navigate, location.pathname]);
 
-  return { user, inviteCode, loading };
+  return { user, inviteCode, loading, questionsCount };
 }

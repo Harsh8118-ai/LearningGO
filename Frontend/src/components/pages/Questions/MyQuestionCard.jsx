@@ -10,7 +10,7 @@ const MyQuestionCard = ({ title, author, time, answers, likes, tag, isPublic, on
 
       {/* Header Section */}
       <div className="flex justify-between items-start mb-4">
-        <h2 className="text-white text-xl font-medium">{title}</h2>
+        <h2 className="text-white text-xl font-medium">{title.length > 50 ? `${title.substring(0, 50)}...` : title}</h2>
         <div className="flex items-center gap-2">
           <div className="flex flex-wrap gap-2">
             {(Array.isArray(tag) ? tag : [tag]).map((t, index) => (

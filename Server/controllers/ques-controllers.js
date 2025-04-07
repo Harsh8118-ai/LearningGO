@@ -307,6 +307,7 @@ const getPrivateQuestions = async (req, res) => {
   }
 };
 
+
 const getAnswers = async (req, res) => {
   try {
     const { questionId } = req.params;
@@ -336,6 +337,43 @@ const getAnswers = async (req, res) => {
 };
 
 
+const getAnswersByUserId = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Find all documents where any question contains an answer by this user
+    const matchingDocs = await Question.find({ "questions.answers.userId": userId });
+
+    let userAnswers = [];
+
+    matchingDocs.forEach(doc => {
+      doc.questions.forEach(question => {
+        const matchingAnswers = question.answers.filter(answer => answer.userId.toString() === userId);
+        matchingAnswers.forEach(answer => {
+          userAnswers.push({
+            answerId: answer._id,
+            answerText: answer.text,
+            answerCreatedAt: answer.createdAt,
+            questionId: question._id,
+            questionText: question.question,
+            questionTags: question.tags,
+            questionAskedById: doc.userId,
+            questionAskedByUsername: doc.username,
+            questionCreatedAt: question.createdAt,
+          });
+        });
+      });
+    });
+
+    res.status(200).json({ answers: userAnswers });
+  } catch (error) {
+    console.error("Error fetching user's answers:", error.message);
+    res.status(500).json({ message: "Error fetching answers", error: error.message });
+  }
+};
+
+
+
 module.exports = {
   createQuestion,
   getAllQuestions,
@@ -348,4 +386,5 @@ module.exports = {
   getTrendingQuestions,
   getPrivateQuestions,
   getAnswers,
+  getAnswersByUserId,
 };
