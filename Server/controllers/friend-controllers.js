@@ -170,24 +170,43 @@ exports.getSentRequests = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // ✅ Find the friend document for the user
     const friendData = await Friend.findOne({ userId });
 
     if (!friendData) {
       return res.status(404).json({ message: "Friend data not found" });
     }
 
-    // ✅ Fetch user details for each sent request
-    const sentRequests = await User.find(
-      { _id: { $in: friendData.requestsSent } },
-      "username email inviteCode");
+    const requestsSentMeta = friendData.requestsSent; // contains status, createdAt, _id
+    const sentUserIds = requestsSentMeta.map((r) => r._id);
 
-    res.status(200).json(sentRequests);
+    // Get basic user info
+    const users = await User.find(
+      { _id: { $in: sentUserIds } },
+      "username email"
+    );
+
+    // Merge user info with metadata (status, createdAt)
+    const enriched = users.map((user) => {
+      const meta = requestsSentMeta.find(
+        (r) => r._id.toString() === user._id.toString()
+      );
+
+      return {
+        _id: user._id,
+        email: user.email,
+        username: user.username,
+        status: meta?.status,
+        createdAt: meta?.createdAt,
+      };
+    });
+
+    res.status(200).json(enriched);
   } catch (error) {
     console.error("Error fetching sent requests:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
 
 // ✅ Get Received Requests

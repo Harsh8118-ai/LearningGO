@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ActivityTab from "./ActivityTab";
-import BadgesTab from "./BadgesTab";
+import NetworkTab from "./NetworkTab";
 import StatisticsTab from "./StatisticsTab";
 
 const ProfileTabs = () => {
@@ -9,7 +9,7 @@ const ProfileTabs = () => {
   const tabClasses = (tab) =>
     `w-full text-md py-1 font-medium rounded-xl transition duration-200 ${
       activeTab === tab
-        ? "bg-gray-950 text-white"
+        ? "bg-gray-950 text-white"  
         : "text-gray-300 hover:text-white"
     }`;
 
@@ -21,8 +21,8 @@ const ProfileTabs = () => {
         <button className={tabClasses("Activity")} onClick={() => setActiveTab("Activity")}>
           Activity
         </button>
-        <button className={tabClasses("Badges")} onClick={() => setActiveTab("Badges")}>
-          Badges
+        <button className={tabClasses("Network")} onClick={() => setActiveTab("Network")}>
+          Network
         </button>
         <button className={tabClasses("Statistics")} onClick={() => setActiveTab("Statistics")}>
           Statistics
@@ -31,7 +31,7 @@ const ProfileTabs = () => {
 
       {/* Tab Content */}  
       {activeTab === "Activity" && <ActivityTab />}
-      {activeTab === "Badges" && <BadgesTab />}
+      {activeTab === "Network" && <NetworkTab />}
       {activeTab === "Statistics" && <StatisticsTab />}
     </div>
   );

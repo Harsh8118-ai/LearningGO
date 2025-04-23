@@ -28,7 +28,7 @@ const io = new Server(server, {
   cors: {
     origin: process.env.NODE_ENV === "production"
       ? ["https://silkenglamour.com", "https://www.silkenglamour.com", "https://silken-glamour.vercel.app", "https://silkenglamour.netlify.app"]
-      : ["http://localhost:5173", "http://192.168.81.15:5173", "https://aksagora.netlify.app"],
+      : ["http://localhost:5173", "https://aksagora.netlify.app", "http://192.168.23.15:5173"],
     methods: ["GET", "POST"],
     credentials: true,
   },
@@ -40,7 +40,7 @@ app.use(cors({ origin: io.opts.cors.origin, methods: "GET, POST, PUT, DELETE", c
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
-  session({
+  session({ 
     secret: process.env.SESSION_SECRET || "default_secret",
     resave: false,
     saveUninitialized: false,
