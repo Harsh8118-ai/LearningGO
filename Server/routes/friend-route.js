@@ -36,7 +36,6 @@ router.post("/generate-invite-code", authMiddleware, async (req, res) => {
   }
 });
 
-
 // ✅ Search User by Invite Code
 router.get("/search-by-invite", async (req, res) => {
   try {
@@ -63,9 +62,7 @@ router.get("/search-by-invite", async (req, res) => {
     res.status(500).json({ message: "Server error!", error: error.message });
   }
 });
-
 module.exports = router;
-
 
 
 // ✅ Get Stored Invite Code

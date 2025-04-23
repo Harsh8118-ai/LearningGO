@@ -4,6 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { UserPlus } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { BsPerson } from "react-icons/bs";
 
 
 const Sent = () => {
@@ -67,11 +68,11 @@ const Sent = () => {
           {sentRequests.map((req) => (
   <div
     key={req._id}
-    className="bg-[#0f0f11] border border-[#2a2a2a] p-4 rounded-xl flex items-center justify-between"
+    className="bg-gray-950 border border-[#2a2a2a] p-4 rounded-xl flex items-center justify-between"
   >
     <div className="flex items-center space-x-3">
-      <div className="w-10 h-10 rounded-full bg-[#1a1a1f] flex items-center justify-center text-white text-sm font-bold">
-        <span>👤</span>
+      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-white text-sm font-bold">
+        <BsPerson className="text-[#1e1e1e] font-extrabold text-xl" />
       </div>
       <div>
         <p className="text-white font-semibold">{req.username || "Unknown"}</p>
