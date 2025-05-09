@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaGithub } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -14,26 +15,26 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Handle Input Change
+  
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle Form Submission
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     console.log("🛠 Login Attempt Started");
 
-    // ✅ Ensure both fields are filled
+    
     if (!formData.mobileNumber.trim() || !formData.password.trim()) {
       setError("⚠️ Please enter both mobile number and password.");
       setLoading(false);
       return;
     }
 
-    // ✅ Fix: Change "type" to "authProvider"
+    
     const requestBody = {
       mobileNumber: formData.mobileNumber,
       password: formData.password,
@@ -41,7 +42,6 @@ const Login = () => {
     };
 
     try {
-      console.log("📤 Sending Login Request:", requestBody);
 
       const response = await fetch(`${BASE_URL}/auth/login`, {
         method: "POST",

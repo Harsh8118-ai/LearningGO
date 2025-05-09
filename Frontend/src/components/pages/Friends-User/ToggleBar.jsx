@@ -20,7 +20,7 @@ const ToggleBar = () => {
             onClick={() => setActiveTab(tab.id)}
             className={`px-6 py-2 text-sm font-semibold rounded-full transition-all ${
               activeTab === tab.id
-                ? "bg-black text-white shadow-md"
+                ? "bg-gray-950 text-white shadow-md"
                 : "text-gray-400 hover:text-white"
             }`}
           >

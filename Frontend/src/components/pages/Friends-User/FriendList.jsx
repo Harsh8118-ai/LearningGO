@@ -72,9 +72,7 @@ const FriendList = () => {
 
     return (
       <div className="max-w-6xl mx-auto p-5">
-      <h2 className="text-2xl font-bold mb-6 text-center text-white">
-        Friend List
-      </h2>
+      
 
       {error && <p className="text-red-500 text-center">{error}</p>}
       {loading ? (
@@ -87,10 +85,10 @@ const FriendList = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="w-full sm:w-auto overflow-hidden rounded-lg shadow-lg bg-gray-900 text-white text-center"
+              className="w-full sm:w-auto overflow-hidden rounded-lg shadow-lg bg-gray-950 border border-white/10 text-white text-center"
             >
               {/* Gradient Header */}
-              <div className="h-24 bg-gradient-to-r from-purple-700 to-purple-900"></div>
+              <div className="h-24 bg-gradient-to-r from-[#693cc3] via-[#a946fb] to-[#693cc3]"></div>
 
               {/* Avatar & Info */}
               <div className="flex flex-col items-center -mt-12 mb-4 p-4">

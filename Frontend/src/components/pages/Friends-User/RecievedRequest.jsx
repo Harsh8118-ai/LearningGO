@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { BsPerson } from "react-icons/bs";
+
 
 const RecievedRequests = () => {
   const [sentRequests, setSentRequests] = useState([]);
@@ -116,64 +118,69 @@ const RecievedRequests = () => {
   };
 
   return (
-    <div className="w-full h-screen mx-auto p-4 sm:p-6 gradient
- shadow-md rounded-lg">
-      <ToastContainer position="top-right" autoClose={2000} hideProgressBar={false} />
-      <h2 className="text-xl font-bold mb-4 text-center">Friend Requests</h2>
-
-      {error && <p className="text-red-500 text-center">{error}</p>}
-      {loading ? (
-        <p className="text-gray-500 text-center">Loading...</p>
-      ) : (
-        <>
-          
-
-          {/* 🔹 Received Requests */}
-          <div data-aos="fade-up">
-            <h3 className="font-semibold text-lg">Received Requests</h3>
-            {receivedRequests.length > 0 ? (
-              receivedRequests.map((request) => (
+    <div className="w-full min-h-screen mx-auto p-4 sm:p-6 bg-gray-950 text-white">
+    <ToastContainer position="top-right" autoClose={2000} hideProgressBar={false} />
+    {error && <p className="text-red-500 text-center">{error}</p>}
+    {loading ? (
+      <p className="text-gray-400 text-center">Loading...</p>
+    ) : (
+      <>
+        <div data-aos="fade-up">
+          {receivedRequests.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ">
+              {receivedRequests.map((request) => (
                 <motion.div
                   key={request._id}
-                  initial={{ opacity: 0, scale: 0.9 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.3 }}
-                  className="p-3 border rounded-md bg-gray-100 mt-2 flex flex-col sm:flex-row sm:justify-between items-center text-sm"
+                  className="bg-gray-950 p-4 rounded-xl shadow-md flex flex-col justify-between border border-white/10"
                 >
-                  <div className="text-center sm:text-left">
-                    <p><strong>Username:</strong> {request.username || "N/A"}</p>
-                    <p><strong>Email:</strong> {request.email || "N/A"}</p>
+                  <div className="flex items-start gap-4">
+                  <div className="mt-2 w-10 h-8 bg-white rounded-full flex items-center justify-center text-white text-lg">
+                  <BsPerson className="text-[#1e1e1e] font-extrabold text-xl" />
                   </div>
-                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    <div>
+                      <p className="font-semibold text-white text-base">
+                        {request.username || "Unknown User"}
+                      </p>
+                      <p className="text-sm text-gray-400 mb-2">
+                        {request.mutualFriends || Math.floor(Math.random() * 6) + 1} mutual friends
+                      </p>
+                      <p className="text-sm text-gray-300">
+                        {request.message || "Hey! I'd love to connect and discuss tech!"}
+                      </p>
+                    </div>
+                  </div>
+  
+                  <div className="flex mt-4 gap-3">
                     <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="gradient
- text-white px-3 py-1 rounded-md w-full sm:w-auto"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => handleConfirm(request._id, "accept")}
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white py-1 rounded-full transition"
                     >
-                      Confirm
+                      ✓ Accept
                     </motion.button>
-
                     <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="gradient
- text-white px-3 py-1 rounded-md w-full sm:w-auto"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => handleDelete(request._id)}
+                      className="w-full bg-gray-800 hover:bg-gray-700 text-white py-1 rounded-full transition"
                     >
-                      Delete
+                      ✕ Decline
                     </motion.button>
                   </div>
                 </motion.div>
-              ))
-            ) : (
-              <p className="text-gray-500">No received requests.</p>
-            )}
-          </div>
-        </>
-      )}
-    </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500">No received requests.</p>
+          )}
+        </div>
+      </>
+    )}
+  </div>
   );
 };
 
