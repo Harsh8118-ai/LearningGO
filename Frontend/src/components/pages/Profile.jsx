@@ -96,10 +96,8 @@ const Profile = () => {
             <p className="text-gray-400 text-sm">@{user.username.toLowerCase()}</p>
 
             <div className="flex gap-4 mt-4">
-              <button className="bg-gray-800 px-4 py-1 rounded-full text-sm hover:bg-gray-700 transition">Edit Profile</button>
-              <Link to="/settings">
-                <button className="bg-gray-800 px-4 py-1 rounded-full text-sm hover:bg-gray-700 transition">Settings
-                </button></Link>
+              <Link to="/settings?tab=edit"><button className="bg-gray-800 px-4 py-1 rounded-full text-sm hover:bg-gray-700 transition">Edit Profile</button></Link>
+              <Link to="/settings?tab=settings"><button className="bg-gray-800 px-4 py-1 rounded-full text-sm hover:bg-gray-700 transition">Settings</button></Link>
             </div>
 
             <p className="mt-4 text-center text-sm text-gray-300">
