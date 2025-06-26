@@ -32,13 +32,15 @@ const ActivityTab = () => {
           username: item.questionAskedByUsername,
         }));
 
+        const User = localStorage.getItem("username");
+
         const asked = (askedData.questions || []).map((q) => ({
           type: "asked",
           _id: q._id,
           title: q.question,
           body: q.answers?.[0]?.text || "No answers yet.",
           createdAt: q.createdAt,
-          username: q.username,
+          username: User
         }));
 
         const combined = [...answered, ...asked].sort(

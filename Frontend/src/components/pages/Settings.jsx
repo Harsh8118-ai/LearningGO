@@ -18,7 +18,6 @@ const Settings = () => {
   const [editStep, setEditStep] = useState("edit");
   const location = useLocation();
 
-
   useEffect(() => {
     const query = new URLSearchParams(location.search);
     const section = query.get("tab");
@@ -50,7 +49,7 @@ const Settings = () => {
       );
       alert(`${field} updated successfully!`);
       setUser((prev) => ({ ...prev, [field]: newValue }));
-      setIsModalOpen(null);
+      resetModal();
     } catch (error) {
       alert(`Failed to update ${field}.`);
     }
@@ -58,62 +57,108 @@ const Settings = () => {
 
   const sendOtp = async () => {
     try {
-      await axios.post(`${BASE_URL}/otp/send-otp`, { email: user.email });
-      alert("OTP sent to your email.");
+      await axios.post(`${BASE_URL}/otp/send-otp`, {
+        email:
+          isModalOpen === "password" || isModalOpen === "email"
+            ? user.email
+            : undefined,
+        mobileNumber: isModalOpen === "mobileNumber" ? user.mobileNumber : undefined,
+      });
+      alert("OTP sent!");
       setIsOtpSent(true);
+      setEditStep("verify");
     } catch (error) {
       alert("Failed to send OTP.");
     }
   };
 
-  const handleUpdatePassword = async () => {
-    if (!otp) return alert("Please enter the OTP.");
+  const verifyAndUpdate = async () => {
     try {
-      await axios.put(`${BASE_URL}/auth/reset-password`, {
-        email: user.email,
+      await axios.post(`${BASE_URL}/otp/verify-otp`, {
+        email:
+          isModalOpen === "password" || isModalOpen === "email"
+            ? user.email
+            : undefined,
+        mobileNumber: isModalOpen === "mobileNumber" ? user.mobileNumber : undefined,
         otp,
-        newPassword,
       });
-      alert("Password updated successfully!");
-      setIsModalOpen(null);
-      setOtp("");
-      setIsOtpSent(false);
+
+      if (isModalOpen === "password") {
+        await axios.put(`${BASE_URL}/auth/reset-password`, {
+          email: user.email,
+          otp,
+          newPassword,
+        });
+      } else {
+        await handleUpdateProfile(isModalOpen);
+      }
+
+      alert("Verified & updated!");
+      resetModal();
     } catch (error) {
-      alert("Failed to update password.");
+      alert("OTP verification failed.");
     }
   };
 
-  const tabClass = (tab) => `px-4 py-2 rounded-xl font-medium text-sm ${activeTab === tab ? "bg-gray-800 text-white" : "text-gray-400 hover:text-white"
+  const resetModal = () => {
+    setIsModalOpen(null);
+    setEditStep("edit");
+    setOtp("");
+    setNewPassword("");
+    setIsOtpSent(false);
+  };
+
+  const tabClass = (tab) =>
+    `px-4 py-2 rounded-xl font-medium text-sm ${
+      activeTab === tab
+        ? "bg-gray-800 text-white"
+        : "text-gray-400 hover:text-white"
     }`;
 
   return (
-    <div className="p-6 md:p-10 text-white">
-      <motion.div className="bg-gray-950 border border-gray-700 rounded-2xl shadow-xl">
-        <div className="flex justify-between items-center p-6 border-b border-gray-700">
+    <div className="p-4 sm:p-6 md:p-10 text-white mt-10 sm:mt-10">
+      <motion.div className="bg-gray-950 border border-gray-700 rounded-2xl shadow-xl max-w-4xl mx-auto">
+        <div className="flex justify-between items-center p-6 border-b border-gray-700 flex-wrap gap-2">
           <h2 className="text-2xl font-bold">Settings</h2>
-          <div className="flex space-x-3">
-            <button onClick={() => setActiveTab("edit")} className={tabClass("edit")}>Edit Profile</button>
-            <button onClick={() => setActiveTab("settings")} className={tabClass("settings")}>Preferences</button>
+          <div className="flex flex-wrap gap-2">
+            <button onClick={() => setActiveTab("edit")} className={tabClass("edit")}>
+              Edit Profile
+            </button>
+            <button
+              onClick={() => setActiveTab("settings")}
+              className={tabClass("settings")}
+            >
+              Preferences
+            </button>
           </div>
         </div>
 
         {activeTab === "edit" && (
           <div className="p-6 space-y-4">
-            {['username', 'email', 'mobileNumber'].map((field) => (
-              <div key={field} className="flex justify-between items-center">
+            {["username", "email", "mobileNumber"].map((field) => (
+              <div
+                key={field}
+                className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2"
+              >
                 <p className="text-lg">
-                  <strong className="text-white capitalize">{field}:</strong> {user[field]}
+                  <strong className="text-white capitalize">{field}:</strong>{" "}
+                  {user[field]}
                 </p>
                 <button
-                  onClick={() => { setIsModalOpen(field); setNewValue(user[field]); }}
+                  onClick={() => {
+                    setIsModalOpen(field);
+                    setNewValue(user[field]);
+                  }}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
                 >
                   Edit
                 </button>
               </div>
             ))}
-            <div className="flex justify-between items-center">
-              <p className="text-lg"><strong>Password:</strong> ********</p>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+              <p className="text-lg">
+                <strong>Password:</strong> ********
+              </p>
               <button
                 onClick={() => setIsModalOpen("password")}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded"
@@ -132,19 +177,13 @@ const Settings = () => {
         )}
       </motion.div>
 
-      {/* Edit Modal  */}
+      {/* Shared Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 flex justify-center items-center bg-black/50 z-50">
-          <div className="bg-gray-900 p-6 rounded-lg shadow-lg w-96 relative">
-            {/* Close Button */}
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 px-4">
+          <div className="bg-gray-900 p-5 sm:p-6 rounded-lg shadow-lg w-full max-w-sm sm:max-w-md md:max-w-lg relative">
+            {/* Close */}
             <button
-              onClick={() => {
-                setIsModalOpen(null);
-                setEditStep("edit");
-                setOtp("");
-                setNewPassword("");
-                setIsOtpSent(false);
-              }}
+              onClick={resetModal}
               className="absolute top-2 right-3 text-white text-xl hover:text-red-500"
             >
               ✖
@@ -154,50 +193,29 @@ const Settings = () => {
               Edit {isModalOpen}
             </h3>
 
-            {/* Step 1: Input New Value */}
+            {/* Step 1: Input */}
             {editStep === "edit" && (
               <>
-                {/* Input for field or password */}
                 {isModalOpen === "password" ? (
                   <input
                     placeholder="New Password"
-                    className="w-full p-2 mb-4 rounded bg-gray-800 border border-gray-600 text-white"
+                    className="w-full p-2 mb-3 rounded bg-gray-800 border border-gray-600 text-white text-sm"
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                   />
                 ) : (
                   <input
-                    className="w-full p-2 mb-4 rounded bg-gray-800 border border-gray-600 text-white"
+                    className="w-full p-2 mb-3 rounded bg-gray-800 border border-gray-600 text-white text-sm"
                     value={newValue}
                     onChange={(e) => setNewValue(e.target.value)}
                   />
                 )}
 
-                <div className="flex justify-end gap-3">
+                <div className="flex flex-col sm:flex-row justify-end gap-2">
                   {["email", "mobileNumber", "password"].includes(isModalOpen) ? (
                     <button
-                      onClick={async () => {
-                        try {
-                          await axios.post(`${BASE_URL}/otp/send-otp`, {
-                            email:
-                              isModalOpen === "password"
-                                ? user.email
-                                : isModalOpen === "email"
-                                  ? user.email
-                                  : undefined,
-                            mobileNumber:
-                              isModalOpen === "mobileNumber"
-                                ? user.mobileNumber
-                                : undefined,
-                          });
-                          alert("OTP sent!");
-                          setIsOtpSent(true);
-                          setEditStep("verify");
-                        } catch (err) {
-                          alert("Failed to send OTP.");
-                        }
-                      }}
+                      onClick={sendOtp}
                       className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700"
                     >
                       Send OTP
@@ -211,10 +229,7 @@ const Settings = () => {
                     </button>
                   )}
                   <button
-                    onClick={() => {
-                      setIsModalOpen(null);
-                      setEditStep("edit");
-                    }}
+                    onClick={resetModal}
                     className="bg-gray-600 px-4 py-2 rounded hover:bg-gray-700"
                   >
                     Cancel
@@ -223,54 +238,18 @@ const Settings = () => {
               </>
             )}
 
-            {/* Step 2: OTP Verification */}
+            {/* Step 2: OTP Verify */}
             {editStep === "verify" && (
               <>
                 <input
                   placeholder="Enter OTP"
-                  className="w-full p-2 mb-3 rounded bg-gray-800 border border-gray-600 text-white"
+                  className="w-full p-2 mb-3 rounded bg-gray-800 border border-gray-600 text-white text-sm"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                 />
-                <div className="flex justify-end gap-3">
+                <div className="flex flex-col sm:flex-row justify-end gap-2">
                   <button
-                    onClick={async () => {
-                      try {
-                        await axios.post(`${BASE_URL}/otp/verify-otp`, {
-                          email:
-                            isModalOpen === "password"
-                              ? user.email
-                              : isModalOpen === "email"
-                                ? user.email
-                                : undefined,
-                          mobileNumber:
-                            isModalOpen === "mobileNumber"
-                              ? user.mobileNumber
-                              : undefined,
-                          otp,
-                        });
-
-                        // Now update value
-                        if (isModalOpen === "password") {
-                          await axios.put(`${BASE_URL}/auth/reset-password`, {
-                            email: user.email,
-                            otp,
-                            newPassword,
-                          });
-                        } else {
-                          await handleUpdateProfile(isModalOpen);
-                        }
-
-                        alert("Verified & updated!");
-                        setIsModalOpen(null);
-                        setEditStep("edit");
-                        setOtp("");
-                        setNewPassword("");
-                        setIsOtpSent(false);
-                      } catch (err) {
-                        alert("OTP verification failed.");
-                      }
-                    }}
+                    onClick={verifyAndUpdate}
                     className="bg-green-600 px-4 py-2 rounded hover:bg-green-700"
                   >
                     Verify & Save
@@ -291,7 +270,6 @@ const Settings = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };

@@ -23,14 +23,15 @@ const HomePage = () => {
     fetchStats();
   }, []);
 
-  const fetchStats = async () => {
-    try {
-      const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/stats`);
-      setStats(data);
-    } catch (error) {
-      console.error("Error fetching stats:", error);
-    }
-  };
+ const fetchStats = async () => {
+  try {
+    const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ques/stats`);
+    setStats(data);
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+  }
+};
+
 
   const addQuestion = () => {
     setQuestions([...questions, newQuestion]);

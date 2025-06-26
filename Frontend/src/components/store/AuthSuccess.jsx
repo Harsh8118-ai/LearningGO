@@ -13,18 +13,14 @@ const AuthSuccess = () => {
     const token = searchParams.get("token");
     const username = searchParams.get("username");
 
-    console.log("🔹 Token:", token);
-    console.log("🔹 Username:", username);
-
+    
     if (token) {
       try {
         localStorage.setItem("token", token);
         const decoded = jwtDecode(token);
-        console.log("🔹 Decoded Token:", decoded);
-
         
+        localStorage.setItem("username", username);
         localStorage.setItem("userId", decoded.id);
-        console.log("User ID stored:", decoded.id);
 
         const newUser = { id: decoded.id, username };
         setUser(newUser);

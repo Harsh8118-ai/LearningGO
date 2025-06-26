@@ -15,7 +15,7 @@ const categories = [
   "Game Development", 
   "AR/VR", 
   "IoT", 
-  "Database Management", 
+  "Database Management",
   "Software Testing",
 ];
 

@@ -17,6 +17,11 @@ export function QuestionModal({ open, setOpen, question }) {
   }, [open, question]);
 
   const handleAddAnswer = async () => {
+     if (!newAnswer.trim() || !question?._id || !user?._id) {
+    console.warn("Missing question or user info");
+    return;
+  }
+  
     if (!newAnswer.trim()) return;
     try {
       const token = localStorage.getItem("token");

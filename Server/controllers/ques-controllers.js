@@ -1,4 +1,5 @@
 const Question = require("../models/ques-model");
+const User = require("../models/user-model");
 const mongoose = require("mongoose");
 
 // Create or Add a Question (User can also provide an answer while posting)
@@ -189,7 +190,7 @@ const addAnswer = async (req, res) => {
   }
 };
 
-
+// Get all questions by a specific user (both public and private for that user)
 const getQuestionsByUserId = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -212,6 +213,7 @@ const getQuestionsByUserId = async (req, res) => {
   }
 };
 
+// Update a specific question (only by the owner)
 const updateQuestion = async (req, res) => {
   try {
     const { userId, questionId } = req.params;
@@ -238,6 +240,7 @@ const updateQuestion = async (req, res) => {
   }
 };
 
+// Delete a specific question (only by the owner)
 const deleteQuestion = async (req, res) => {
   try {
     const { userId, questionId } = req.params;
@@ -261,6 +264,7 @@ const deleteQuestion = async (req, res) => {
   }
 };
 
+// Get top 10 trending questions (public, sorted by likes)
 const getTrendingQuestions = async (req, res) => {
   try {
     const questions = await Question.aggregate([
@@ -289,7 +293,7 @@ const getTrendingQuestions = async (req, res) => {
   }
 };
 
-
+// Get all private questions of the logged-in user
 const getPrivateQuestions = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -307,7 +311,7 @@ const getPrivateQuestions = async (req, res) => {
   }
 };
 
-
+// Get all answers for a specific question
 const getAnswers = async (req, res) => {
   try {
     const { questionId } = req.params;
@@ -336,7 +340,7 @@ const getAnswers = async (req, res) => {
   }
 };
 
-
+// Get all answers posted by a user
 const getAnswersByUserId = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -372,6 +376,76 @@ const getAnswersByUserId = async (req, res) => {
   }
 };
 
+// Get Stats 
+const getStats = async (req, res) => {
+  try {
+    const stats = await Question.aggregate([
+      { $unwind: "$questions" },
+      {
+        $facet: {
+          totalQuestions: [{ $count: "count" }],
+          totalAnswers: [
+            {
+              $project: {
+                numAnswers: { $size: "$questions.answers" }
+              }
+            },
+            {
+              $group: {
+                _id: null,
+                total: { $sum: "$numAnswers" }
+              }
+            }
+          ],
+          expertUserIds: [
+            {
+              $match: {
+                "questions.answers.0": { $exists: true }
+              }
+            },
+            {
+              $project: {
+                expertIds: "$questions.answers.userId"
+              }
+            },
+            { $unwind: "$expertIds" },
+            {
+              $group: {
+                _id: null,
+                uniqueExperts: { $addToSet: "$expertIds" }
+              }
+            },
+            {
+              $project: {
+                count: { $size: "$uniqueExperts" }
+              }
+            }
+          ]
+        }
+      },
+      {
+        $project: {
+          totalQuestions: { $arrayElemAt: ["$totalQuestions.count", 0] },
+          totalAnswers: { $arrayElemAt: ["$totalAnswers.total", 0] },
+          experts: { $arrayElemAt: ["$expertUserIds.count", 0] }
+        }
+      }
+    ]);
+
+    const totalUsers = await User.countDocuments();
+
+    res.json({
+      users: totalUsers,
+      questions: stats[0]?.totalQuestions || 0,
+      answers: stats[0]?.totalAnswers || 0,
+      experts: stats[0]?.experts || 0
+    });
+  } catch (err) {
+    console.error("❌ Failed to get stats:", err.message);
+    res.status(500).json({ message: "Failed to get stats", error: err.message });
+  }
+};
+
 
 
 module.exports = {
@@ -387,4 +461,5 @@ module.exports = {
   getPrivateQuestions,
   getAnswers,
   getAnswersByUserId,
+  getStats
 };

@@ -39,5 +39,9 @@ router.get("/:questionId/answer", quesController.getAnswers);
 // Get all answers posted by a user
 router.get("/answers/user/:userId", quesController.getAnswersByUserId);
 
+// Get Stats
+router.get("/stats", quesController.getStats);
+
+
 
 module.exports = router;
