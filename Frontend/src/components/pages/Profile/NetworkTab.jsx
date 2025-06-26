@@ -8,62 +8,20 @@ import Requests from "./NetworkToggle/Requests";
 import Sent from "./NetworkToggle/Sent";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { useAuth } from "../../store/UseAuth";
+import { Link } from "react-router-dom";
 
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const NetworkTab = () => {
   const [activeTab, setActiveTab] = useState("Connections");
-  const [friends, setFriends] = useState([]);
-  const [receivedRequests, setReceivedRequests] = useState([]);
-  const [sentRequests, setSentRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    AOS.init({ duration: 800 });
-  
-    const fetchNetworkStats = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setError("User is not authenticated. Please log in.");
-        setLoading(false);
-        return;
-      }
-  
-      try {
-        const [friendsRes, sentRes, receivedRes] = await Promise.all([
-          axios.get(`${BASE_URL}/friends/friends-list`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${BASE_URL}/friends/requests/sent`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${BASE_URL}/friends/requests/received`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-  
-        setFriends(friendsRes.data.friends || []);
-        setSentRequests(sentRes.data || []);
-        setReceivedRequests(receivedRes.data || []);
-  
-      } catch (error) {
-        const message = error.response?.data?.message || "Failed to load network data.";
-        setError(message);
-        toast.error(message);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchNetworkStats();
-  }, []);
-  
+  const { friends, sentRequests, receivedRequests } = useAuth();  
 
   const tabClasses = (tab) =>
-    `w-full text-md py-1 font-medium rounded-xl transition duration-200 ${
-      activeTab === tab ? "bg-gray-950 text-white" : "text-gray-300 hover:text-white"
+    `w-full text-md py-1 font-medium rounded-xl transition duration-200 ${activeTab === tab ? "bg-gray-950 text-white" : "text-gray-300 hover:text-white"
     }`;
 
   return (
@@ -77,24 +35,25 @@ const NetworkTab = () => {
               Manage your connections and grow your Network
             </p>
           </div>
+          <Link to="/friends">
           <button className="gap-2 flex justify-center items-center border border-[#2c2c32] rounded-lg px-3 py-1.5 text-sm text-white hover:bg-[#1a1a1f]">
             <Users size={16} />
             Find Connections
-          </button>
+          </button></Link>
         </div>
 
         {/* Stats Pills */}
         <div className="flex flex-wrap gap-3">
-  <span className="bg-purple-600/20 text-purple-400 text-sm px-3 border border-gray-950 rounded-full font-medium">
-    {friends.length} Connections
-  </span>
-  <span className="bg-blue-600/20 text-blue-400 text-sm px-3 border border-gray-950 rounded-full font-medium">
-    {receivedRequests.length} Requests
-  </span>
-  <span className="bg-green-600/20 text-green-400 text-sm px-3 border border-gray-950 rounded-full font-medium">
-    {sentRequests.length} Sent
-  </span>
-</div>
+          <span className="bg-purple-600/20 text-purple-400 text-sm px-3 border border-gray-950 rounded-full font-medium">
+            {friends.length} Connections
+          </span>
+          <span className="bg-blue-600/20 text-blue-400 text-sm px-3 border border-gray-950 rounded-full font-medium">
+            {receivedRequests.length} Requests
+          </span>
+          <span className="bg-green-600/20 text-green-400 text-sm px-3 border border-gray-950 rounded-full font-medium">
+            {sentRequests.length} Sent
+          </span>
+        </div>
 
 
         {/* Tabs */}
@@ -130,17 +89,6 @@ const NetworkTab = () => {
           <BreakdownItem label="Data Science" percent={28} color="bg-blue-400" />
           <BreakdownItem label="UI/UX Design" percent={18} color="bg-purple-400" />
           <BreakdownItem label="DevOps" percent={12} color="bg-green-400" />
-        </div>
-      </div>
-
-      {/* Groups & Communities */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Groups & Communities</h3>
-        <p className="text-sm text-muted-foreground">
-          Groups and communities you're a part of
-        </p>
-        <div className="flex justify-center">
-          <Button variant="outline">Discover More Communities</Button>
         </div>
       </div>
     </div>

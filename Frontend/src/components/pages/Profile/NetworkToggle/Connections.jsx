@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaEllipsisH } from "react-icons/fa";
 import { BsPerson } from "react-icons/bs";
 
@@ -120,9 +120,10 @@ const Connections = () => {
           </div>
 
           <div className="pt-4 flex justify-center">
+            <Link to="/friends">
             <button className="bg-gray-950 border border-[#444] text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-[#2a2a2a] transition">
               View All Connections
-            </button>
+            </button></Link>
           </div>
         </>
       ) : (

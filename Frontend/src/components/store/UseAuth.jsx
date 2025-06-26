@@ -8,6 +8,10 @@ export function useAuth() {
   const [user, setUser] = useState(null);
   const [inviteCode, setInviteCode] = useState(null);
   const [questionsCount, setQuestionsCount] = useState(0);
+  const [answersCount, setAnswersCount] = useState(0);
+  const [friends, setFriends] = useState([]);
+  const [sentRequests, setSentRequests] = useState([]);
+  const [receivedRequests, setReceivedRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -19,6 +23,7 @@ export function useAuth() {
     return `${numericCode.toString().padStart(6, "0")}`;
   };
 
+  // Fetch user data on mount
   useEffect(() => {
     const fetchUserData = async () => {
       const token = localStorage.getItem("token");
@@ -63,8 +68,9 @@ export function useAuth() {
         setInviteCode(userInviteCode);
         localStorage.setItem("inviteCode", userInviteCode);
 
-        // 👉 Fetch question stats AFTER setting user
+        // Fetch additional stats
         fetchUserQuestionStats(data.user._id);
+        fetchUserAnswerStats(data.user._id);
       } catch (error) {
         console.error("❌ Error fetching user:", error.message);
         if (!["/", "/login", "/signup"].includes(location.pathname)) {
@@ -75,22 +81,80 @@ export function useAuth() {
       }
     };
 
-    const fetchUserQuestionStats = async (userId) => {
-      try {
-        const response = await axios.get(`${BASE_URL}/ques/user/${userId}`, {
-          params: { viewerId: userId },
-        });
-
-        const userQuestions = response.data.questions || [];
-        setQuestionsCount(userQuestions.length); // ✅ Set count
-      } catch (error) {
-        console.error("Error fetching user questions:", error.message);
-        setQuestionsCount(0); // fallback
-      }
-    };
-
     fetchUserData();
   }, [navigate, location.pathname]);
 
-  return { user, inviteCode, loading, questionsCount };
+  // Fetch network stats whenever user changes
+  useEffect(() => {
+    if (user) {
+      const fetchNetworkStats = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        try {
+          const [friendsRes, sentRes, receivedRes] = await Promise.all([
+            axios.get(`${BASE_URL}/friends/friends-list`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get(`${BASE_URL}/friends/requests/sent`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get(`${BASE_URL}/friends/requests/received`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+          ]);
+
+          setFriends(friendsRes.data.friends || []);
+          setSentRequests(sentRes.data || []);
+          setReceivedRequests(receivedRes.data || []);
+        } catch (err) {
+          console.error("Network stats error:", err.message);
+          setFriends([]);
+          setSentRequests([]);
+          setReceivedRequests([]);
+        }
+      };
+
+      fetchNetworkStats();
+    }
+  }, [user]);
+
+  const fetchUserQuestionStats = async (userId) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/ques/user/${userId}`, {
+        params: { viewerId: userId },
+      });
+
+      const userQuestions = response.data.questions || [];
+      setQuestionsCount(userQuestions.length);
+    } catch (error) {
+      console.error("Error fetching user questions:", error.message);
+      setQuestionsCount(0);
+    }
+  };
+
+  const fetchUserAnswerStats = async (userId) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/ques/answers/user/${userId}`);
+      const userAnswers = response.data.answers || [];
+      setAnswersCount(userAnswers.length);
+    } catch (error) {
+      console.error("Error fetching user answers:", error.message);
+      setAnswersCount(0);
+    }
+  };
+
+  return {
+    user,
+    inviteCode,
+    loading,
+    questionsCount,
+    answersCount,
+    friends,
+    sentRequests,
+    receivedRequests,
+    friendsCount: friends.length,
+    receivedRequestsCount: receivedRequests.length,
+    sentRequestsCount: sentRequests.length,
+  };
 }

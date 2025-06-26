@@ -16,7 +16,7 @@ const StatisticsTab = () => {
       try {
         const res = await fetch(`${BASE_URL}/ques/answers/user/${userId}`);
         const data = await res.json();
-        const answers = data.answers || [];
+        const answers = data.answers || []; 
         setAnswers(answers);
 
         // 🔢 Tag Counts
