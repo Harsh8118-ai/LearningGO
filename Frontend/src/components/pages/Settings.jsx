@@ -11,7 +11,7 @@ const Settings = () => {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const [isModalOpen, setIsModalOpen] = useState(null);
   const [newValue, setNewValue] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  const [newPassword, setNewPassword] = useState(""); 
   const [otp, setOtp] = useState("");
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [activeTab, setActiveTab] = useState("settings");
