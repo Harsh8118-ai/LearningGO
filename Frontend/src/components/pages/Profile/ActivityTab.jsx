@@ -108,7 +108,7 @@ const ActivityTab = () => {
       ))}
 
       {/* ✅ Consistent with PublicQues */}
-      {selectedQuestion && (
+      {selectedQuestion && ( 
         <QuestionModal
           open={!!selectedQuestion}
           setOpen={() => setSelectedQuestion(null)}

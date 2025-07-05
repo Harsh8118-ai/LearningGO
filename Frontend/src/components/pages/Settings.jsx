@@ -6,7 +6,7 @@ import { useLocation } from "react-router-dom";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-const Settings = () => {
+const Settings = () => { 
   const [user, setUser] = useState({ username: "", email: "", mobileNumber: "" });
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
   const [isModalOpen, setIsModalOpen] = useState(null);
