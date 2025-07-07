@@ -16,7 +16,7 @@ const Settings = () => {
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [activeTab, setActiveTab] = useState("settings");
   const [editStep, setEditStep] = useState("edit");
-  const location = useLocation();
+  const location = useLocation(); 
 
   useEffect(() => {
     const query = new URLSearchParams(location.search);
