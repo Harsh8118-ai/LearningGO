@@ -21,7 +21,7 @@ const Settings = () => {
   useEffect(() => {
     const query = new URLSearchParams(location.search);
     const section = query.get("tab");
-    if (section === "edit") setActiveTab("edit");
+    if (section === "edit") setActiveTab("edit"); 
   }, [location.search]);
 
   useEffect(() => {
