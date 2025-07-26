@@ -57,7 +57,7 @@ const ActivityTab = () => {
   }, []);
 
   const handleOpenModal = (question) => {
-    setSelectedQuestion(question);
+    setSelectedQuestion(question); 
   };
 
   return (
