@@ -48,7 +48,7 @@ const ActivityTab = () => {
         );
 
         setActivityList(combined);
-      } catch (err) {
+      } catch (err) { 
         console.error("Error loading activity:", err);
       }
     };
