@@ -63,7 +63,7 @@ const TrendingQues = () => {
                 console.error("Error fetching trending questions:", error);
                 setError("Failed to load questions.");   
                 setLoading(false);
-            }
+            }    
         };
 
         fetchTrendingQuestions();
